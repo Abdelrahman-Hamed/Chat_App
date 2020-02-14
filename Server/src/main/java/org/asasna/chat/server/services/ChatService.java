@@ -5,9 +5,13 @@ import org.asasna.chat.common.service.IChatService;
 
 import java.rmi.RemoteException;
 import java.rmi.server.RemoteRef;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 
-public class ChatService implements IChatService {
+public class ChatService extends UnicastRemoteObject implements IChatService {
+    public ChatService() throws RemoteException {
+    }
+
     @Override
     public List<User> getFriendList(User user) throws RemoteException {
         return null;
