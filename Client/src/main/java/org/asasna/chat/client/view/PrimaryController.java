@@ -1,0 +1,78 @@
+package org.asasna.chat.client.view;
+
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.text.Text;
+import org.asasna.chat.client.App;
+import org.asasna.chat.client.util.Validation;
+
+
+import java.io.IOException;
+
+public class PrimaryController {
+
+    @FXML
+    private TextField phoneNumber;
+
+    @FXML
+    private Text errorPhoneNumber;
+
+    @FXML
+    private PasswordField password;
+
+    @FXML
+    private Text errorPassword;
+
+    @FXML
+    private Button loginButton;
+    @FXML
+    private void switchToLogin()  {
+        try {
+            App.setRoot("register");
+        }
+        catch(IOException e){
+            System.out.println("no fxml file");
+        }
+    }
+
+    @FXML
+    private void phoneNumberChanged(KeyEvent evnet){
+        if(!Validation.validatePhoneNumber(phoneNumber.getText())){
+            errorPhoneNumber.setVisible(true);
+            password.setDisable(true);
+            loginButton.setDisable(true);
+            errorPhoneNumber.setText("Not A Valid Phone Number");
+        }
+        else{
+            password.setDisable(false);
+            loginButton.setDisable(false);
+            errorPhoneNumber.setVisible(false);
+        }
+
+    }
+    @FXML
+    private void loginButtonClicked(ActionEvent event){
+        if(!Validation.validatePhoneNumber(phoneNumber.getText())){
+            errorPhoneNumber.setVisible(true);
+            errorPhoneNumber.setText("Not A Valid Phone Number");
+        }
+        else{
+            password.setDisable(false);
+            errorPhoneNumber.setVisible(false);
+            loadChatPage(event);
+        }
+    }
+
+    private void loadChatPage(ActionEvent event){
+        try {
+            App.setRoot("chat");
+        }
+            catch(IOException e){
+            System.out.println("no chat.fxml file");
+        }
+    }
+}
