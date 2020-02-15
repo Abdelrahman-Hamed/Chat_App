@@ -139,6 +139,8 @@ public class User implements Serializable {
         return userImage;
     }
 
+    public String getImageURL(){return imageURL;}
+
     public void setImageURL(String imageURL) {
         this.imageURL = imageURL;
     }
