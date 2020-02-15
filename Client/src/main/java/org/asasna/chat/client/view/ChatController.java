@@ -39,7 +39,6 @@ import java.util.ResourceBundle;
 
 public class ChatController implements Initializable, IChatController {
 
-    Client client;
     @FXML
     TextField searchTextField;
 
