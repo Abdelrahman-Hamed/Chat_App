@@ -1,5 +1,6 @@
 module org.asasna.common {
     requires java.rmi;
+    requires javafx.graphics;
     requires rmiio;
     requires javafx.base;
     requires javafx.controls;

@@ -1,9 +1,6 @@
 package org.asasna.chat.common.service;
 
-import org.asasna.chat.common.model.Message;
-import org.asasna.chat.common.model.Notification;
-import org.asasna.chat.common.model.User;
-import org.asasna.chat.common.model.UserStatus;
+import org.asasna.chat.common.model.*;
 
 import java.io.FileInputStream;
 import java.rmi.Remote;
@@ -16,6 +13,9 @@ public interface IClientService extends Remote {
     void changeStatus(int id, UserStatus status) throws RemoteException;
 
     void recieveNotivication(Notification notification) throws RemoteException;
-    public void sendFileToServer(String filePath,String extension) throws RemoteException;
+
+    void recieveGroupMessage(ChatGroup group, Message message) throws RemoteException;
+
+    void sendFileToServer(String filePath, String extension) throws RemoteException;
 
 }

@@ -1,5 +1,6 @@
 package org.asasna.chat.client.view;
 
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -36,6 +37,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class ChatController implements Initializable, IChatController {
 
@@ -58,19 +60,33 @@ public class ChatController implements Initializable, IChatController {
 
 
     public Contact activeContact;
+    private User user;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         setToolTip();
+        user = new User(4, "Ahmed", "01027420575");
+        Message message = new Message(3, "Hello");
+        List<User> list = new ArrayList<>();
+        list.add(user);
+        list.add(new User(1, "Khaled", "014587"));
+        list.add(new User(5, "Sayed", "54663"));
+        ChatGroup chatGroup = new ChatGroup(1, list.stream().map(u -> u.getId()).collect(Collectors.toList()), "Group1");
+
         try {
-            client=new Client(this);
+            client = new Client(this);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        try {
+            client.sendGroupMessage(chatGroup, message);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
         me = new User();
         try {
-            Contact contact = new Contact("Abdelrahman", new Image(new FileInputStream("./client/src/main/resources/org/asasna/chat/client/abdo.jpg")), UserStatus.ONLINE);
-            contactsList.getChildren().add(contact);
+            //Contact contact = new Contact("Abdelrahman", new Image(new FileInputStream("./client/src/main/resources/org/asasna/chat/client/abdo.jpg")), UserStatus.ONLINE);
+            //contactsList.getChildren().add(contact);
             SearchedContact searchedContact = new SearchedContact("Sayed Nabil", new Image(new FileInputStream("./client/src/main/resources/org/asasna/chat/client/abdo.jpg")), UserStatus.ONLINE);
             contactsList.getChildren().add(searchedContact);
         } catch (FileNotFoundException e) {
@@ -126,10 +142,10 @@ public class ChatController implements Initializable, IChatController {
         for (Node c : contacts) {
             c.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
                 this.activeContact = (Contact) c;
+                System.out.println(activeContact.getName());
                 //  System.out.println("active Contact is : "+ this.activeContact.getUser().getName());
             });
         }
-
     }
 
     private void setToolTip() {
@@ -208,6 +224,24 @@ public class ChatController implements Initializable, IChatController {
 
 
     //    Start Abdo
+    public void recieveGroupMessage(ChatGroup group, Message message) {
+        System.out.println("Message from group : ");
+        System.out.println(message.getMesssagecontent());
+        System.out.println("Group : " + group.getName());
+        Platform.runLater(() -> {
+            Contact contact = new Contact(group.getName(), null, UserStatus.ONLINE);
+            contact.setOnMouseClicked((e) -> {
+                this.activeContact = contact;
+                System.out.println(activeContact.getName());
+            });
+            contactsList.getChildren().add(contact);
+        });
+    }
+
+    public void sendGroupMessage(ChatGroup group, Message message) throws RemoteException {
+        client.sendGroupMessage(group, message);
+
+    }
     // End Abdo
 
 
@@ -230,26 +264,26 @@ public class ChatController implements Initializable, IChatController {
             }).start();
         }
     }
-        // End Aya
+    // End Aya
 
 
-        //    Start Shimaa
-        // End shimaa
+    //    Start Shimaa
+    // End shimaa
 
 
-        //    Start Abeer Emad
-        // End Abeer Emad
+    //    Start Abeer Emad
+    // End Abeer Emad
 
 
-        //    Start Nehal Adel
+    //    Start Nehal Adel
 
-    public void send () {
+    public void send() {
         String messageTXT = messageTextArea.getText();
         Message mes = new Message(5, messageTXT);
         messageTextArea.setText("");
         displayMessage(mes);
         System.out.println(messageTXT);
     }
-        // End Nehal Adel
-    }
+    // End Nehal Adel
+}
 

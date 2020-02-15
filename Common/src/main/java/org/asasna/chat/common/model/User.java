@@ -2,6 +2,7 @@ package org.asasna.chat.common.model;
 
 import java.io.Serializable;
 import java.util.Date;
+
 import javafx.scene.image.Image;
 
 
@@ -52,6 +53,12 @@ public class User implements Serializable {
         this.imageURL = imageURL;
         this.verified = verified;
         this.chatbotOption = chatbotOption;
+    }
+
+    public User(int id, String name, String phone) {
+        this.id = id;
+        this.name = name;
+        this.phone = phone;
     }
 
     public int getId() {
@@ -139,7 +146,9 @@ public class User implements Serializable {
         return userImage;
     }
 
-    public String getImageURL(){return imageURL;}
+    public String getImageURL() {
+        return imageURL;
+    }
 
     public void setImageURL(String imageURL) {
         this.imageURL = imageURL;
