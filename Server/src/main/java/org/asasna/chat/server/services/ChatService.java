@@ -89,7 +89,7 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     }
 
     @Override
-    public void sendFriendRequest(String fromPhoneNumber, String toPhoneNumber) {
+    public void sendFriendRequest(String fromPhoneNumber, String toPhoneNumber) throws RemoteException{
 
     }
 
@@ -108,7 +108,6 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
                 outWrite.close();*/
             }
         } catch (IOException  e) {
-         //   e.printStackTrace();
             System.out.println("Something went wrong with the client");
         }
 
