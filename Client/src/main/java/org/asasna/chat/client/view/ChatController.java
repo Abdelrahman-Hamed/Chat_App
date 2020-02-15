@@ -98,14 +98,14 @@ public class ChatController implements Initializable, IChatController {
     public void exit() {
 
     }
-    @FXML
+
     private void getSelectedContact() {
         ObservableList<Node> contacts;
         contacts = contactsList.getChildren() ;
         for (Node c:contacts) {
             c.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
                 this.activeContact = (Contact) c;
-              //  System.out.println("active Contact is : "+ this.activeContact.getUser().getName());
+                //System.out.println("active Contact is : "+ this.activeContact.getName());
             });
         }
 
@@ -140,10 +140,10 @@ public class ChatController implements Initializable, IChatController {
     public void displayMessage(Message msg) {
         viewTextMessage = new MSGview(msg);
         if(me.getId() == msg.getUserId()){
-            viewTextMessage.setTextMSGview(SpeechDirection.RIGHT);
+            viewTextMessage.setTextMSGview("RIGHT");
         }
         else {
-            viewTextMessage.setTextMSGview(SpeechDirection.LEFT);
+            viewTextMessage.setTextMSGview("LEFT");
         }
     }
 
@@ -155,5 +155,9 @@ public class ChatController implements Initializable, IChatController {
     @Override
     public void recieveNotification(Notification notification) {
 
+    }
+    public void searchContacts(KeyEvent keyEvent) {
+        String searchedMessage = searchTextField.getText();
+        List<User> users = client.search(searchedMessage);
     }
 }

@@ -2,20 +2,35 @@ package org.asasna.chat.server.services;
 
 import org.asasna.chat.common.model.*;
 import org.asasna.chat.common.service.IChatService;
+import org.asasna.chat.server.model.dao.IUserDao;
+import org.asasna.chat.server.model.dao.UserDao;
 
 import java.rmi.RemoteException;
 import java.rmi.server.RemoteRef;
 import java.rmi.server.UnicastRemoteObject;
+import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ChatService extends UnicastRemoteObject implements IChatService {
 
+    private static Map<Integer,List<Message>> receiverMessages = new HashMap<>();
+    private static Map<Integer, IChatService> onlineUsers = new HashMap<>();
+    IUserDao userDao;
+    private User user;
+
     public ChatService() throws RemoteException {
+        try {
+            userDao = new UserDao();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public List<User> getFriendList(User user) throws RemoteException {
-        return null;
+        return userDao.getFriendList(user);
     }
 
     @Override
