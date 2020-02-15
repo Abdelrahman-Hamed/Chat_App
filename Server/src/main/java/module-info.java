@@ -6,7 +6,7 @@ module org.asasna.server {
     requires mysql.connector.java;
     requires java.rmi;
     requires java.naming;
-
+    requires org.controlsfx.controls ;
     opens org.asasna.chat.server to javafx.fxml;
     exports org.asasna.chat.server;
 }
