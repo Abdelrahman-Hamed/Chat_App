@@ -3,9 +3,7 @@ package org.asasna.chat.server.model.db;
 import com.mysql.cj.jdbc.MysqlDataSource;
 
 import javax.sql.DataSource;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.util.Properties;
 
 public class MyDataSourceFactory {
@@ -13,7 +11,7 @@ public class MyDataSourceFactory {
         Properties props = new Properties();
         FileInputStream input = null;
         MysqlDataSource mySqlDataSource = null;
-        String filePath = "./src/main/resources/org/example/DB_Properties.properties";
+        String filePath = "./Server/src/main/resources/org/asasna/chat/server/DB_Properties.properties";
         try {
             input = new FileInputStream(filePath);
             props.load(input);

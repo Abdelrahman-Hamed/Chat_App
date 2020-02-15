@@ -74,6 +74,10 @@ public class Client extends UnicastRemoteObject implements IClientService {
     }
 
     public void sendFriendRequest(String toUserPhone) {
-        chatService.sendFriendRequest("01279425232" , toUserPhone);
+        try {
+            chatService.sendFriendRequest("01279425232" , toUserPhone);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 }
