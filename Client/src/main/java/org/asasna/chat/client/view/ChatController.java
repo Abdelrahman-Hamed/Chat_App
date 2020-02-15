@@ -13,10 +13,7 @@ import org.asasna.chat.client.model.Contact;
 import org.asasna.chat.client.model.IChatController;
 import org.asasna.chat.client.model.MSGview;
 import org.asasna.chat.client.model.SearchedContact;
-import org.asasna.chat.common.model.Message;
-import org.asasna.chat.common.model.Notification;
-import org.asasna.chat.common.model.User;
-import org.asasna.chat.common.model.UserStatus;
+import org.asasna.chat.common.model.*;
 
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -24,6 +21,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -161,8 +159,42 @@ public class ChatController implements Initializable, IChatController {
 
     }
 
+    //    Start Elsayed Nabil
+
     public void searchContacts(KeyEvent keyEvent) {
         String searchedMessage = searchTextField.getText();
-        List<User> users = client.search(searchedMessage);
+//        List<User> users = client.search(searchedMessage);
+        List<User> users = new ArrayList<>();
+        String names[] = {"Elsayed Nabil", "Abeer Emad", "Abdo Fahmy", "Aya Amin", "Shymaa shokry"};
+        for(int i=0; i<names.length; i++){
+            users.add(new User(names[i], "01279425232", "sayed0nabil@gmail.com", "123456789", Gender.Male, "Egypt", null, null, UserStatus.ONLINE, "abdo.jpg", false, false));
+        }
     }
+    // End Elsayed Nabil
+
+
+    //    Start Abdo
+    // End Abdo
+
+
+
+
+    //    Start Aya
+    // End Aya
+
+
+
+
+    //    Start Shimaa
+    // End shimaa
+
+
+
+    //    Start Abeer Emad
+    // End Abeer Emad
+
+
+
+    //    Start Nehal Adel
+    // End Nehal Adel
 }
