@@ -23,7 +23,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        try {
+       /* try {
             IChatService iChatService=new ChatService();
             Registry reg= LocateRegistry.createRegistry(5000);
             reg.rebind("ChatService",iChatService );
@@ -33,7 +33,7 @@ public class App extends Application {
         }
         scene = new Scene(loadFXML("primary"));
         stage.setScene(scene);
-        stage.show();
+        stage.show();*/
     }
 
     static void setRoot(String fxml) throws IOException {
@@ -46,7 +46,15 @@ public class App extends Application {
     }
 
     public static void main(String[] args) {
-        launch();
+        //launch();
+        try {
+            IChatService iChatService=new ChatService();
+            Registry reg= LocateRegistry.createRegistry(5000);
+            reg.rebind("ChatService",iChatService );
+        }
+        catch (RemoteException ex) {
+            ex.printStackTrace();
+        }
 
     }
 

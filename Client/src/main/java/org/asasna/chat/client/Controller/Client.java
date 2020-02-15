@@ -7,18 +7,31 @@ import org.asasna.chat.common.model.UserStatus;
 import org.asasna.chat.common.service.IChatService;
 import org.asasna.chat.common.service.IClientService;
 
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import com.healthmarketscience.rmiio.*;
 
 public class Client extends UnicastRemoteObject implements IClientService {
     IChatController chatController;
     IChatService chatService;
 
-    protected Client() throws RemoteException {
+    public Client() throws RemoteException {
     }
 
     public Client(IChatController chatController) throws RemoteException {
         this.chatController = chatController;
+        try {
+            Registry reg = LocateRegistry.getRegistry(5000);
+            chatService = (IChatService) reg.lookup("ChatService");
+        }catch(RemoteException | NotBoundException e){
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -29,6 +42,18 @@ public class Client extends UnicastRemoteObject implements IClientService {
     @Override
     public void changeStatus(int id, UserStatus status) throws RemoteException {
 
+    }
+    @Override
+    public void sendFileToServer(String filePath,String extension) throws RemoteException {
+        RemoteInputStreamServer istream = null;
+        try {
+                istream = new GZIPRemoteInputStream(new BufferedInputStream(new FileInputStream(filePath)));
+            chatService.sendFile(istream.export(),extension);
+            } catch (IOException e) {
+                e.printStackTrace();
+        } finally {
+            if (istream != null) istream.close();
+        }
     }
 
     @Override

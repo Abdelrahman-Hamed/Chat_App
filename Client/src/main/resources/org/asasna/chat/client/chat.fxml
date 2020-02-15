@@ -145,7 +145,7 @@
                               <Insets right="15.0" top="35.0" />
                            </HBox.margin>
                         </FontIcon>
-                        <FontIcon iconColor="#1e82dc" iconLiteral="dashicons-paperclip" iconSize="30" wrappingWidth="28.25">
+                        <FontIcon iconColor="#1e82dc" iconLiteral="dashicons-paperclip" iconSize="30" onMouseClicked="#chooseFile" wrappingWidth="28.25">
                            <HBox.margin>
                               <Insets top="35.0" />
                            </HBox.margin>

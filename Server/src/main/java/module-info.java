@@ -6,6 +6,8 @@ module org.asasna.server {
     requires mysql.connector.java;
     requires java.rmi;
     requires java.naming;
+    requires rmiio;
+    requires commons.io;
 
     opens org.asasna.chat.server to javafx.fxml;
     exports org.asasna.chat.server;

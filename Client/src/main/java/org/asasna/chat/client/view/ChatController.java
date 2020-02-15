@@ -6,6 +6,8 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
+import org.asasna.chat.client.Controller.Client;
 import org.asasna.chat.client.model.Contact;
 import org.asasna.chat.client.model.IChatController;
 import org.asasna.chat.common.model.Message;
@@ -15,7 +17,9 @@ import org.asasna.chat.common.model.UserStatus;
 
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.io.File;
 import java.net.URL;
+import java.rmi.RemoteException;
 import java.util.ResourceBundle;
 
 public class ChatController implements Initializable, IChatController {
@@ -28,9 +32,16 @@ public class ChatController implements Initializable, IChatController {
     @FXML
     VBox contactsList;
 
+    private Client client;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         setToolTip();
+        try {
+            client=new Client(this);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
         /*Contact contact = new Contact("Abdelrahman", new Image(getClass().getResourceAsStream("../resources/org/asasna/chat/client/abdo.jpg")), UserStatus.ONLINE);
         contactsList.getChildren().add(contact);*/
     }
@@ -78,6 +89,25 @@ public class ChatController implements Initializable, IChatController {
     }
 
     public void exit() {
+
+    }
+    @FXML
+    public void chooseFile(){
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Choose File");
+        File selectedFile = fileChooser.showOpenDialog(null);
+        //validation
+        if(selectedFile != null) {
+            String fileName = selectedFile.getName();
+            String fileExtension = fileName.substring(fileName.lastIndexOf("."), fileName.length());
+                new Thread(() -> {
+                    try {
+                        client.sendFileToServer(selectedFile.getPath(), fileExtension);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }).start();
+        }
 
     }
 
