@@ -5,8 +5,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.asasna.chat.client.Controller.Client;
+import org.asasna.chat.client.model.IChatController;
 
 import java.io.IOException;
+import java.rmi.RemoteException;
 
 /**
  * JavaFX App
@@ -32,7 +35,16 @@ public class App extends Application {
     }
 
     public static void main(String[] args) {
+        FXMLLoader loader = new FXMLLoader(App.class.getResource("chat.fxml"));
+        IChatController chatController=loader.getController();
+        /*try {
+            Client c = new Client(chatController);
+        }
+        catch(RemoteException e){
+            e.printStackTrace();
+        }*/
         launch();
+
     }
 
 }

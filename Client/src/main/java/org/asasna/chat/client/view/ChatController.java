@@ -18,8 +18,13 @@ import org.asasna.chat.client.Controller.Client;
 import org.asasna.chat.client.model.Contact;
 import org.asasna.chat.client.model.IChatController;
 import org.asasna.chat.client.model.MSGview;
+import org.asasna.chat.common.model.Message;
+import org.asasna.chat.common.model.Notification;
+import org.asasna.chat.common.model.User;
+import org.asasna.chat.common.model.UserStatus;
 import org.asasna.chat.client.model.SearchedContact;
 import org.asasna.chat.common.model.*;
+
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.FileInputStream;
@@ -34,17 +39,21 @@ public class ChatController implements Initializable, IChatController {
     Client client;
     @FXML
     TextField searchTextField;
+
     @FXML
     TextArea messageTextArea;
     @FXML
     FontIcon profileIcon, groupIcon, logoutIcon, addFriendIcon, notificationIcon, saveChatIcon;
+
     @FXML
     VBox contactsList;
     @FXML
-    VBox view;
+    VBox view ;
 
     MSGview viewTextMessage;
     private User me;
+
+
     public Contact activeContact;
 
     @Override
@@ -61,7 +70,6 @@ public class ChatController implements Initializable, IChatController {
         }
 
     }
-
 
     public void sendAudio() {
 
@@ -102,15 +110,14 @@ public class ChatController implements Initializable, IChatController {
     public void exit() {
 
     }
-
     @FXML
     private void getSelectedContact() {
         ObservableList<Node> contacts;
-        contacts = contactsList.getChildren();
-        for (Node c : contacts) {
+        contacts = contactsList.getChildren() ;
+        for (Node c:contacts) {
             c.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
                 this.activeContact = (Contact) c;
-                //  System.out.println("active Contact is : "+ this.activeContact.getUser().getName());
+              //  System.out.println("active Contact is : "+ this.activeContact.getUser().getName());
             });
         }
 
@@ -196,16 +203,22 @@ public class ChatController implements Initializable, IChatController {
     // End Abdo
 
 
+
+
     //    Start Aya
     // End Aya
+
+
 
 
     //    Start Shimaa
     // End shimaa
 
 
+
     //    Start Abeer Emad
     // End Abeer Emad
+
 
 
     //    Start Nehal Adel
