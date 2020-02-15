@@ -37,12 +37,9 @@ public class MSGview extends HBox {
     }
 
     public void setTextMSGview(SpeechDirection direction){
-        if(direction.equals(SpeechDirection.RIGHT)){
+         this.direction = direction ;
+         setupElements() ;
 
-        }
-        else {
-
-        }
     }
     public void setVoiceMSGview(){
 
@@ -68,7 +65,6 @@ public class MSGview extends HBox {
         displayedText.setPadding(new Insets(5));
         displayedText.setWrapText(true);
         directionIndicator = new SVGPath();
-
         if(direction == SpeechDirection.LEFT){
             configureForReceiver();
         }

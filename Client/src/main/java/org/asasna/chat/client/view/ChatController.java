@@ -33,6 +33,8 @@ public class ChatController implements Initializable, IChatController {
 
     @FXML
     VBox contactsList;
+    @FXML
+    VBox view ;
 
     MSGview viewTextMessage;
     private User me;
@@ -47,6 +49,11 @@ public class ChatController implements Initializable, IChatController {
         try {
             Contact contact = new Contact("Abdelrahman", new Image(new FileInputStream("./client/src/main/resources/org/asasna/chat/client/abdo.jpg")), UserStatus.ONLINE);
             contactsList.getChildren().add(contact);
+
+            viewTextMessage = new MSGview(new Message(1,"welcome Home"));
+            viewTextMessage.setTextMSGview(SpeechDirection.RIGHT);
+            view.getChildren().add(viewTextMessage) ;
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -98,18 +105,19 @@ public class ChatController implements Initializable, IChatController {
     public void exit() {
 
     }
-
+    @FXML
     private void getSelectedContact() {
         ObservableList<Node> contacts;
         contacts = contactsList.getChildren() ;
         for (Node c:contacts) {
             c.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
                 this.activeContact = (Contact) c;
-                //System.out.println("active Contact is : "+ this.activeContact.getName());
+              //  System.out.println("active Contact is : "+ this.activeContact.getUser().getName());
             });
         }
 
     }
+
     private void setToolTip() {
         Tooltip profileTooltip, groupTooltip, addFriendTooltip, notificationTooltip, saveChatTooltip, logoutTooltip;
         profileTooltip = new Tooltip("Profile");
@@ -140,10 +148,11 @@ public class ChatController implements Initializable, IChatController {
     public void displayMessage(Message msg) {
         viewTextMessage = new MSGview(msg);
         if(me.getId() == msg.getUserId()){
-            viewTextMessage.setTextMSGview("RIGHT");
+            viewTextMessage.setTextMSGview(SpeechDirection.RIGHT);
+
         }
         else {
-            viewTextMessage.setTextMSGview("LEFT");
+            viewTextMessage.setTextMSGview(SpeechDirection.LEFT);
         }
     }
 
@@ -155,9 +164,5 @@ public class ChatController implements Initializable, IChatController {
     @Override
     public void recieveNotification(Notification notification) {
 
-    }
-    public void searchContacts(KeyEvent keyEvent) {
-        String searchedMessage = searchTextField.getText();
-        List<User> users = client.search(searchedMessage);
     }
 }

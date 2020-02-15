@@ -5,6 +5,11 @@ public class Message {
     private int userId;
     private String messsagecontent;
 
+    public Message(int userId, String messsagecontent) {
+        this.userId = userId;
+        this.messsagecontent = messsagecontent;
+    }
+
     public void setUserId(int userId){
         this.userId = userId;
     }
