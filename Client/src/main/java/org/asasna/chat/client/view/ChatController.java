@@ -16,6 +16,8 @@ import org.asasna.chat.common.model.UserStatus;
 
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -36,8 +38,13 @@ public class ChatController implements Initializable, IChatController {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         setToolTip();
         me = new User();
-//        Contact contact = new Contact("Abdelrahman", new Image(getClass().getResourceAsStream("../resources/org/asasna/chat/client/abdo.jpg")), UserStatus.ONLINE);
-//        contactsList.getChildren().add(contact);
+        try {
+            Contact contact = new Contact("Abdelrahman", new Image(new FileInputStream("./client/src/main/resources/org/asasna/chat/client/abdo.jpg")), UserStatus.ONLINE);
+            contactsList.getChildren().add(contact);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void send() {
