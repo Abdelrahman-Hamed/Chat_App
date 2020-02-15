@@ -1,24 +1,19 @@
 package org.asasna.chat.client.view;
 
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.Node;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import org.asasna.chat.client.Controller.Client;
 import org.asasna.chat.client.model.Contact;
 import org.asasna.chat.client.model.IChatController;
 import org.asasna.chat.client.model.MSGview;
-import org.asasna.chat.common.model.Message;
-import org.asasna.chat.common.model.Notification;
-import org.asasna.chat.common.model.User;
-import org.asasna.chat.common.model.UserStatus;
 import org.asasna.chat.client.model.SearchedContact;
 import org.asasna.chat.common.model.*;
 
@@ -45,22 +40,22 @@ public class ChatController implements Initializable, IChatController {
 
     @FXML
     VBox contactsList;
-    @FXML
-    VBox view ;
 
     MSGview viewTextMessage;
     private User me;
-
-
-    public Contact activeContact;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         setToolTip();
         me = new User();
         try {
-            Contact contact = new Contact("Abdelrahman", new Image(new FileInputStream("./client/src/main/resources/org/asasna/chat/client/abdo.jpg")), UserStatus.ONLINE);
-            contactsList.getChildren().add(contact);
+            client = new Client(this);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        try {
+//            Contact contact = new Contact("Abdelrahman", new Image(new FileInputStream("./client/src/main/resources/org/asasna/chat/client/abdo.jpg")), UserStatus.ONLINE);
+            SearchedContact searchedContact = new SearchedContact("Sayed Nabil", new Image(new FileInputStream("./client/src/main/resources/org/asasna/chat/client/abdo.jpg")), UserStatus.ONLINE);
 
             contactsList.getChildren().add(searchedContact);
         } catch (FileNotFoundException e) {
@@ -114,17 +109,9 @@ public class ChatController implements Initializable, IChatController {
     public void exit() {
 
     }
-    @FXML
-    private void getSelectedContact() {
-        ObservableList<Node> contacts;
-        contacts = contactsList.getChildren() ;
-        for (Node c:contacts) {
-            c.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-                this.activeContact = (Contact) c;
-              //  System.out.println("active Contact is : "+ this.activeContact.getUser().getName());
-            });
-        }
 
+    public User getSelectedContact() {
+        return null;
     }
 
     private void setToolTip() {
@@ -158,7 +145,6 @@ public class ChatController implements Initializable, IChatController {
         viewTextMessage = new MSGview(msg);
         if(me.getId() == msg.getUserId()){
             viewTextMessage.setTextMSGview(SpeechDirection.RIGHT);
-
         }
         else {
             viewTextMessage.setTextMSGview(SpeechDirection.LEFT);
@@ -175,7 +161,6 @@ public class ChatController implements Initializable, IChatController {
 
     }
 
-
     //    Start Elsayed Nabil
 
     public void searchContacts(KeyEvent keyEvent) {
@@ -183,7 +168,7 @@ public class ChatController implements Initializable, IChatController {
 //        List<User> users = client.search(searchedMessage);
         List<User> users = new ArrayList<>();
         String names[] = {"Elsayed Nabil", "Abeer Emad", "Abdo Fahmy", "Aya Amin", "Shymaa shokry"};
-        for (int i = 0; i < names.length; i++) {
+        for(int i=0; i<names.length; i++){
             users.add(new User(names[i], "01279425232", "sayed0nabil@gmail.com", "123456789", Gender.Male, "Egypt", null, null, UserStatus.ONLINE, "abdo.jpg", false, false));
         }
     }
