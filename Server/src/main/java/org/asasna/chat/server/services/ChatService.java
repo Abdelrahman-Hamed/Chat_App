@@ -83,4 +83,9 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
         searchList.stream().filter(x -> phoneNumber.matches(x.getPhone()+"[0-9]*")).collect(Collectors.toList());
         return  searchList;
     }
+
+    @Override
+    public void sendFriendRequest(String fromPhoneNumber, String toPhoneNumber) {
+
+    }
 }

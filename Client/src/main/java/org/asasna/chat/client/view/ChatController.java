@@ -26,6 +26,7 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -186,6 +187,14 @@ public class ChatController implements Initializable, IChatController {
         for (int i = 0; i < names.length; i++) {
             users.add(new User(names[i], "01279425232", "sayed0nabil@gmail.com", "123456789", Gender.Male, "Egypt", null, null, UserStatus.ONLINE, "abdo.jpg", false, false));
         }
+        contactsList.getChildren().clear();
+        users.forEach(user -> {
+            try {
+                contactsList.getChildren().add(new SearchedContact(client, user));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
     // End Elsayed Nabil
 
