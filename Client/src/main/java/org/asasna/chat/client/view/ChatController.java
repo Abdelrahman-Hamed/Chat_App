@@ -10,8 +10,10 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import org.asasna.chat.client.Controller.Client;
+import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import org.asasna.chat.client.Controller.Client;
 import org.asasna.chat.client.model.Contact;
@@ -29,9 +31,7 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.net.URL;
-import java.rmi.RemoteException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +39,7 @@ import java.util.ResourceBundle;
 
 public class ChatController implements Initializable, IChatController {
 
+    Client client;
     @FXML
     TextField searchTextField;
 
@@ -58,8 +59,6 @@ public class ChatController implements Initializable, IChatController {
 
     public Contact activeContact;
 
-    private Client client;
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         setToolTip();
@@ -72,17 +71,7 @@ public class ChatController implements Initializable, IChatController {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        try {
-            client = new Client(this);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-    }
 
-    public void send() {
-        String message = messageTextArea.getText();
-        messageTextArea.setText("");
-        System.out.println(message);
     }
 
     public void sendAudio() {
@@ -137,27 +126,6 @@ public class ChatController implements Initializable, IChatController {
         }
 
     }
-    @FXML
-    public void chooseFile(){
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Choose File");
-        File selectedFile = fileChooser.showOpenDialog(null);
-        //validation
-        if(selectedFile != null) {
-            String fileName = selectedFile.getName();
-            String fileExtension = fileName.substring(fileName.lastIndexOf("."), fileName.length());
-            new Thread(() -> {
-                try {
-                    client.sendFileToServer(selectedFile.getPath(), fileExtension);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-            }).start();
-        }
-
-    }
-
-
 
     private void setToolTip() {
         Tooltip profileTooltip, groupTooltip, addFriendTooltip, notificationTooltip, saveChatTooltip, logoutTooltip;
@@ -184,16 +152,28 @@ public class ChatController implements Initializable, IChatController {
 
     }
 
-
     @Override
     public void displayMessage(Message msg) {
         viewTextMessage = new MSGview(msg);
-        if(me.getId() == msg.getUserId()){
+        if (me.getId() == msg.getUserId()) {
             viewTextMessage.setTextMSGview(SpeechDirection.RIGHT);
-
-        }
-        else {
+            HBox drawer = new HBox();
+            Image im = activeContact.getImage();
+            Circle circle = new Circle();
+            circle.setRadius(20);
+            circle.setFill(new ImagePattern(im));
+            circle.setCenterY(75);
+            view.getChildren().add(circle);
+            view.getChildren().add(viewTextMessage);
+        } else {
             viewTextMessage.setTextMSGview(SpeechDirection.LEFT);
+            Image im = activeContact.getImage();
+            Circle circle = new Circle();
+            circle.setRadius(20);
+            circle.setFill(new ImagePattern(im));
+            circle.setCenterY(75);
+            view.getChildren().add(circle);
+            view.getChildren().add(viewTextMessage);
         }
     }
 
@@ -212,20 +192,12 @@ public class ChatController implements Initializable, IChatController {
 
     public void searchContacts(KeyEvent keyEvent) {
         String searchedMessage = searchTextField.getText();
-        List<User> users = client.search(searchedMessage);
-//        List<User> users = new ArrayList<>();
-//        String names[] = {"Elsayed Nabil", "Abeer Emad", "Abdo Fahmy", "Aya Amin", "Shymaa shokry"};
-//        for (int i = 0; i < names.length; i++) {
-//            users.add(new User(names[i], "01279425232", "sayed0nabil@gmail.com", "123456789", Gender.Male, "Egypt", null, null, UserStatus.ONLINE, "abdo.jpg", false, false));
-//        }
-        contactsList.getChildren().clear();
-        users.forEach(user -> {
-            try {
-                contactsList.getChildren().add(new SearchedContact(client, user));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
+//        List<User> users = client.search(searchedMessage);
+        List<User> users = new ArrayList<>();
+        String names[] = {"Elsayed Nabil", "Abeer Emad", "Abdo Fahmy", "Aya Amin", "Shymaa shokry"};
+        for (int i = 0; i < names.length; i++) {
+            users.add(new User(names[i], "01279425232", "sayed0nabil@gmail.com", "123456789", Gender.Male, "Egypt", null, null, UserStatus.ONLINE, "abdo.jpg", false, false));
+        }
     }
     // End Elsayed Nabil
 
@@ -234,26 +206,45 @@ public class ChatController implements Initializable, IChatController {
     // End Abdo
 
 
-
-
     //    Start Aya
+    @FXML
+    public void chooseFile() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Choose File");
+        File selectedFile = fileChooser.showOpenDialog(null);
+        //validation
+        if (selectedFile != null) {
+            String fileName = selectedFile.getName();
+            String fileExtension = fileName.substring(fileName.lastIndexOf("."), fileName.length());
+            new Thread(() -> {
+                try {
+                    client.sendFileToServer(selectedFile.getPath(), fileExtension);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+        }
+    }
+        // End Aya
 
 
-    // End Aya
+        //    Start Shimaa
+        // End shimaa
 
 
+        //    Start Abeer Emad
+        // End Abeer Emad
 
 
-    //    Start Shimaa
-    // End shimaa
+        //    Start Nehal Adel
 
+    public void send () {
+        String messageTXT = messageTextArea.getText();
+        Message mes = new Message(5, messageTXT);
+        messageTextArea.setText("");
+        displayMessage(mes);
+        System.out.println(messageTXT);
+    }
+        // End Nehal Adel
+    }
 
-
-    //    Start Abeer Emad
-    // End Abeer Emad
-
-
-
-    //    Start Nehal Adel
-    // End Nehal Adel
-}

@@ -58,6 +58,10 @@ public class Contact extends HBox {
         getChildren().addAll(circle, vBox);
     }
 
+    public Image getImage() {
+        return image;
+    }
+
     {
         setSpacing(20);
         getStyleClass().add("contact");
