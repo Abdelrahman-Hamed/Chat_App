@@ -1,10 +1,13 @@
 package org.asasna.chat.client.view;
 
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import org.asasna.chat.client.model.Contact;
 import org.asasna.chat.client.model.IChatController;
@@ -33,6 +36,9 @@ public class ChatController implements Initializable, IChatController {
 
     MSGview viewTextMessage;
     private User me;
+
+
+    public Contact activeContact;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -93,10 +99,17 @@ public class ChatController implements Initializable, IChatController {
 
     }
 
-    public User getSelectedContact() {
-        return null;
-    }
+    private void getSelectedContact() {
+        ObservableList<Node> contacts;
+        contacts = contactsList.getChildren() ;
+        for (Node c:contacts) {
+            c.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+                this.activeContact = (Contact) c;
+                //System.out.println("active Contact is : "+ this.activeContact.getName());
+            });
+        }
 
+    }
     private void setToolTip() {
         Tooltip profileTooltip, groupTooltip, addFriendTooltip, notificationTooltip, saveChatTooltip, logoutTooltip;
         profileTooltip = new Tooltip("Profile");
