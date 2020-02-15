@@ -104,6 +104,7 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
                 IOUtils.copy(istream, out);
               /*  BufferedWriter outWrite = new BufferedWriter(new FileWriter("C:\\Users\\Aya\\Desktop\\ids.txt", true));
                 String str=String.valueOf(senderID+userID);
+                outWrite.write(tempFile.getName());
                 outWrite.write(str);
                 outWrite.close();*/
             }
