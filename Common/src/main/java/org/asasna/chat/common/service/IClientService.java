@@ -16,5 +16,4 @@ public interface IClientService extends Remote {
 
     void recieveNotivication(Notification notification) throws RemoteException;
 
-    List<User> search(String phoneNumber);
 }

@@ -38,9 +38,13 @@ public class Client extends UnicastRemoteObject implements IClientService {
 
     }
 
-    @Override
     public List<User> search(String phoneNumber) {
-        System.out.println(phoneNumber);
-        return null;
+        try {
+            return chatService.search(phoneNumber);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }finally {
+            return null;
+        }
     }
 }
