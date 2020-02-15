@@ -1,10 +1,14 @@
 package org.asasna.chat.server;
 
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.asasna.chat.common.service.IChatService;
 import org.asasna.chat.server.services.ChatService;
 
@@ -20,6 +24,9 @@ import java.rmi.registry.Registry;
 public class App extends Application {
 
     private static Scene scene;
+    private static Stage primaryStage;
+    private double xOffset = 0;
+    private double yOffset = 0;
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -31,12 +38,29 @@ public class App extends Application {
         catch (RemoteException ex) {
             ex.printStackTrace();
         }
-        scene = new Scene(loadFXML("primary"));
+        scene = new Scene(loadFXML("login"));
+        AnchorPane root= (AnchorPane) scene.lookup("#root");
+        root.setOnMousePressed(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                xOffset = event.getSceneX();
+                yOffset = event.getSceneY();
+            }
+        });
+        root.setOnMouseDragged(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                primaryStage.setX(event.getScreenX() - xOffset);
+                primaryStage.setY(event.getScreenY() - yOffset);
+            }
+        });
+        primaryStage.setScene(scene);
+        primaryStage.initStyle(StageStyle.TRANSPARENT);
         stage.setScene(scene);
         stage.show();*/
     }
 
-    static void setRoot(String fxml) throws IOException {
+    public static void setRoot(String fxml) throws IOException {
         scene.setRoot(loadFXML(fxml));
     }
 

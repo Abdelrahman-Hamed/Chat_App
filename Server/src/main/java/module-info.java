@@ -6,6 +6,7 @@ module org.asasna.server {
     requires mysql.connector.java;
     requires java.rmi;
     requires java.naming;
+    requires org.controlsfx.controls ;
     requires rmiio;
     requires commons.io;
 

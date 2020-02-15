@@ -2,6 +2,8 @@ package org.asasna.chat.common.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import javafx.scene.image.Image;
+
 
 public class User implements Serializable {
     private int id;
@@ -132,9 +134,12 @@ public class User implements Serializable {
         this.status = status;
     }
 
-    public String getImageURL() {
-        return imageURL;
+    public Image getImage() {
+        Image userImage = new Image(getClass().getResourceAsStream(imageURL));
+        return userImage;
     }
+
+    public String getImageURL(){return imageURL;}
 
     public void setImageURL(String imageURL) {
         this.imageURL = imageURL;

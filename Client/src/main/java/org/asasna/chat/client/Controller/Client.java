@@ -3,6 +3,7 @@ package org.asasna.chat.client.Controller;
 import org.asasna.chat.client.model.IChatController;
 import org.asasna.chat.common.model.Message;
 import org.asasna.chat.common.model.Notification;
+import org.asasna.chat.common.model.User;
 import org.asasna.chat.common.model.UserStatus;
 import org.asasna.chat.common.service.IChatService;
 import org.asasna.chat.common.service.IClientService;
@@ -15,13 +16,14 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.List;
 import com.healthmarketscience.rmiio.*;
 
 public class Client extends UnicastRemoteObject implements IClientService {
     IChatController chatController;
     IChatService chatService;
 
-    public Client() throws RemoteException {
+    protected Client() throws RemoteException {
     }
 
     public Client(IChatController chatController) throws RemoteException {
@@ -59,5 +61,19 @@ public class Client extends UnicastRemoteObject implements IClientService {
     @Override
     public void recieveNotivication(Notification notification) throws RemoteException {
 
+    }
+
+    public List<User> search(String phoneNumber) {
+        try {
+            return chatService.search(phoneNumber);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }finally {
+            return null;
+        }
+    }
+
+    public void sendFriendRequest(String toUserPhone) {
+        chatService.sendFriendRequest("01279425232" , toUserPhone);
     }
 }
