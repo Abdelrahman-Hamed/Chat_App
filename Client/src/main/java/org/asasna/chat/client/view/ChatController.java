@@ -3,12 +3,16 @@ package org.asasna.chat.client.view;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
+import org.asasna.chat.client.Controller.Client;
 import org.asasna.chat.client.model.Contact;
 import org.asasna.chat.client.model.IChatController;
 import org.asasna.chat.client.model.MSGview;
+import org.asasna.chat.client.model.SearchedContact;
 import org.asasna.chat.common.model.Message;
 import org.asasna.chat.common.model.Notification;
 import org.asasna.chat.common.model.User;
@@ -19,9 +23,15 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.URL;
+import java.rmi.RemoteException;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class ChatController implements Initializable, IChatController {
+
+    Client client ;
+    @FXML
+    TextField searchTextField;
 
     @FXML
     TextArea messageTextArea;
@@ -39,8 +49,15 @@ public class ChatController implements Initializable, IChatController {
         setToolTip();
         me = new User();
         try {
-            Contact contact = new Contact("Abdelrahman", new Image(new FileInputStream("./client/src/main/resources/org/asasna/chat/client/abdo.jpg")), UserStatus.ONLINE);
-            contactsList.getChildren().add(contact);
+            client = new Client(this);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        try {
+//            Contact contact = new Contact("Abdelrahman", new Image(new FileInputStream("./client/src/main/resources/org/asasna/chat/client/abdo.jpg")), UserStatus.ONLINE);
+            SearchedContact searchedContact = new SearchedContact("Sayed Nabil", new Image(new FileInputStream("./client/src/main/resources/org/asasna/chat/client/abdo.jpg")), UserStatus.ONLINE);
+
+            contactsList.getChildren().add(searchedContact);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -142,5 +159,10 @@ public class ChatController implements Initializable, IChatController {
     @Override
     public void recieveNotification(Notification notification) {
 
+    }
+
+    public void searchContacts(KeyEvent keyEvent) {
+        String searchedMessage = searchTextField.getText();
+        List<User> users = client.search(searchedMessage);
     }
 }
