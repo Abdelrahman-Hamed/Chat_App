@@ -62,6 +62,11 @@ public class ChatController implements Initializable, IChatController {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         setToolTip();
+        try {
+            client=new Client(this);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
         me = new User();
         try {
             Contact contact = new Contact("Abdelrahman", new Image(new FileInputStream("./client/src/main/resources/org/asasna/chat/client/abdo.jpg")), UserStatus.ONLINE);
