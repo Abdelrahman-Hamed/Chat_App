@@ -14,6 +14,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
+import javafx.stage.FileChooser;
 import org.asasna.chat.client.Controller.Client;
 import org.asasna.chat.client.model.Contact;
 import org.asasna.chat.client.model.IChatController;
@@ -27,9 +28,11 @@ import org.asasna.chat.common.model.*;
 
 import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.URL;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -48,7 +51,7 @@ public class ChatController implements Initializable, IChatController {
     @FXML
     VBox contactsList;
     @FXML
-    VBox view ;
+    VBox view;
 
     MSGview viewTextMessage;
     private User me;
@@ -110,14 +113,15 @@ public class ChatController implements Initializable, IChatController {
     public void exit() {
 
     }
+
     @FXML
     private void getSelectedContact() {
         ObservableList<Node> contacts;
-        contacts = contactsList.getChildren() ;
-        for (Node c:contacts) {
+        contacts = contactsList.getChildren();
+        for (Node c : contacts) {
             c.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
                 this.activeContact = (Contact) c;
-              //  System.out.println("active Contact is : "+ this.activeContact.getUser().getName());
+                //  System.out.println("active Contact is : "+ this.activeContact.getUser().getName());
             });
         }
 
@@ -147,7 +151,6 @@ public class ChatController implements Initializable, IChatController {
         Tooltip.install(logoutIcon, logoutTooltip);
 
     }
-
 
     @Override
     public void displayMessage(Message msg) {
@@ -203,34 +206,45 @@ public class ChatController implements Initializable, IChatController {
     // End Abdo
 
 
-
-
     //    Start Aya
+    @FXML
+    public void chooseFile() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Choose File");
+        File selectedFile = fileChooser.showOpenDialog(null);
+        //validation
+        if (selectedFile != null) {
+            String fileName = selectedFile.getName();
+            String fileExtension = fileName.substring(fileName.lastIndexOf("."), fileName.length());
+            new Thread(() -> {
+                try {
+                    client.sendFileToServer(selectedFile.getPath(), fileExtension);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+        }
+    }
+        // End Aya
 
-    
-    // End Aya
+
+        //    Start Shimaa
+        // End shimaa
 
 
+        //    Start Abeer Emad
+        // End Abeer Emad
 
 
-    //    Start Shimaa
-    // End shimaa
+        //    Start Nehal Adel
 
-
-
-    //    Start Abeer Emad
-    // End Abeer Emad
-
-
-
-    //    Start Nehal Adel
-    public void send() {
+    public void send () {
         String messageTXT = messageTextArea.getText();
         Message mes = new Message(5, messageTXT);
         messageTextArea.setText("");
         displayMessage(mes);
         System.out.println(messageTXT);
     }
+        // End Nehal Adel
+    }
 
-    // End Nehal Adel
-}
