@@ -181,12 +181,12 @@ public class ChatController implements Initializable, IChatController {
 
     public void searchContacts(KeyEvent keyEvent) {
         String searchedMessage = searchTextField.getText();
-//        List<User> users = client.search(searchedMessage);
-        List<User> users = new ArrayList<>();
-        String names[] = {"Elsayed Nabil", "Abeer Emad", "Abdo Fahmy", "Aya Amin", "Shymaa shokry"};
-        for (int i = 0; i < names.length; i++) {
-            users.add(new User(names[i], "01279425232", "sayed0nabil@gmail.com", "123456789", Gender.Male, "Egypt", null, null, UserStatus.ONLINE, "abdo.jpg", false, false));
-        }
+        List<User> users = client.search(searchedMessage);
+//        List<User> users = new ArrayList<>();
+//        String names[] = {"Elsayed Nabil", "Abeer Emad", "Abdo Fahmy", "Aya Amin", "Shymaa shokry"};
+//        for (int i = 0; i < names.length; i++) {
+//            users.add(new User(names[i], "01279425232", "sayed0nabil@gmail.com", "123456789", Gender.Male, "Egypt", null, null, UserStatus.ONLINE, "abdo.jpg", false, false));
+//        }
         contactsList.getChildren().clear();
         users.forEach(user -> {
             try {
