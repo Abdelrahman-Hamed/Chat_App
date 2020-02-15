@@ -5,10 +5,13 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
+import org.asasna.chat.client.Controller.Client;
 import org.asasna.chat.client.model.Contact;
 import org.asasna.chat.client.model.IChatController;
 import org.asasna.chat.client.model.MSGview;
@@ -16,15 +19,24 @@ import org.asasna.chat.common.model.Message;
 import org.asasna.chat.common.model.Notification;
 import org.asasna.chat.common.model.User;
 import org.asasna.chat.common.model.UserStatus;
+import org.asasna.chat.client.model.SearchedContact;
+import org.asasna.chat.common.model.*;
 
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.URL;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class ChatController implements Initializable, IChatController {
+
+    Client client ;
+    @FXML
+    TextField searchTextField;
 
     @FXML
     TextArea messageTextArea;
@@ -50,10 +62,7 @@ public class ChatController implements Initializable, IChatController {
             Contact contact = new Contact("Abdelrahman", new Image(new FileInputStream("./client/src/main/resources/org/asasna/chat/client/abdo.jpg")), UserStatus.ONLINE);
             contactsList.getChildren().add(contact);
 
-            viewTextMessage = new MSGview(new Message(1,"welcome Home"));
-            viewTextMessage.setTextMSGview(SpeechDirection.RIGHT);
-            view.getChildren().add(viewTextMessage) ;
-
+            contactsList.getChildren().add(searchedContact);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -165,4 +174,44 @@ public class ChatController implements Initializable, IChatController {
     public void recieveNotification(Notification notification) {
 
     }
+
+
+    //    Start Elsayed Nabil
+
+    public void searchContacts(KeyEvent keyEvent) {
+        String searchedMessage = searchTextField.getText();
+//        List<User> users = client.search(searchedMessage);
+        List<User> users = new ArrayList<>();
+        String names[] = {"Elsayed Nabil", "Abeer Emad", "Abdo Fahmy", "Aya Amin", "Shymaa shokry"};
+        for (int i = 0; i < names.length; i++) {
+            users.add(new User(names[i], "01279425232", "sayed0nabil@gmail.com", "123456789", Gender.Male, "Egypt", null, null, UserStatus.ONLINE, "abdo.jpg", false, false));
+        }
+    }
+    // End Elsayed Nabil
+
+
+    //    Start Abdo
+    // End Abdo
+
+
+
+
+    //    Start Aya
+    // End Aya
+
+
+
+
+    //    Start Shimaa
+    // End shimaa
+
+
+
+    //    Start Abeer Emad
+    // End Abeer Emad
+
+
+
+    //    Start Nehal Adel
+    // End Nehal Adel
 }
