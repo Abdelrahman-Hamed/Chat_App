@@ -158,7 +158,6 @@ public class ChatController implements Initializable, IChatController {
     }
 
 
-    }
 
     private void setToolTip() {
         Tooltip profileTooltip, groupTooltip, addFriendTooltip, notificationTooltip, saveChatTooltip, logoutTooltip;
