@@ -7,8 +7,9 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
-<?import org.kordamp.ikonli.javafx.*?>
+<?import org.kordamp.ikonli.*?>
 
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 <BorderPane prefHeight="500.0" prefWidth="700.0" stylesheets="@chat.css" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.asasna.chat.client.view.ChatController">
    <center>
       <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0">
@@ -25,7 +26,7 @@
             <ImageView fitHeight="43.0" fitWidth="54.0" layoutX="22.0" layoutY="22.0" pickOnBounds="true" preserveRatio="true">
                   <Image url="@user.png" />
             </ImageView>
-            <VBox fx:id="contactsList" layoutX="86.0" prefHeight="600.0" prefWidth="257.0" style="-fx-background-color: #1e82dc;">
+            <VBox  layoutX="86.0" prefHeight="600.0" prefWidth="257.0" style="-fx-background-color: #1e82dc;">
                   <HBox prefHeight="74.0" prefWidth="257.0">
                         <TextField prefHeight="38.0" prefWidth="208.0" promptText="Search" style="-fx-background-color: white; -fx-background-radius: 30; -fx-border-radius: 30;">
                            <HBox.margin>
@@ -33,49 +34,7 @@
                            </HBox.margin>
                         </TextField>
                   </HBox>
-                  <HBox prefHeight="48.0" prefWidth="257.0" style="-fx-border-color: #1e82dc  #1e82dc  #ffffff  #1e82dc; -fx-border-width: 0.5;" styleClass="contact">
-                        <ImageView fitHeight="57.0" fitWidth="38.0" pickOnBounds="true" preserveRatio="true">
-                              <Image url="@user.png" />
-                           <HBox.margin>
-                              <Insets bottom="10.0" left="20.0" top="20.0" />
-                           </HBox.margin>
-                        </ImageView>
-                        <Circle fill="#7eff21" radius="6.0" stroke="BLACK" strokeType="INSIDE">
-                           <HBox.margin>
-                              <Insets top="45.0" />
-                           </HBox.margin>
-                        </Circle>
-                        <Label prefHeight="48.0" prefWidth="132.0" style="-fx-text-fill: white;" text="Shimaa Shokry " textFill="#41fcff">
-                           <font>
-                              <Font name="Comic Sans MS" size="16.0" />
-                           </font>
-                           <HBox.margin>
-                              <Insets bottom="10.0" left="20.0" top="20.0" />
-                           </HBox.margin>
-                        </Label>
-                  </HBox>
-                  <HBox prefHeight="44.0" prefWidth="257.0" style="-fx-border-color: #1e82dc  #1e82dc  #ffffff  #1e82dc; -fx-border-width: 0.5;" styleClass="contact">
-                        <ImageView fitHeight="57.0" fitWidth="38.0" pickOnBounds="true" preserveRatio="true">
-                              <Image url="@user.png" />
-                           <HBox.margin>
-                              <Insets bottom="10.0" left="20.0" top="20.0" />
-                           </HBox.margin>
-                        </ImageView>
-                        <Circle fill="#ff3021" radius="6.0" stroke="BLACK" strokeType="INSIDE">
-                           <HBox.margin>
-                              <Insets top="45.0" />
-                           </HBox.margin>
-                        </Circle>
-                        <Label prefHeight="48.0" prefWidth="132.0" style="-fx-text-fill: white;" text="Aya Amin" textFill="#41fcff">
-                           <font>
-                              <Font name="Comic Sans MS" size="16.0" />
-                           </font>
-                           <HBox.margin>
-                              <Insets bottom="10.0" left="20.0" top="20.0" />
-                           </HBox.margin>
-                        </Label>
-                        <FontIcon />
-                  </HBox>
+            <VBox fx:id="contactsList" onMouseMoved="#getSelectedContact" prefHeight="496.0" prefWidth="257.0" />
             </VBox>
             <GridPane layoutX="342.0" layoutY="-2.0" prefHeight="600.0" prefWidth="555.0">
               <columnConstraints>
