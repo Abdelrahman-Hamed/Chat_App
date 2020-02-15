@@ -10,48 +10,41 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Circle;
 import org.asasna.chat.client.Controller.Client;
 import org.asasna.chat.client.model.Contact;
 import org.asasna.chat.client.model.IChatController;
 import org.asasna.chat.client.model.MSGview;
-import org.asasna.chat.common.model.Message;
-import org.asasna.chat.common.model.Notification;
-import org.asasna.chat.common.model.User;
-import org.asasna.chat.common.model.UserStatus;
 import org.asasna.chat.client.model.SearchedContact;
 import org.asasna.chat.common.model.*;
-
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.URL;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
 public class ChatController implements Initializable, IChatController {
 
-    Client client ;
+    Client client;
     @FXML
     TextField searchTextField;
-
     @FXML
     TextArea messageTextArea;
     @FXML
     FontIcon profileIcon, groupIcon, logoutIcon, addFriendIcon, notificationIcon, saveChatIcon;
-
     @FXML
     VBox contactsList;
     @FXML
-    VBox view ;
+    VBox view;
 
     MSGview viewTextMessage;
     private User me;
-
-
     public Contact activeContact;
 
     @Override
@@ -69,11 +62,6 @@ public class ChatController implements Initializable, IChatController {
 
     }
 
-    public void send() {
-        String message = messageTextArea.getText();
-        messageTextArea.setText("");
-        System.out.println(message);
-    }
 
     public void sendAudio() {
 
@@ -114,14 +102,15 @@ public class ChatController implements Initializable, IChatController {
     public void exit() {
 
     }
+
     @FXML
     private void getSelectedContact() {
         ObservableList<Node> contacts;
-        contacts = contactsList.getChildren() ;
-        for (Node c:contacts) {
+        contacts = contactsList.getChildren();
+        for (Node c : contacts) {
             c.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
                 this.activeContact = (Contact) c;
-              //  System.out.println("active Contact is : "+ this.activeContact.getUser().getName());
+                //  System.out.println("active Contact is : "+ this.activeContact.getUser().getName());
             });
         }
 
@@ -156,12 +145,25 @@ public class ChatController implements Initializable, IChatController {
     @Override
     public void displayMessage(Message msg) {
         viewTextMessage = new MSGview(msg);
-        if(me.getId() == msg.getUserId()){
+        if (me.getId() == msg.getUserId()) {
             viewTextMessage.setTextMSGview(SpeechDirection.RIGHT);
-
-        }
-        else {
+            HBox drawer = new HBox();
+            Image im = activeContact.getImage();
+            Circle circle = new Circle();
+            circle.setRadius(20);
+            circle.setFill(new ImagePattern(im));
+            circle.setCenterY(75);
+            view.getChildren().add(circle);
+            view.getChildren().add(viewTextMessage);
+        } else {
             viewTextMessage.setTextMSGview(SpeechDirection.LEFT);
+            Image im = activeContact.getImage();
+            Circle circle = new Circle();
+            circle.setRadius(20);
+            circle.setFill(new ImagePattern(im));
+            circle.setCenterY(75);
+            view.getChildren().add(circle);
+            view.getChildren().add(viewTextMessage);
         }
     }
 
@@ -194,24 +196,26 @@ public class ChatController implements Initializable, IChatController {
     // End Abdo
 
 
-
-
     //    Start Aya
     // End Aya
-
-
 
 
     //    Start Shimaa
     // End shimaa
 
 
-
     //    Start Abeer Emad
     // End Abeer Emad
 
 
-
     //    Start Nehal Adel
+    public void send() {
+        String messageTXT = messageTextArea.getText();
+        Message mes = new Message(5, messageTXT);
+        messageTextArea.setText("");
+        displayMessage(mes);
+        System.out.println(messageTXT);
+    }
+
     // End Nehal Adel
 }

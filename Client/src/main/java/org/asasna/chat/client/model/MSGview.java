@@ -3,6 +3,7 @@ package org.asasna.chat.client.model;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
@@ -14,8 +15,8 @@ import org.asasna.chat.common.model.Message;
 
 public class MSGview extends HBox {
 
-    private Color DEFAULT_SENDER_COLOR = Color.GOLD;
-    private Color DEFAULT_RECEIVER_COLOR = Color.LIMEGREEN;
+    private Color DEFAULT_SENDER_COLOR = Color.AQUAMARINE;
+    private Color DEFAULT_RECEIVER_COLOR = Color.CYAN;
     private Background DEFAULT_SENDER_BACKGROUND, DEFAULT_RECEIVER_BACKGROUND;
     private SpeechDirection direction;
     private Label displayedText;
@@ -39,7 +40,6 @@ public class MSGview extends HBox {
     public void setTextMSGview(SpeechDirection direction){
          this.direction = direction ;
          setupElements() ;
-
     }
     public void setVoiceMSGview(){
 
