@@ -8,6 +8,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
 import org.asasna.chat.client.model.Contact;
 import org.asasna.chat.client.model.IChatController;
+import org.asasna.chat.client.model.MSGview;
 import org.asasna.chat.common.model.Message;
 import org.asasna.chat.common.model.Notification;
 import org.asasna.chat.common.model.User;
@@ -28,11 +29,15 @@ public class ChatController implements Initializable, IChatController {
     @FXML
     VBox contactsList;
 
+    MSGview viewTextMessage;
+    private User me;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         setToolTip();
-        /*Contact contact = new Contact("Abdelrahman", new Image(getClass().getResourceAsStream("../resources/org/asasna/chat/client/abdo.jpg")), UserStatus.ONLINE);
-        contactsList.getChildren().add(contact);*/
+        me = new User();
+//        Contact contact = new Contact("Abdelrahman", new Image(getClass().getResourceAsStream("../resources/org/asasna/chat/client/abdo.jpg")), UserStatus.ONLINE);
+//        contactsList.getChildren().add(contact);
     }
 
     public void send() {
@@ -113,7 +118,13 @@ public class ChatController implements Initializable, IChatController {
 
     @Override
     public void displayMessage(Message msg) {
-
+        viewTextMessage = new MSGview(msg);
+        if(me.getId() == msg.getUserId()){
+            viewTextMessage.setTextMSGview("RIGHT");
+        }
+        else {
+            viewTextMessage.setTextMSGview("LEFT");
+        }
     }
 
     @Override

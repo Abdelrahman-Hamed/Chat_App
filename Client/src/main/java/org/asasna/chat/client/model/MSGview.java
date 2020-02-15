@@ -18,8 +18,9 @@ public class MSGview extends HBox {
         this.message = message;
     }
 
-    public void setTextMSGview(){
-
+    public void setTextMSGview(String direction){
+        if(direction.equals("RIGHT")){
+        }
     }
     public void setVoiceMSGview(){
 

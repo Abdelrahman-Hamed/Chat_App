@@ -9,6 +9,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 
 public class ChatService extends UnicastRemoteObject implements IChatService {
+
     public ChatService() throws RemoteException {
     }
 

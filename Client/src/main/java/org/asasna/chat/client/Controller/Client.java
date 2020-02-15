@@ -23,7 +23,7 @@ public class Client extends UnicastRemoteObject implements IClientService {
 
     @Override
     public void recieveMessage(Message message) throws RemoteException {
-
+        chatController.displayMessage(message);
     }
 
     @Override
