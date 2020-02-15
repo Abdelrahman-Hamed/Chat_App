@@ -30,7 +30,7 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
 
     @Override
     public List<User> getFriendList(User user) throws RemoteException {
-        return null;
+        return userDao.getFriendList(user);
     }
 
     @Override
