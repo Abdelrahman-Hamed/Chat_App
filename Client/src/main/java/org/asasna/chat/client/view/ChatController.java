@@ -245,6 +245,7 @@ public class ChatController implements Initializable, IChatController {
         });
     }
 
+
     public void sendGroupMessage(ChatGroup group, Message message) throws RemoteException {
         client.sendGroupMessage(group, message);
 
@@ -275,6 +276,14 @@ public class ChatController implements Initializable, IChatController {
 
 
     //    Start Shimaa
+    @Override
+    public void sendMessage(int receiverId, Message message) {
+        try {
+            client.sendMessage(receiverId, message);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
     // End shimaa
 
 
@@ -290,6 +299,14 @@ public class ChatController implements Initializable, IChatController {
         messageTextArea.setText("");
         displayMessage(mes);
         System.out.println(messageTXT);
+
+        /* Lines added by Shimaa */
+        int friendId = Integer.parseInt(activeContact.getId());
+        int senderId = me.getId();
+        String messageContent = messageTextArea.getText();
+        Message message = new Message(senderId, messageContent);
+        sendMessage(friendId, message);
+        /* End Shimaa */
     }
     // End Nehal Adel
 }

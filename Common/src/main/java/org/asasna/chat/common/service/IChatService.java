@@ -15,13 +15,13 @@ public interface IChatService extends Remote {
 
     void changeStatus(UserStatus userStatus) throws RemoteException;
 
-    Message sendMessage(int userId, Message message) throws RemoteException;
+    void sendMessage(int userId, Message message) throws RemoteException;
 
     List<Notification> getNotifications() throws RemoteException;
 
     void register(int userId, IClientService client) throws RemoteException;
 
-    void unRegister(RemoteRef client) throws RemoteException;
+    void unRegister(IClientService client) throws RemoteException;
 
     void addFriend(int friendId) throws RemoteException;
 
@@ -31,7 +31,7 @@ public interface IChatService extends Remote {
 
     void sendFriendRequest(String fromPhoneNumber, String toPhoneNumber) throws RemoteException;
 
-    public void sendFile(RemoteInputStream inFile, String suffix) throws RemoteException;
+    void sendFile(RemoteInputStream inFile, String suffix) throws RemoteException;
 
-    public void getFile(String filePath) throws RemoteException;
+    void getFile(String filePath) throws RemoteException;
 }

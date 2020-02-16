@@ -1,5 +1,6 @@
 package org.asasna.chat.server.services;
 
+import com.mysql.cj.xdevapi.Client;
 import org.asasna.chat.common.model.*;
 import org.asasna.chat.common.service.IChatService;
 import org.asasna.chat.common.service.IClientService;
@@ -50,8 +51,12 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     }
 
     @Override
-    public Message sendMessage(int userId, Message message) throws RemoteException {
-        return null;
+    public void sendMessage(int userId, Message message) throws RemoteException {
+        saveReceiverMessages(userId, message);
+        IClientService me = onlineUsers.get(message.getUserId());
+        IClientService myFriend = onlineUsers.get(userId);
+        me.recieveMessage(message);
+        myFriend.recieveMessage(message);
     }
 
     @Override
@@ -61,13 +66,16 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
 
     @Override
     public void register(int userId, IClientService client) throws RemoteException {
-        onlineUsers.put(userId, (IClientService) client);
+        onlineUsers.put(userId, client);
         System.out.println(onlineUsers);
     }
 
     @Override
-    public void unRegister(RemoteRef client) throws RemoteException {
-
+    public void unRegister(IClientService client) throws RemoteException {
+        IClientService removedUser = onlineUsers.remove(client.getUser().getId());
+        if(removedUser == null){ // Check User In Map
+            System.out.println("Not Founed To Remove");
+        }
     }
 
     @Override
@@ -148,6 +156,15 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
         }
     }
 
-
+    private void saveReceiverMessages(int receiverId, Message message){
+        List<Message> messagesList = receiverMessages.get(receiverId);
+        if (messagesList.isEmpty()) {
+            List<Message> newMessagesList = new ArrayList<>();
+            newMessagesList.add(message);
+            receiverMessages.put(receiverId, newMessagesList);
+        } else {
+            receiverMessages.get(receiverId).add(message);
+        }
+    }
 
 }

@@ -14,5 +14,7 @@ public interface IChatController {
 
     void recieveNotification(Notification notification);
 
-    public void recieveGroupMessage(ChatGroup group, Message message);
+    void recieveGroupMessage(ChatGroup group, Message message);
+
+    void sendMessage(int receiverId, Message message);
 }
