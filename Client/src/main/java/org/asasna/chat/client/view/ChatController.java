@@ -121,7 +121,7 @@ public class ChatController implements Initializable, IChatController {
             this.messageTextArea.prefWidthProperty().bind(root.getScene().widthProperty().multiply(.66).subtract(120));
 
         }).start();
-        new Thread(()->{
+        new Thread(() -> {
             try {
                 client.getFriendList().forEach(u -> {
                     Contact contact1 = new Contact(u);
@@ -134,7 +134,7 @@ public class ChatController implements Initializable, IChatController {
                 e.printStackTrace();
             }
         }).start();
-
+        searchTextField.setOnKeyReleased(this::searchContacts);
         SearchedGroupContact searchedGroupContact = new SearchedGroupContact(user);
         contactsList.getChildren().add(searchedGroupContact);
     }
@@ -264,11 +264,7 @@ public class ChatController implements Initializable, IChatController {
         List<User> users = client.search(searchedMessage);
         contactsList.getChildren().clear();
         users.forEach(user -> {
-            try {
-                contactsList.getChildren().add(new SearchedContact(client, user));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            contactsList.getChildren().add(new SearchedContact(client, user));
         });
     }
     // End Elsayed Nabil

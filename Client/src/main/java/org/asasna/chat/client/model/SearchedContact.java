@@ -19,7 +19,8 @@ public class SearchedContact extends Contact {
     private int userId;
     private String userPhone;
     private Client client;
-    public SearchedContact(String name, Image image, UserStatus userStatus){
+
+    public SearchedContact(String name, Image image, UserStatus userStatus) {
         super(name, image, userStatus);
 
 
@@ -32,8 +33,9 @@ public class SearchedContact extends Contact {
         });
         getChildren().add(addBtn);
     }
-    public SearchedContact(Client client, User user) throws IOException {
-        this(user.getName(), new Image(new FileInputStream("./client/src/main/resources/org/asasna/chat/client/abdo.jpg")), user.getStatus());
+
+    public SearchedContact(Client client, User user) {
+        this(user.getName(), null, user.getStatus());
         userId = user.getId();
         userPhone = user.getPhone();
         this.client = client;
