@@ -13,10 +13,7 @@ import java.rmi.RemoteException;
 import java.rmi.server.RemoteRef;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.healthmarketscience.rmiio.*;
@@ -109,11 +106,10 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
 
             searchList = searchList.stream().filter(user -> user.getPhone().contains(phoneNumber)).collect(Collectors.toList());
             System.out.println("Size1: " + searchList.size());
-            return  searchList;
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        searchList.stream().filter(x -> phoneNumber.matches(x.getPhone()+"[0-9]*")).collect(Collectors.toList());
         return  searchList;
     }
 
