@@ -14,7 +14,7 @@ public class SearchedGroupContact extends Contact {
         super(user);
         VBox box = new VBox();
         JFXCheckBox checkBox = new JFXCheckBox();
-        checkBox.selectedProperty().bindBidirectional(isSelected);
+        //this.isSelected.bind(checkBox.selectedProperty());
         checkBox.setStyle("-jfx-checked-color:#045ba5");
         box.getChildren().add(checkBox);
         box.setStyle("-fx-padding: 20 0 0 15");

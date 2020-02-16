@@ -90,14 +90,10 @@ public class ChatController implements Initializable, IChatController {
             e.printStackTrace();
         }
         me = new User();
-        try {
-            Contact contact = new Contact("Abdelrahman", new Image(new FileInputStream("./client/src/main/resources/org/asasna/chat/client/abdo.jpg")), UserStatus.ONLINE);
-            contactsList.getChildren().add(contact);
-            SearchedContact searchedContact = new SearchedContact("Sayed Nabil", new Image(new FileInputStream("./client/src/main/resources/org/asasna/chat/client/abdo.jpg")), UserStatus.ONLINE);
-            contactsList.getChildren().add(searchedContact);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        Contact contact = new Contact("Abdelrahman", new Image(getClass().getResource("abdo.jpg").toExternalForm()), UserStatus.ONLINE);
+        contactsList.getChildren().add(contact);
+        SearchedContact searchedContact = new SearchedContact("Sayed Nabil", new Image(getClass().getResource("abdo.jpg").toExternalForm()), UserStatus.ONLINE);
+        contactsList.getChildren().add(searchedContact);
         new Thread(() -> {
             while (root.getScene() == null) {
                 try {
@@ -125,7 +121,8 @@ public class ChatController implements Initializable, IChatController {
             this.messageTextArea.prefWidthProperty().bind(root.getScene().widthProperty().multiply(.66).subtract(120));
 
         }).start();
-
+        SearchedGroupContact searchedGroupContact = new SearchedGroupContact(user);
+        contactsList.getChildren().add(searchedGroupContact);
     }
 
     public void sendAudio() {
@@ -167,7 +164,8 @@ public class ChatController implements Initializable, IChatController {
     public void exit() {
 
     }
-    public void setClient(Client client){
+
+    public void setClient(Client client) {
         this.client = client;
     }
 

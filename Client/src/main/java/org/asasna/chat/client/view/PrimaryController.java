@@ -89,7 +89,7 @@ public class PrimaryController {
                     System.out.println("Phone Number OR Password is Incorrect");
                 }else{
                     chatController.setClient(client);
-                    FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("chat" + ".fxml"));
+                    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("chat" + ".fxml"));
                     fxmlLoader.setController(chatController);
                     Parent parent = fxmlLoader.load();
                     scene.setRoot(parent);
