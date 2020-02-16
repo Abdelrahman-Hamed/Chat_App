@@ -14,6 +14,10 @@ public class Contact extends HBox {
     private Image image;
     private UserStatus status;
     private User user;
+    private boolean isGroup = false;
+
+    public Contact() {
+    }
 
     public Contact(String name, Image image, UserStatus status) {
         this.name = name;
@@ -40,7 +44,8 @@ public class Contact extends HBox {
     public Contact(User user) {
         this.user = user;
         this.name = user.getName();
-        this.image = user.getImage();
+        if (image != null)
+            this.image = user.getImage();
         this.status = user.getStatus();
         Circle circle = new Circle();
         circle.setRadius(30);
@@ -100,5 +105,13 @@ public class Contact extends HBox {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public boolean isGroup() {
+        return isGroup;
+    }
+
+    public void setGroup(boolean group) {
+        isGroup = group;
     }
 }

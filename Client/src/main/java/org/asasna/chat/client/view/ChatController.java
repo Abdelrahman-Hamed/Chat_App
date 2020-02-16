@@ -5,21 +5,19 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import org.asasna.chat.client.Controller.Client;
-import org.asasna.chat.client.model.Contact;
-import org.asasna.chat.client.model.IChatController;
-import org.asasna.chat.client.model.MSGview;
+import org.asasna.chat.client.model.*;
 import org.asasna.chat.common.model.Message;
 import org.asasna.chat.common.model.Notification;
 import org.asasna.chat.common.model.User;
@@ -45,14 +43,26 @@ public class ChatController implements Initializable, IChatController {
     Client client;
     @FXML
     TextField searchTextField;
-
+    @FXML
+    BorderPane mainWindow;
     @FXML
     TextArea messageTextArea;
     @FXML
     FontIcon profileIcon, groupIcon, logoutIcon, addFriendIcon, notificationIcon, saveChatIcon;
-
+    @FXML
+    AnchorPane root;
     @FXML
     VBox contactsList;
+    @FXML
+    Pane sidePanel;
+    @FXML
+    VBox contactsView;
+    @FXML
+    GridPane chatArea;
+    @FXML
+    HBox chatArea_hbox;
+    @FXML
+    ScrollPane chatArea_scroll;
     @FXML
     VBox view;
 
@@ -73,6 +83,7 @@ public class ChatController implements Initializable, IChatController {
         list.add(new User(1, "Khaled", "014587"));
         list.add(new User(5, "Sayed", "54663"));
         ChatGroup chatGroup = new ChatGroup(1, list.stream().map(u -> u.getId()).collect(Collectors.toList()), "Group1");
+
         try {
             client.sendGroupMessage(chatGroup, message);
         } catch (RemoteException e) {
@@ -87,6 +98,33 @@ public class ChatController implements Initializable, IChatController {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+        new Thread(() -> {
+            while (root.getScene() == null) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            this.root.prefHeightProperty().bind(root.getScene().heightProperty());
+            this.root.prefWidthProperty().bind(root.getScene().widthProperty());
+            this.messageTextArea.prefHeightProperty().bind(root.getScene().heightProperty());
+
+            this.sidePanel.prefHeightProperty().bind(root.getScene().heightProperty());
+            this.mainWindow.prefHeightProperty().bind(root.getScene().heightProperty());
+            this.contactsView.prefHeightProperty().bind(root.getScene().heightProperty());
+            this.chatArea.prefHeightProperty().bind(root.getScene().heightProperty());
+            this.chatArea.prefWidthProperty().bind(root.getScene().widthProperty());
+            this.chatArea_hbox.prefWidthProperty().bind(root.getScene().widthProperty());
+            //this.chatArea_hbox.prefHeightProperty().bind(root.getScene().heightProperty());
+            this.chatArea_scroll.prefWidthProperty().bind(root.getScene().widthProperty().multiply(.5));
+            this.chatArea_scroll.prefHeightProperty().bind(root.getScene().heightProperty());
+            this.view.prefHeightProperty().bind(root.getScene().heightProperty());
+            this.view.prefWidthProperty().bind(root.getScene().widthProperty().multiply(.5));
+            this.messageTextArea.prefHeightProperty().bind(root.getScene().heightProperty());
+            this.messageTextArea.prefWidthProperty().bind(root.getScene().widthProperty().multiply(.66).subtract(120));
+
+        }).start();
 
     }
 
@@ -143,7 +181,6 @@ public class ChatController implements Initializable, IChatController {
                 //  System.out.println("active Contact is : "+ this.activeContact.getUser().getName());
             });
         }
-
     }
 
     private void setToolTip() {
@@ -189,7 +226,8 @@ public class ChatController implements Initializable, IChatController {
             Image im = activeContact.getImage();
             Circle circle = new Circle();
             circle.setRadius(20);
-            circle.setFill(new ImagePattern(im));
+            if (im != null)
+                circle.setFill(new ImagePattern(im));
             circle.setCenterY(75);
             view.getChildren().add(circle);
             view.getChildren().add(viewTextMessage);
@@ -239,7 +277,6 @@ public class ChatController implements Initializable, IChatController {
         });
     }
 
-
     public void sendGroupMessage(ChatGroup group, Message message) throws RemoteException {
         client.sendGroupMessage(group, message);
 
@@ -287,9 +324,12 @@ public class ChatController implements Initializable, IChatController {
 
     //    Start Nehal Adel
 
-    public void send() {
+    public void send() throws RemoteException {
         String messageTXT = messageTextArea.getText();
-        Message mes = new Message(5, messageTXT);
+        Contact contact = activeContact;
+        Message mes = new Message(1, messageTXT);
+        if (contact.isGroup())
+            client.sendGroupMessage(((GroupContact) contact).getChatGroup(), mes);
         messageTextArea.setText("");
         displayMessage(mes);
         System.out.println(messageTXT);

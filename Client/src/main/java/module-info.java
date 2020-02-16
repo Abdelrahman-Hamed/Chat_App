@@ -5,6 +5,8 @@ module org.asasna.client {
     requires java.rmi;
     requires org.kordamp.ikonli.javafx;
     requires rmiio;
+    requires com.jfoenix;
+    opens org.asasna.chat.client;
     opens org.asasna.chat.client.view to javafx.fxml;
     exports org.asasna.chat.client;
 }

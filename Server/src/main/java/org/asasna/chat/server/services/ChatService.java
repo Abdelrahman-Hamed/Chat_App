@@ -89,6 +89,8 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
                 .map(u -> onlineUsers.get(u))
                 .forEach(u -> {
                     try {
+                        System.out.println("Message from group : " + group.getGroupId());
+                        System.out.println("Message : " + groupMessage.getMesssagecontent());
                         u.recieveGroupMessage(group, groupMessage);
                     } catch (RemoteException e) {
                         e.printStackTrace();

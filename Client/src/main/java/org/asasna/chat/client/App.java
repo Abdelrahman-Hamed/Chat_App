@@ -41,6 +41,14 @@ public class App extends Application {
     }
 
     public static void main(String[] args) {
+        FXMLLoader loader = new FXMLLoader(App.class.getResource("chat.fxml"));
+        IChatController chatController=loader.getController();
+        /*try {
+            Client c = new Client(chatController);
+        }
+        catch(RemoteException e){
+            e.printStackTrace();
+        }*/
         launch();
 
     }
