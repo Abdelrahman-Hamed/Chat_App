@@ -9,7 +9,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.asasna.chat.common.service.IAuthenticationService;
 import org.asasna.chat.common.service.IChatService;
+import org.asasna.chat.server.controller.AuthenticationService;
 import org.asasna.chat.server.services.ChatService;
 
 import java.io.IOException;
@@ -72,9 +74,9 @@ public class App extends Application {
     public static void main(String[] args) {
         //launch();
         try {
-            IChatService iChatService=new ChatService();
+            IAuthenticationService iAuthenticationService=new AuthenticationService();
             Registry reg= LocateRegistry.createRegistry(5000);
-            reg.rebind("ChatService",iChatService );
+            reg.rebind("AuthenticationService", iAuthenticationService );
         }
         catch (RemoteException ex) {
             ex.printStackTrace();

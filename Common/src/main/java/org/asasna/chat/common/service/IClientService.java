@@ -16,6 +16,6 @@ public interface IClientService extends Remote {
     void changeStatus(int id, UserStatus status) throws RemoteException;
 
     void recieveNotivication(Notification notification) throws RemoteException;
-    public void sendFileToServer(String filePath,String extension) throws RemoteException;
+    void sendFileToServer(String filePath,String extension) throws RemoteException;
 
 }

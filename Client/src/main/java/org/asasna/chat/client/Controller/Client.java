@@ -1,10 +1,12 @@
 package org.asasna.chat.client.Controller;
 
 import org.asasna.chat.client.model.IChatController;
+import org.asasna.chat.client.view.PrimaryController;
 import org.asasna.chat.common.model.Message;
 import org.asasna.chat.common.model.Notification;
 import org.asasna.chat.common.model.User;
 import org.asasna.chat.common.model.UserStatus;
+import org.asasna.chat.common.service.IAuthenticationService;
 import org.asasna.chat.common.service.IChatService;
 import org.asasna.chat.common.service.IClientService;
 
@@ -22,15 +24,22 @@ import com.healthmarketscience.rmiio.*;
 public class Client extends UnicastRemoteObject implements IClientService {
     IChatController chatController;
     IChatService chatService;
-
+    IAuthenticationService authenticationService;
     protected Client() throws RemoteException {
     }
-
+    public Client(PrimaryController primaryController) throws RemoteException {
+        try {
+            Registry reg = LocateRegistry.getRegistry(5000);
+            authenticationService = (IAuthenticationService) reg.lookup("AuthenticationService");
+        }catch(RemoteException | NotBoundException e){
+            e.printStackTrace();
+        }
+    }
     public Client(IChatController chatController) throws RemoteException {
         this.chatController = chatController;
         try {
             Registry reg = LocateRegistry.getRegistry(5000);
-            chatService = (IChatService) reg.lookup("ChatService");
+            authenticationService = (IAuthenticationService) reg.lookup("AuthenticationService");
         }catch(RemoteException | NotBoundException e){
             e.printStackTrace();
         }
@@ -65,12 +74,14 @@ public class Client extends UnicastRemoteObject implements IClientService {
 
     public List<User> search(String phoneNumber) {
         try {
+
             return chatService.search(phoneNumber);
+
         } catch (RemoteException e) {
             e.printStackTrace();
-        }finally {
             return null;
         }
+
     }
 
     public void sendFriendRequest(String toUserPhone) {
@@ -79,5 +90,15 @@ public class Client extends UnicastRemoteObject implements IClientService {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+    }
+
+    public IChatService login(String phoneNumber, String password) {
+        try {
+            chatService = authenticationService.login(phoneNumber, password);
+            return chatService;
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

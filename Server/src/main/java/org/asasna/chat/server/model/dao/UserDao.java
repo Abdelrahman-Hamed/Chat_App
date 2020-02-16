@@ -10,6 +10,7 @@ import org.asasna.chat.server.model.db.DBConnection;
 
 
 import javax.sql.RowSet;
+import javax.xml.transform.Result;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +37,9 @@ public class UserDao implements IUserDao {
             while (resultSet.next()) {
                 User user = extractUser(resultSet);
                 users.add(user);
+
             }
+            System.out.println(users.size());
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -56,6 +59,37 @@ public class UserDao implements IUserDao {
             e.printStackTrace();
         }
         return user;
+    }
+
+    @Override
+    public User getUser(String phoneNumber, String password) {
+        try {
+            preparedStatement = conn.prepareStatement("select * from users where phone_number = ? and password = ?");
+            preparedStatement.setString(1, phoneNumber);
+            preparedStatement.setString(2, password);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if(resultSet.next()){
+                return extractUser(resultSet);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public User getUser(String phoneNumber) {
+        try {
+            preparedStatement = conn.prepareStatement("select * from users where phone_number = ?");
+            preparedStatement.setString(1, phoneNumber);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if(resultSet.next()){
+                return extractUser(resultSet);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override

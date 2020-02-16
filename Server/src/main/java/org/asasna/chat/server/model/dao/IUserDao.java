@@ -11,6 +11,11 @@ public interface IUserDao {
 
     User getUser(int id);
 
+    User getUser(String phoneNumber, String password);
+
+    User getUser(String phoneNumber);
+
+
     boolean updateUser(int id, User user);
 
     boolean deleteUser(int id);

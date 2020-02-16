@@ -34,6 +34,9 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
         }
     }
 
+    public ChatService(User user) throws RemoteException{
+        this.user = user;
+    }
     @Override
     public List<User> getFriendList(User user) throws RemoteException {
         return null;
@@ -81,11 +84,15 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
         try {
             userdao = new UserDao();
             searchList= userdao.getAllUsers();
+
+            searchList = searchList.stream().filter(user -> user.getPhone().contains(phoneNumber)).collect(Collectors.toList());
+            System.out.println("Size1: " + searchList.size());
+            return  searchList;
         } catch (SQLException e) {
             e.printStackTrace();
+            return null;
         }
-        searchList.stream().filter(x -> phoneNumber.matches(x.getPhone()+"[0-9]*")).collect(Collectors.toList());
-        return  searchList;
+
     }
 
     @Override

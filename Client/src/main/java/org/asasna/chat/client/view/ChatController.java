@@ -31,6 +31,7 @@ import org.kordamp.ikonli.javafx.FontIcon;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -61,12 +62,6 @@ public class ChatController implements Initializable, IChatController {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        setToolTip();
-        try {
-            client=new Client(this);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
         me = new User();
         try {
             Contact contact = new Contact("Abdelrahman", new Image(new FileInputStream("./client/src/main/resources/org/asasna/chat/client/abdo.jpg")), UserStatus.ONLINE);
@@ -117,6 +112,9 @@ public class ChatController implements Initializable, IChatController {
 
     public void exit() {
 
+    }
+    public void setClient(Client client){
+        this.client = client;
     }
 
     @FXML
@@ -197,12 +195,15 @@ public class ChatController implements Initializable, IChatController {
 
     public void searchContacts(KeyEvent keyEvent) {
         String searchedMessage = searchTextField.getText();
-//        List<User> users = client.search(searchedMessage);
-        List<User> users = new ArrayList<>();
-        String names[] = {"Elsayed Nabil", "Abeer Emad", "Abdo Fahmy", "Aya Amin", "Shymaa shokry"};
-        for (int i = 0; i < names.length; i++) {
-            users.add(new User(names[i], "01279425232", "sayed0nabil@gmail.com", "123456789", Gender.Male, "Egypt", null, null, UserStatus.ONLINE, "abdo.jpg", false, false));
-        }
+        List<User> users = client.search(searchedMessage);
+        contactsList.getChildren().clear();
+        users.forEach(user -> {
+            try {
+                contactsList.getChildren().add(new SearchedContact(client, user));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
     // End Elsayed Nabil
 

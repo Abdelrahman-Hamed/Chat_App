@@ -38,4 +38,5 @@ public class SearchedContact extends Contact {
         userPhone = user.getPhone();
         this.client = client;
     }
+
 }
