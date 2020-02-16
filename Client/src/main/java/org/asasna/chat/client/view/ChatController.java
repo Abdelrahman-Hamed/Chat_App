@@ -121,11 +121,20 @@ public class ChatController implements Initializable, IChatController {
             this.messageTextArea.prefWidthProperty().bind(root.getScene().widthProperty().multiply(.66).subtract(120));
 
         }).start();
-        try {
-            client.getFriendList().forEach(System.out::println);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+        new Thread(()->{
+            try {
+                client.getFriendList().forEach(u -> {
+                    Contact contact1 = new Contact(u);
+                    contact1.setOnMouseClicked(e -> {
+                        activeContact = contact1;
+                    });
+                    contactsList.getChildren().add(contact1);
+                });
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }).start();
+
         SearchedGroupContact searchedGroupContact = new SearchedGroupContact(user);
         contactsList.getChildren().add(searchedGroupContact);
     }
