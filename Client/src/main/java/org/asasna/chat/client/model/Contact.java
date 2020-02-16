@@ -21,7 +21,8 @@ public class Contact extends HBox {
         this.status = status;
         Circle circle = new Circle();
         circle.setRadius(30);
-        circle.setFill(new ImagePattern(image));
+        if (image != null)
+            circle.setFill(new ImagePattern(image));
         circle.setCenterY(75);
         Label nameLabel = new Label(name);
         nameLabel.setStyle("-fx-font-family: 'Comic Sans MS';-fx-font-size: 18;-fx-font-weight: 500;-fx-text-fill: WHITE;-fx-padding: 5 0 0 0;");
@@ -43,7 +44,8 @@ public class Contact extends HBox {
         this.status = user.getStatus();
         Circle circle = new Circle();
         circle.setRadius(30);
-        circle.setFill(new ImagePattern(image));
+        if (image != null)
+            circle.setFill(new ImagePattern(image));
         circle.setCenterY(75);
         Label nameLabel = new Label(name);
         nameLabel.setStyle("-fx-font-family: 'Comic Sans MS';-fx-font-size: 18;-fx-font-weight: 500;-fx-text-fill: WHITE;-fx-padding: 5 0 0 0;");
@@ -72,7 +74,31 @@ public class Contact extends HBox {
         setHeight(150);
     }
 
-    public User getUser(){
+    public User getUser() {
         return user;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setImage(Image image) {
+        this.image = image;
+    }
+
+    public UserStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(UserStatus status) {
+        this.status = status;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

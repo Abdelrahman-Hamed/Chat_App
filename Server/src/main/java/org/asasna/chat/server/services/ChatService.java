@@ -2,6 +2,7 @@ package org.asasna.chat.server.services;
 
 import org.asasna.chat.common.model.*;
 import org.asasna.chat.common.service.IChatService;
+import org.asasna.chat.common.service.IClientService;
 import org.asasna.chat.server.model.dao.IUserDao;
 import org.asasna.chat.server.model.dao.UserDao;
 
@@ -16,13 +17,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import com.healthmarketscience.rmiio.*;
 import org.apache.commons.io.IOUtils;
 
 public class ChatService extends UnicastRemoteObject implements IChatService {
 
-    private static Map<Integer,List<Message>> receiverMessages = new HashMap<>();
-    private static Map<Integer, IChatService> onlineUsers = new HashMap<>();
+    private Map<Integer, List<Message>> receiverMessages = new HashMap<>();
+    private static Map<Integer, IClientService> onlineUsers = new HashMap<>();
     IUserDao userDao;
     private User user;
 
@@ -58,8 +60,9 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     }
 
     @Override
-    public void register(int userId, RemoteRef client) throws RemoteException {
-
+    public void register(int userId, IClientService client) throws RemoteException {
+        onlineUsers.put(userId, (IClientService) client);
+        System.out.println(onlineUsers);
     }
 
     @Override
@@ -73,14 +76,25 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     }
 
     @Override
-    public void sendGroupMsg(Group group, Message groupMessage) throws RemoteException {
-
+    public void sendGroupMsg(ChatGroup group, Message groupMessage) throws RemoteException {
+        System.out.println(group.getParticipents());
+        onlineUsers.keySet()
+                .parallelStream()
+                .filter(u -> group.getParticipents().contains(u))
+                .map(u -> onlineUsers.get(u))
+                .forEach(u -> {
+                    try {
+                        u.recieveGroupMessage(group, groupMessage);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                });
     }
 
     @Override
     public List<User> search(String phoneNumber) throws RemoteException {
-        List<User> searchList =new ArrayList<User>();
-        UserDao userdao= null;
+        List<User> searchList = new ArrayList<User>();
+        UserDao userdao = null;
         try {
             userdao = new UserDao();
             searchList= userdao.getAllUsers();
@@ -90,9 +104,9 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
             return  searchList;
         } catch (SQLException e) {
             e.printStackTrace();
-            return null;
         }
-
+        searchList.stream().filter(x -> phoneNumber.matches(x.getPhone()+"[0-9]*")).collect(Collectors.toList());
+        return  searchList;
     }
 
     @Override
@@ -100,12 +114,12 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
 
     }
 
-   @Override
-    public void sendFile(RemoteInputStream inFile,String suffix) throws RemoteException{
+    @Override
+    public void sendFile(RemoteInputStream inFile, String suffix) throws RemoteException {
         try {
             //,int senderID,int userID
             InputStream istream = RemoteInputStreamClient.wrap(inFile);
-            final File tempFile = File.createTempFile("tmp", suffix,new File("C:\\Users\\Aya\\Desktop"));
+            final File tempFile = File.createTempFile("tmp", suffix, new File("C:\\Users\\Aya\\Desktop"));
             tempFile.deleteOnExit();
             try (FileOutputStream out = new FileOutputStream(tempFile)) {
                 IOUtils.copy(istream, out);
@@ -115,14 +129,14 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
                 outWrite.write(str);
                 outWrite.close();*/
             }
-        } catch (IOException  e) {
+        } catch (IOException e) {
             System.out.println("Something went wrong with the client");
         }
 
     }
 
     @Override
-    public void getFile(String filePath) throws RemoteException{
+    public void getFile(String filePath) throws RemoteException {
         RemoteInputStreamServer istream = null;
         try {
             istream = new GZIPRemoteInputStream(new BufferedInputStream(new FileInputStream(filePath)));

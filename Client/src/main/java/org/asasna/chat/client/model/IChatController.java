@@ -1,5 +1,6 @@
 package org.asasna.chat.client.model;
 
+import org.asasna.chat.common.model.ChatGroup;
 import org.asasna.chat.common.model.Message;
 import org.asasna.chat.common.model.Notification;
 import org.asasna.chat.common.model.UserStatus;
@@ -12,4 +13,6 @@ public interface IChatController {
     void changeStatus(UserStatus status);
 
     void recieveNotification(Notification notification);
+
+    public void recieveGroupMessage(ChatGroup group, Message message);
 }

@@ -33,7 +33,7 @@
                            </HBox.margin>
                         </TextField>
                   </HBox>
-            <VBox fx:id="contactsList" onMouseMoved="#getSelectedContact" prefHeight="496.0" prefWidth="257.0" />
+            <VBox fx:id="contactsList" onMouseClicked="#getSelectedContact" prefHeight="496.0" prefWidth="257.0" />
             </VBox>
             <GridPane layoutX="342.0" layoutY="-2.0" prefHeight="600.0" prefWidth="555.0">
               <columnConstraints>
