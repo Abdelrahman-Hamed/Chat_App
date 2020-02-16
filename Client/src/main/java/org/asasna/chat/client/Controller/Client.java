@@ -32,27 +32,29 @@ public class Client extends UnicastRemoteObject implements IClientService {
 
     protected Client() throws RemoteException {
     }
+
     public Client(PrimaryController primaryController) throws RemoteException {
         try {
             Registry reg = LocateRegistry.getRegistry(5000);
             authenticationService = (IAuthenticationService) reg.lookup("AuthenticationService");
-        }catch(RemoteException | NotBoundException e){
+        } catch (RemoteException | NotBoundException e) {
             e.printStackTrace();
         }
     }
+
     public Client(IChatController chatController) throws RemoteException {
         this.chatController = chatController;
         Registry reg = null;
 //        try {
-            reg = LocateRegistry.getRegistry(5000);
+        reg = LocateRegistry.getRegistry(5000);
 //            this.user = new User(4, "Mohamed", "01027420575");
 //            chatService.register(this.user.getId(), this);
 //        } catch (RemoteException | NotBoundException e) {
-            try {
-                authenticationService = (IAuthenticationService) reg.lookup("AuthenticationService");
-            } catch (NotBoundException ex) {
-                ex.printStackTrace();
-            }
+        try {
+            authenticationService = (IAuthenticationService) reg.lookup("AuthenticationService");
+        } catch (NotBoundException ex) {
+            ex.printStackTrace();
+        }
 //        }
     }
 
@@ -127,8 +129,12 @@ public class Client extends UnicastRemoteObject implements IClientService {
         chatService.sendMessage(receiverId, message);
     }
 
+    public List<User> getFriendList() throws RemoteException {
+        return this.chatService.getFriendList();
+    }
+
     @Override
-    public User getUser(){
+    public User getUser() {
         return user;
     }
 }

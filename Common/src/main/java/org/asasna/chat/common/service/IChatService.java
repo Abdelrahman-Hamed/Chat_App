@@ -11,7 +11,7 @@ import com.healthmarketscience.rmiio.*;
 
 public interface IChatService extends Remote {
 
-    List<User> getFriendList(User user) throws RemoteException;
+    List<User> getFriendList() throws RemoteException;
 
     void changeStatus(UserStatus userStatus) throws RemoteException;
 

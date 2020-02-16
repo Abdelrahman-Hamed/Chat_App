@@ -163,7 +163,7 @@ public class UserDao implements IUserDao {
         List<User> friends = new ArrayList<>();
         try {
             String sql = "select second_member from contacts where first_member = ? " +
-                    " union select first_member from contacts where second_number = ?";
+                    " union select first_member from contacts where second_member= ?";
             preparedStatement = conn.prepareStatement(sql);
             preparedStatement.setInt(1, user.getId());
             preparedStatement.setInt(2, user.getId());
