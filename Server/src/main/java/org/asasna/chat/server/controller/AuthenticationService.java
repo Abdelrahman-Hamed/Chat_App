@@ -19,6 +19,7 @@ public class AuthenticationService extends UnicastRemoteObject implements IAuthe
         try {
             UserDao userDao = new UserDao();
             User user = userDao.getUser(phoneNumber, password);
+            if(user == null) return null;
             return new ChatService(user);
         } catch (SQLException e) {
             e.printStackTrace();

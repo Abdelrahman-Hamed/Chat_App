@@ -57,7 +57,6 @@ public class PrimaryController {
 
     @FXML
     public void phoneNumberChanged(KeyEvent evnet){
-        System.out.println("Welcome");
         if(!Validation.validatePhoneNumber(phoneNumber.getText())){
             errorPhoneNumber.setVisible(true);
             password.setDisable(true);
@@ -79,7 +78,7 @@ public class PrimaryController {
             errorPhoneNumber.setText("Not A Valid Phone Number");
         }
         else{
-
+            System.out.println("Clicked");
             try {
                 ChatController chatController = new ChatController();
                 client = new Client(chatController);
