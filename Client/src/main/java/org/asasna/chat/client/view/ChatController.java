@@ -73,12 +73,6 @@ public class ChatController implements Initializable, IChatController {
         list.add(new User(1, "Khaled", "014587"));
         list.add(new User(5, "Sayed", "54663"));
         ChatGroup chatGroup = new ChatGroup(1, list.stream().map(u -> u.getId()).collect(Collectors.toList()), "Group1");
-
-        try {
-            client = new Client(this);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
         try {
             client.sendGroupMessage(chatGroup, message);
         } catch (RemoteException e) {

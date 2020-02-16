@@ -19,6 +19,6 @@ public interface IClientService extends Remote {
 
     void sendMessage(int receiverId, Message message) throws RemoteException;
 
-    User getUser();
+    User getUser() throws RemoteException;
 
 }
