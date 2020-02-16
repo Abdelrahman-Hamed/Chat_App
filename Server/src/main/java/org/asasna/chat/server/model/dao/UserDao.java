@@ -227,6 +227,40 @@ public class UserDao implements IUserDao {
         return statusData;
     }
 
+    @Override
+    public void setNotification(int fromUserId, int toUserId) {
+
+        try {
+            String sql = "select * from invitations where from_id = ? and to_id = ?";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE);
+            preparedStatement.setInt(1, toUserId);
+            preparedStatement.setInt(2,fromUserId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if(resultSet.next()){
+                resultSet.deleteRow();
+                sql = "insert into contacts values(?, ?)";
+                preparedStatement = conn.prepareStatement(sql);
+                preparedStatement.setInt(1, fromUserId);
+                preparedStatement.setInt(2, toUserId);
+                int effectedRows = preparedStatement.executeUpdate();
+            }else{
+                sql = "insert into invitations values(?, ?)";
+                preparedStatement = conn.prepareStatement(sql);
+                preparedStatement.setInt(1, fromUserId);
+                preparedStatement.setInt(2, toUserId);
+                int effectedRows = preparedStatement.executeUpdate();
+//                if(effectedRows == 1){
+//
+//                }else{
+//
+//                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     private User extractUser(ResultSet resultSet) {
         try {
             User user = new User();
