@@ -114,7 +114,17 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     }
 
     @Override
-    public void sendFriendRequest(String fromPhoneNumber, String toPhoneNumber) throws RemoteException{
+    public void sendFriendRequest(int fromUserId, int toUserId) throws RemoteException{
+        try {
+            UserDao userDao = new UserDao();
+            boolean notified =  userDao.setNotification(fromUserId, toUserId);
+            if(notified){
+                // Call Receive Notification On Client Side
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
     }
 

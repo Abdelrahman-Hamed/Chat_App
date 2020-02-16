@@ -228,7 +228,7 @@ public class UserDao implements IUserDao {
     }
 
     @Override
-    public void setNotification(int fromUserId, int toUserId) {
+    public boolean setNotification(int fromUserId, int toUserId) {
 
         try {
             String sql = "select * from invitations where from_id = ? and to_id = ?";
@@ -244,21 +244,23 @@ public class UserDao implements IUserDao {
                 preparedStatement.setInt(1, fromUserId);
                 preparedStatement.setInt(2, toUserId);
                 int effectedRows = preparedStatement.executeUpdate();
+                return false;
             }else{
                 sql = "insert into invitations values(?, ?)";
                 preparedStatement = conn.prepareStatement(sql);
                 preparedStatement.setInt(1, fromUserId);
                 preparedStatement.setInt(2, toUserId);
                 int effectedRows = preparedStatement.executeUpdate();
-//                if(effectedRows == 1){
-//
-//                }else{
-//
-//                }
+                if(effectedRows == 1){
+                    return true;
+                }else{
+                    return false;
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return false;
     }
 
     private User extractUser(ResultSet resultSet) {

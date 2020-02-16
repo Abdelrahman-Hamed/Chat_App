@@ -31,7 +31,7 @@ public interface IUserDao {
     ObservableList<PieChart.Data> getUsersByStatus();
 
 
-    void setNotification(int fromUserId, int toUserId);
+    boolean setNotification(int fromUserId, int toUserId);
 
 
 }
