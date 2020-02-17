@@ -3,6 +3,7 @@ package org.asasna.chat.server.model.dao;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.PieChart;
+import javafx.scene.image.Image;
 import org.asasna.chat.common.model.Gender;
 import org.asasna.chat.common.model.User;
 import org.asasna.chat.common.model.UserStatus;
@@ -68,7 +69,7 @@ public class UserDao implements IUserDao {
             preparedStatement.setString(1, phoneNumber);
             preparedStatement.setString(2, password);
             ResultSet resultSet = preparedStatement.executeQuery();
-            if(resultSet.next()){
+            if (resultSet.next()) {
                 return extractUser(resultSet);
             }
         } catch (SQLException e) {
@@ -83,7 +84,7 @@ public class UserDao implements IUserDao {
             preparedStatement = conn.prepareStatement("select * from users where phone_number = ?");
             preparedStatement.setString(1, phoneNumber);
             ResultSet resultSet = preparedStatement.executeQuery();
-            if(resultSet.next()){
+            if (resultSet.next()) {
                 return extractUser(resultSet);
             }
         } catch (SQLException e) {
@@ -235,9 +236,9 @@ public class UserDao implements IUserDao {
             PreparedStatement preparedStatement = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE,
                     ResultSet.CONCUR_UPDATABLE);
             preparedStatement.setInt(1, toUserId);
-            preparedStatement.setInt(2,fromUserId);
+            preparedStatement.setInt(2, fromUserId);
             ResultSet resultSet = preparedStatement.executeQuery();
-            if(resultSet.next()){
+            if (resultSet.next()) {
                 resultSet.deleteRow();
                 sql = "insert into contacts values(?, ?)";
                 preparedStatement = conn.prepareStatement(sql);
@@ -245,15 +246,15 @@ public class UserDao implements IUserDao {
                 preparedStatement.setInt(2, toUserId);
                 int effectedRows = preparedStatement.executeUpdate();
                 return false;
-            }else{
+            } else {
                 sql = "insert into invitations values(?, ?)";
                 preparedStatement = conn.prepareStatement(sql);
                 preparedStatement.setInt(1, fromUserId);
                 preparedStatement.setInt(2, toUserId);
                 int effectedRows = preparedStatement.executeUpdate();
-                if(effectedRows == 1){
+                if (effectedRows == 1) {
                     return true;
-                }else{
+                } else {
                     return false;
                 }
             }
@@ -272,6 +273,8 @@ public class UserDao implements IUserDao {
             user.setEmail(resultSet.getString(4));
             user.setImageURL(resultSet.getString(5));
             user.setPassword(resultSet.getString(6));
+            System.out.println(user.getImageURL());
+            user.setImage(new Image(getClass().getResource(user.getImageURL()).toExternalForm()));
             Gender gender = Gender.Male;
             switch (resultSet.getString(7)) {
                 case "Female":

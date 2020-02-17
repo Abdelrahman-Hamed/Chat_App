@@ -23,7 +23,6 @@ public class SearchedContact extends Contact {
     public SearchedContact(String name, Image image, UserStatus userStatus) {
         super(name, image, userStatus);
 
-
         Button addBtn = new Button("+");
         addBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -35,7 +34,7 @@ public class SearchedContact extends Contact {
     }
 
     public SearchedContact(Client client, User user) {
-        this(user.getName(), null, user.getStatus());
+        this(user.getName(), user.getImage(), user.getStatus());
         userId = user.getId();
         userPhone = user.getPhone();
         this.client = client;

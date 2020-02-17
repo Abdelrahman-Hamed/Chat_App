@@ -46,7 +46,7 @@ public class Client extends UnicastRemoteObject implements IClientService {
         this.chatController = chatController;
         Registry reg = null;
 //        try {
-        reg = LocateRegistry.getRegistry(1000);
+        reg = LocateRegistry.getRegistry(5000);
 //            this.user = new User(4, "Mohamed", "01027420575");
 //            chatService.register(this.user.getId(), this);
 //        } catch (RemoteException | NotBoundException e) {
