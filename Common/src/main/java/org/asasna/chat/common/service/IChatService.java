@@ -34,4 +34,6 @@ public interface IChatService extends Remote {
     void sendFile(RemoteInputStream inFile, String suffix) throws RemoteException;
 
     void getFile(String filePath) throws RemoteException;
+
+    User getUser() throws RemoteException;
 }

@@ -170,6 +170,11 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
         }
     }
 
+    @Override
+    public User getUser() throws RemoteException {
+        return user;
+    }
+
     private void saveReceiverMessages(int receiverId, Message message) {
         List<Message> messagesList = receiverMessages.get(receiverId);
         if (messagesList.isEmpty()) {
