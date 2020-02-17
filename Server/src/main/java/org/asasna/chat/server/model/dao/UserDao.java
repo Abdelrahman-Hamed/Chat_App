@@ -48,6 +48,30 @@ public class UserDao implements IUserDao {
     }
 
     @Override
+    public List<User> getNonContactUsers(String mePhoneNumber) {
+        List<User> users = new ArrayList<>();
+        try {
+
+            String sql = "select * from users\n" +
+                    "left join contacts\n" +
+                    "on users.id = contacts.first_member\n" +
+                    "or users.id = contacts.second_member\n" +
+                    "where contacts.first_member is null\n" +
+                    "and users.phone_number <> '" + mePhoneNumber +"';";
+            ResultSet resultSet = statement.executeQuery(sql);
+            while (resultSet.next()) {
+                User user = extractUser(resultSet);
+                users.add(user);
+
+            }
+            System.out.println(users.size());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return users;
+    }
+
+    @Override
     public User getUser(int id) {
         User user = null;
         try {

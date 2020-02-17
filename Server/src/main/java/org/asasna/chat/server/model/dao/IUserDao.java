@@ -9,6 +9,8 @@ import java.util.List;
 public interface IUserDao {
     List<User> getAllUsers();
 
+    List<User> getNonContactUsers(String mePhoneNumber);
+
     User getUser(int id);
 
     User getUser(String phoneNumber, String password);

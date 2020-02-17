@@ -110,11 +110,8 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
         UserDao userdao = null;
         try {
             userdao = new UserDao();
-            searchList = userdao.getAllUsers();
-
+            searchList = userdao.getNonContactUsers(user.getPhone());
             searchList = searchList.stream().filter(user -> user.getPhone().contains(phoneNumber)).collect(Collectors.toList());
-            System.out.println("Size1: " + searchList.size());
-
         } catch (SQLException e) {
             e.printStackTrace();
         }

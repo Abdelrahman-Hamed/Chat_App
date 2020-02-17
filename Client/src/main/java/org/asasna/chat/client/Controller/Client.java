@@ -103,7 +103,7 @@ public class Client extends UnicastRemoteObject implements IClientService {
 
     }
 
-    public boolean sendFriendRequest(String toUserPhone) {
+    public boolean sendFriendRequest(int toUserId) {
         try {
             System.out.println("Send Friend Request");
             boolean done = chatService.sendFriendRequest(chatService.getUser().getId(), toUserId);
