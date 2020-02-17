@@ -137,8 +137,8 @@ public class Client extends UnicastRemoteObject implements IClientService {
     }
 
     @Override
-    public User getUser() {
-        return user;
+    public User getUser() throws RemoteException {
+        return chatService.getUser();
     }
 
     @Override

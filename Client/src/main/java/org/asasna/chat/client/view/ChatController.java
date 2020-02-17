@@ -46,7 +46,7 @@ public class ChatController implements Initializable, IChatController {
     @FXML
     TextArea messageTextArea;
     @FXML
-    FontIcon profileIcon, groupIcon, logoutIcon, addFriendIcon, notificationIcon, saveChatIcon;
+    FontIcon friendList, groupIcon, logoutIcon, friendRequest, notificationIcon, saveChatIcon;
     @FXML
     AnchorPane root;
     @FXML
@@ -63,7 +63,8 @@ public class ChatController implements Initializable, IChatController {
     ScrollPane chatArea_scroll;
     @FXML
     VBox view;
-
+    @FXML
+    Circle userImage;
     MSGview viewTextMessage;
     private User me;
 
@@ -73,8 +74,11 @@ public class ChatController implements Initializable, IChatController {
     private User sender;
 
     public enum Active {
-
+        Profile, Friends, Group, friendRequets
     }
+
+    private Active active;
+    private List<User> friends;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -92,11 +96,16 @@ public class ChatController implements Initializable, IChatController {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-        me = new User();
-        Contact contact = new Contact("Abdelrahman", new Image(getClass().getResource("abdo.jpg").toExternalForm()), UserStatus.ONLINE);
+        try {
+            me = client.getUser();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        /*Contact contact = new Contact("Abdelrahman", new Image(getClass().getResource("abdo.jpg").toExternalForm()), UserStatus.ONLINE);
         contactsList.getChildren().add(contact);
         SearchedContact searchedContact = new SearchedContact("Sayed Nabil", new Image(getClass().getResource("abdo.jpg").toExternalForm()), UserStatus.ONLINE);
-        contactsList.getChildren().add(searchedContact);
+        contactsList.getChildren().add(searchedContact);*/
+        userImage.setFill(new ImagePattern(me.getImage()));
         new Thread(() -> {
             while (root.getScene() == null) {
                 try {
@@ -105,6 +114,16 @@ public class ChatController implements Initializable, IChatController {
                     e.printStackTrace();
                 }
             }
+            groupIcon.setOnMouseClicked((e) -> {
+                active = Active.Group;
+                System.out.println("Group");
+            });
+            friendList.setOnMouseClicked(e -> {
+                active = Active.Friends;
+            });
+            friendRequest.setOnMouseClicked(e -> {
+                active = Active.friendRequets;
+            });
             this.root.prefHeightProperty().bind(root.getScene().heightProperty());
             this.root.prefWidthProperty().bind(root.getScene().widthProperty());
             this.messageTextArea.prefHeightProperty().bind(root.getScene().heightProperty());
@@ -126,7 +145,8 @@ public class ChatController implements Initializable, IChatController {
         }).start();
         new Thread(() -> {
             try {
-                client.getFriendList().forEach(u -> {
+                friends = client.getFriendList();
+                friends.forEach(u -> {
                     Contact contact1 = new Contact(u);
                     contact1.setOnMouseClicked(e -> {
                         activeContact = contact1;
@@ -226,9 +246,9 @@ public class ChatController implements Initializable, IChatController {
         saveChatTooltip.setStyle("-fx-font-size: 14");
         logoutTooltip.setStyle("-fx-font-size: 14");
 
-        Tooltip.install(profileIcon, profileTooltip);
+        Tooltip.install(friendList, profileTooltip);
         Tooltip.install(groupIcon, groupTooltip);
-        Tooltip.install(addFriendIcon, addFriendTooltip);
+        Tooltip.install(friendRequest, addFriendTooltip);
         Tooltip.install(notificationIcon, notificationTooltip);
         Tooltip.install(saveChatIcon, saveChatTooltip);
         Tooltip.install(logoutIcon, logoutTooltip);
@@ -276,11 +296,19 @@ public class ChatController implements Initializable, IChatController {
 
     public void searchContacts(KeyEvent keyEvent) {
         String searchedMessage = searchTextField.getText();
-        List<User> users = client.search(searchedMessage);
-        contactsList.getChildren().clear();
-        users.forEach(user -> {
-            contactsList.getChildren().add(new SearchedContact(client, user));
-        });
+        if (active == Active.friendRequets) {
+            List<User> users = client.search(searchedMessage);
+            contactsList.getChildren().clear();
+            users.forEach(user -> {
+                contactsList.getChildren().add(new SearchedContact(client, user));
+            });
+        } else if (active == Active.Group) {
+            contactsList.getChildren().clear();
+            friends.stream().filter(f -> f.getPhone().contains(searchTextField.getText()) && f.getStatus() == UserStatus.ONLINE).forEach(f -> {
+                contactsList.getChildren().add(new SearchedGroupContact(f));
+            });
+        }
+
     }
     // End Elsayed Nabil
 
