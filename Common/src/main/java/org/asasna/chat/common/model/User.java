@@ -1,9 +1,17 @@
 package org.asasna.chat.common.model;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
+
+import javax.imageio.ImageIO;
 
 
 public class User implements Serializable {
@@ -20,6 +28,7 @@ public class User implements Serializable {
     private String imageURL;
     private boolean verified;
     private boolean chatbotOption;
+    private transient Image image;
 
     public User() {
     }
@@ -142,8 +151,14 @@ public class User implements Serializable {
     }
 
     public Image getImage() {
-        Image userImage = new Image(getClass().getResourceAsStream(imageURL));
+        /*Image userImage = new Image(getClass().getResourceAsStream(imageURL));
         return userImage;
+         */
+        return this.image;
+    }
+
+    public void setImage(Image image) {
+        this.image = image;
     }
 
     public String getImageURL() {
@@ -168,5 +183,19 @@ public class User implements Serializable {
 
     public void setChatbotOption(boolean chatbotOption) {
         this.chatbotOption = chatbotOption;
+    }
+    private void writeObject(ObjectOutputStream objectOutputStream) throws IOException {
+        objectOutputStream.defaultWriteObject();
+        GZIPOutputStream gzipOutputStream = new GZIPOutputStream(objectOutputStream);
+        ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", gzipOutputStream);
+        gzipOutputStream.finish();
+        //objectOutputStream.writeObject(name);
+    }
+
+    private void readObject(ObjectInputStream objectInputStream) throws IOException, ClassNotFoundException {
+        objectInputStream.defaultReadObject();
+        GZIPInputStream inputStream = new GZIPInputStream(objectInputStream);
+        image = SwingFXUtils.toFXImage(ImageIO.read(inputStream), null);
+        //name = (String) objectInputStream.readObject();
     }
 }

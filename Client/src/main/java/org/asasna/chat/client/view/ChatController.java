@@ -72,6 +72,10 @@ public class ChatController implements Initializable, IChatController {
     private User user;
     private User sender;
 
+    public enum Active {
+
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         setToolTip();
@@ -127,7 +131,10 @@ public class ChatController implements Initializable, IChatController {
                     contact1.setOnMouseClicked(e -> {
                         activeContact = contact1;
                     });
-                    contactsList.getChildren().add(contact1);
+                    Platform.runLater(() -> {
+                        contactsList.getChildren().add(contact1);
+                    });
+
                 });
             } catch (RemoteException e) {
                 e.printStackTrace();

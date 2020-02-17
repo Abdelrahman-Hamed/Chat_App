@@ -44,8 +44,7 @@ public class Contact extends HBox {
     public Contact(User user) {
         this.user = user;
         this.name = user.getName();
-        if (image != null)
-            this.image = user.getImage();
+        this.image = user.getImage();
         this.status = user.getStatus();
         Circle circle = new Circle();
         circle.setRadius(30);

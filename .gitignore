@@ -96,3 +96,4 @@ target/
 # End of https://www.gitignore.io/api/intellij
 
 /.idea/
+/Client/src/main/resources/org/asasna/chat/client/DB_Properties.properties

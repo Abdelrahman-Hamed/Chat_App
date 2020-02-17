@@ -17,10 +17,12 @@ import java.io.IOException;
 
 public class SearchedContact extends Contact {
     private int userId;
+    private String userPhone;
     private Client client;
 
     public SearchedContact(String name, Image image, UserStatus userStatus) {
         super(name, image, userStatus);
+
         Button addBtn = new Button("+");
         addBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -31,11 +33,9 @@ public class SearchedContact extends Contact {
         });
         getChildren().add(addBtn);
     }
-    public void setClient(Client client){
-        this.client = client;
-    }
+
     public SearchedContact(Client client, User user) {
-        this(user.getName(), null, user.getStatus());
+        this(user.getName(), user.getImage(), user.getStatus());
         userId = user.getId();
         this.client = client;
     }
