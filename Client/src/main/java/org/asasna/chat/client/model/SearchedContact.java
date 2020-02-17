@@ -17,27 +17,26 @@ import java.io.IOException;
 
 public class SearchedContact extends Contact {
     private int userId;
-    private String userPhone;
     private Client client;
 
     public SearchedContact(String name, Image image, UserStatus userStatus) {
         super(name, image, userStatus);
-
-
         Button addBtn = new Button("+");
         addBtn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                client.sendFriendRequest(userPhone);
+                boolean done = client.sendFriendRequest(userId);
+                if(done) addBtn.setText("-");
             }
         });
         getChildren().add(addBtn);
     }
-
+    public void setClient(Client client){
+        this.client = client;
+    }
     public SearchedContact(Client client, User user) {
         this(user.getName(), null, user.getStatus());
         userId = user.getId();
-        userPhone = user.getPhone();
         this.client = client;
     }
 

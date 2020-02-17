@@ -122,18 +122,19 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     }
 
     @Override
-    public void sendFriendRequest(int fromUserId, int toUserId) throws RemoteException {
+    public boolean sendFriendRequest(int fromUserId, int toUserId) throws RemoteException {
         try {
             UserDao userDao = new UserDao();
             boolean notified = userDao.setNotification(fromUserId, toUserId);
-            if (notified) {
+            return notified;
+//            if (notified) {
                 // Call Receive Notification On Client Side
-            }
+//            }
 
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
-
     }
 
     @Override
@@ -168,6 +169,11 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
         } finally {
             if (istream != null) istream.close();
         }
+    }
+
+    @Override
+    public User getUser() throws RemoteException {
+        return user;
     }
 
     private void saveReceiverMessages(int receiverId, Message message) {

@@ -29,9 +29,11 @@ public interface IChatService extends Remote {
 
     List<User> search(String phoneNumber) throws RemoteException;
 
-    void sendFriendRequest(int fromUserId, int toUserId) throws RemoteException;
+    boolean sendFriendRequest(int fromUserId, int toUserId) throws RemoteException;
 
     void sendFile(RemoteInputStream inFile, String suffix) throws RemoteException;
 
     void getFile(String filePath) throws RemoteException;
+
+    User getUser() throws RemoteException;
 }

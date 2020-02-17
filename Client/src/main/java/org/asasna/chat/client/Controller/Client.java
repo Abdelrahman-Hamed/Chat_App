@@ -103,12 +103,15 @@ public class Client extends UnicastRemoteObject implements IClientService {
 
     }
 
-    public void sendFriendRequest(String toUserPhone) {
+    public boolean sendFriendRequest(String toUserPhone) {
         try {
-            chatService.sendFriendRequest(1, 2);
+            System.out.println("Send Friend Request");
+            boolean done = chatService.sendFriendRequest(chatService.getUser().getId(), toUserId);
+            return done;
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+        return false;
     }
 
     public void sendGroupMessage(ChatGroup group, Message message) throws RemoteException {
