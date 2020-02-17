@@ -5,10 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -25,6 +22,7 @@ import org.asasna.chat.common.model.UserStatus;
 import org.asasna.chat.client.model.SearchedContact;
 import org.asasna.chat.common.model.*;
 
+import org.asasna.chat.common.service.IClientService;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.File;
@@ -72,6 +70,7 @@ public class ChatController implements Initializable, IChatController {
 
     public Contact activeContact;
     private User user;
+    private User sender;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -137,6 +136,15 @@ public class ChatController implements Initializable, IChatController {
         searchTextField.setOnKeyReleased(this::searchContacts);
         SearchedGroupContact searchedGroupContact = new SearchedGroupContact(user);
         contactsList.getChildren().add(searchedGroupContact);
+
+        sender = new User(1, "Mohammed", "56789");
+        try {
+            IClientService dummyClient = new Client(this);
+            dummyClient.setUser(sender);
+            client.registerUser(sender.getId(), dummyClient);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
 
     public void sendAudio() {
@@ -323,6 +331,17 @@ public class ChatController implements Initializable, IChatController {
             e.printStackTrace();
         }
     }
+
+
+    @Override
+    public void tempDisplayMessage(Message message) {
+        if (sender.getId() == message.getUserId()) {
+            System.out.println("Me: " + message.getMesssagecontent());
+        } else {
+            System.out.println("Friend: " + message.getMesssagecontent());
+        }
+    }
+
     // End shimaa
 
 
@@ -333,21 +352,25 @@ public class ChatController implements Initializable, IChatController {
     //    Start Nehal Adel
 
     public void send() throws RemoteException {
-        String messageTXT = messageTextArea.getText();
-        Contact contact = activeContact;
-        Message mes = new Message(1, messageTXT);
-        if (contact.isGroup())
-            client.sendGroupMessage(((GroupContact) contact).getChatGroup(), mes);
-        messageTextArea.setText("");
-        displayMessage(mes);
-        System.out.println(messageTXT);
+//        String messageTXT = messageTextArea.getText();
+//        Contact contact = activeContact;
+//        Message mes = new Message(1, messageTXT);
+//        if (contact.isGroup())
+//            client.sendGroupMessage(((GroupContact) contact).getChatGroup(), mes);
+//        messageTextArea.setText("");
+//        displayMessage(mes);
+//        System.out.println(messageTXT);
 
         /* Lines added by Shimaa */
-        int friendId = Integer.parseInt(activeContact.getId());
-        int senderId = me.getId();
+        int receiverId = 2;
+        int senderId = sender.getId();
+        System.out.println("sender id " + senderId + "     receiver id " + receiverId);
         String messageContent = messageTextArea.getText();
+        messageTextArea.setText("");
         Message message = new Message(senderId, messageContent);
-        sendMessage(friendId, message);
+        sendMessage(receiverId, message);
+        Label senderName = new Label(sender.getName());
+        view.getChildren().add(senderName);
         /* End Shimaa */
     }
     // End Nehal Adel

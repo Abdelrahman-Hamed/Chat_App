@@ -51,12 +51,11 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
 
     @Override
     public void changeStatus(UserStatus userStatus) throws RemoteException {
-
     }
 
     @Override
     public void sendMessage(int userId, Message message) throws RemoteException {
-        saveReceiverMessages(userId, message);
+        //saveReceiverMessages(userId, message);
         IClientService me = onlineUsers.get(message.getUserId());
         IClientService myFriend = onlineUsers.get(userId);
         me.recieveMessage(message);

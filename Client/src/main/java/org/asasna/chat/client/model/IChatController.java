@@ -17,4 +17,6 @@ public interface IChatController {
     void recieveGroupMessage(ChatGroup group, Message message);
 
     void sendMessage(int receiverId, Message message);
+
+    void tempDisplayMessage(Message message);
 }

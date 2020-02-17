@@ -21,4 +21,8 @@ public interface IClientService extends Remote {
 
     User getUser() throws RemoteException;
 
+    void setUser(User user) throws RemoteException;
+
+    void registerUser(int userId, IClientService client) throws RemoteException;
+
 }

@@ -33,20 +33,20 @@ public class Client extends UnicastRemoteObject implements IClientService {
     protected Client() throws RemoteException {
     }
 
-    public Client(PrimaryController primaryController) throws RemoteException {
-        try {
-            Registry reg = LocateRegistry.getRegistry(5000);
-            authenticationService = (IAuthenticationService) reg.lookup("AuthenticationService");
-        } catch (RemoteException | NotBoundException e) {
-            e.printStackTrace();
-        }
-    }
+//    public Client(PrimaryController primaryController) throws RemoteException {
+//        try {
+//            Registry reg = LocateRegistry.getRegistry(5000);
+//            authenticationService = (IAuthenticationService) reg.lookup("AuthenticationService");
+//        } catch (RemoteException | NotBoundException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     public Client(IChatController chatController) throws RemoteException {
         this.chatController = chatController;
         Registry reg = null;
 //        try {
-        reg = LocateRegistry.getRegistry(5000);
+        reg = LocateRegistry.getRegistry(1000);
 //            this.user = new User(4, "Mohamed", "01027420575");
 //            chatService.register(this.user.getId(), this);
 //        } catch (RemoteException | NotBoundException e) {
@@ -60,7 +60,7 @@ public class Client extends UnicastRemoteObject implements IClientService {
 
     @Override
     public void recieveMessage(Message message) throws RemoteException {
-        chatController.displayMessage(message);
+        chatController.tempDisplayMessage(message);
     }
 
     @Override
@@ -136,5 +136,16 @@ public class Client extends UnicastRemoteObject implements IClientService {
     @Override
     public User getUser() {
         return user;
+    }
+
+    @Override
+    public void setUser(User user) throws RemoteException {
+        this.user = user;
+    }
+
+    @Override
+    public void registerUser(int userId, IClientService client) throws RemoteException {
+        chatService.register(userId, client);
+        System.out.println("Resister at client");
     }
 }
