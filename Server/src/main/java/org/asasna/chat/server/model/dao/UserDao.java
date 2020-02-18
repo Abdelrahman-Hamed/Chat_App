@@ -51,20 +51,20 @@ public class UserDao implements IUserDao {
     public List<User> getNonContactUsers(String mePhoneNumber) {
         List<User> users = new ArrayList<>();
         try {
-
+            System.out.println(mePhoneNumber);
             String sql = "select * from users\n" +
                     "left join contacts\n" +
                     "on users.id = contacts.first_member\n" +
                     "or users.id = contacts.second_member\n" +
                     "where contacts.first_member is null\n" +
-                    "and users.phone_number <> '" + mePhoneNumber +"';";
+                    "and users.phone_number <> '" + mePhoneNumber + "';";
             ResultSet resultSet = statement.executeQuery(sql);
             while (resultSet.next()) {
                 User user = extractUser(resultSet);
                 users.add(user);
 
             }
-            System.out.println(users.size());
+            //System.out.println(users.size());
         } catch (SQLException e) {
             e.printStackTrace();
         }

@@ -1,18 +1,12 @@
 package org.asasna.chat.server;
 
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import org.asasna.chat.common.service.IAuthenticationService;
-import org.asasna.chat.common.service.IChatService;
 import org.asasna.chat.server.controller.AuthenticationService;
-import org.asasna.chat.server.services.ChatService;
 
 import java.io.IOException;
 import java.rmi.RemoteException;

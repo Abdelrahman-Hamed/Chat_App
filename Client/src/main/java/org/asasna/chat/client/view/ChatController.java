@@ -1,5 +1,6 @@
 package org.asasna.chat.client.view;
 
+import com.jfoenix.controls.JFXButton;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -10,7 +11,9 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import org.asasna.chat.client.Controller.Client;
@@ -58,7 +61,9 @@ public class ChatController implements Initializable, IChatController {
     @FXML
     GridPane chatArea;
     @FXML
-    HBox chatArea_hbox;
+    private HBox searchArea;
+    @FXML
+    private HBox chatArea_hbox;
     @FXML
     ScrollPane chatArea_scroll;
     @FXML
@@ -67,7 +72,6 @@ public class ChatController implements Initializable, IChatController {
     Circle userImage;
     MSGview viewTextMessage;
     private User me;
-
 
     public Contact activeContact;
     private User user;
@@ -116,7 +120,15 @@ public class ChatController implements Initializable, IChatController {
             }
             groupIcon.setOnMouseClicked((e) -> {
                 active = Active.Group;
-                System.out.println("Group");
+                groupIcon.setIconColor(Color.BLACK);
+                searchArea.setStyle("-fx-padding: 20 0 0 0");
+                searchArea.setSpacing(20);
+                JFXButton create = new JFXButton("+");
+                //create.setStyle("");
+                create.getStyleClass().clear();
+                create.getStyleClass().add("group-create-btn");
+                this.searchArea.getChildren().add(create);
+
             });
             friendList.setOnMouseClicked(e -> {
                 active = Active.Friends;
@@ -296,6 +308,8 @@ public class ChatController implements Initializable, IChatController {
 
     public void searchContacts(KeyEvent keyEvent) {
         String searchedMessage = searchTextField.getText();
+
+
         if (active == Active.friendRequets) {
             List<User> users = client.search(searchedMessage);
             contactsList.getChildren().clear();
@@ -303,12 +317,21 @@ public class ChatController implements Initializable, IChatController {
                 contactsList.getChildren().add(new SearchedContact(client, user));
             });
         } else if (active == Active.Group) {
+
             contactsList.getChildren().clear();
             friends.stream().filter(f -> f.getPhone().contains(searchTextField.getText()) && f.getStatus() == UserStatus.ONLINE).forEach(f -> {
                 contactsList.getChildren().add(new SearchedGroupContact(f));
             });
-        }
+        } else if (active == Active.Friends) {
+            contactsList.getChildren().clear();
+            friends.stream()
+                    .filter(f -> f.getPhone().contains(searchTextField.getText()) && f.getStatus() == UserStatus.ONLINE)
+                    .forEach(f -> {
+                        Contact contact = new Contact(f);
+                        contactsList.getChildren().add(contact);
+                    });
 
+        }
     }
     // End Elsayed Nabil
 

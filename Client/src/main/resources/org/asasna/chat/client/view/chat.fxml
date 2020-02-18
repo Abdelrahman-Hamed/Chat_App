@@ -25,17 +25,17 @@
                 <FontIcon fx:id="saveChatIcon" iconColor="WHITE" iconLiteral="oct-file" iconSize="30" layoutX="29.0" layoutY="367.0" selectionFill="#1e82dc" styleClass="sidebar_icon" />
             </Pane>
             <Circle fx:id="userImage" fill="WHITE" layoutX="42.0" layoutY="45.0" radius="31.0" stroke="#7eff21" strokeType="INSIDE" strokeWidth="5.0" />
-            <VBox fx:id="contactsView" layoutX="86.0" prefHeight="600.0" prefWidth="257.0" style="-fx-background-color: #1e82dc;">
-                <HBox prefHeight="74.0" prefWidth="257.0">
+            <VBox fx:id="contactsView" layoutX="86.0" prefHeight="600.0" prefWidth="350" style="-fx-background-color: #1e82dc;">
+                <HBox fx:id="searchArea" prefHeight="74.0" prefWidth="257.0">
                     <TextField fx:id="searchTextField" prefHeight="38.0" prefWidth="208.0" promptText="Search" style="-fx-background-color: white; -fx-background-radius: 30; -fx-border-radius: 30;">
                         <HBox.margin>
-                            <Insets left="20.0" top="20.0" />
+                            <Insets left="20.0" top="0.0" />
                         </HBox.margin>
                     </TextField>
                 </HBox>
                 <VBox fx:id="contactsList" prefHeight="496.0" prefWidth="257.0" />
             </VBox>
-            <GridPane fx:id="chatArea" layoutX="342.0" layoutY="-2.0" prefHeight="600.0" prefWidth="555.0">
+            <GridPane fx:id="chatArea" layoutX="450" layoutY="-2.0" prefHeight="600.0" prefWidth="555.0">
                 <columnConstraints>
                     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                 </columnConstraints>
@@ -63,7 +63,7 @@
                             <Insets left="5.0" top="5.0" />
                         </padding>
                     </TextArea>
-                    <Button fx:id="sendButton" minWidth="49.0" mnemonicParsing="false" onAction="#send" prefHeight="36.0" prefWidth="53.0" style="-fx-border-radius: 30; -fx-background-radius: 30; -fx-font-size: 18; -fx-font-weight: bold; -fx-font-family: Comic Sans MS; -fx-background-color: #1e82dc; -fx-text-fill: white; ">
+                    <Button fx:id="sendButton" minWidth="49.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="53.0" style="-fx-border-radius: 30; -fx-background-radius: 30; -fx-font-size: 18; -fx-font-weight: bold; -fx-font-family: Comic Sans MS; -fx-background-color: #1e82dc; -fx-text-fill: white; ">
                         <HBox.margin>
                             <Insets left="20.0" top="15.0" />
                         </HBox.margin>
