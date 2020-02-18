@@ -33,7 +33,7 @@
                         </HBox.margin>
                     </TextField>
                 </HBox>
-                <VBox fx:id="contactsList" prefHeight="496.0" prefWidth="257.0" />
+                <VBox fx:id="contactsList" onMouseClicked="#getSelectedContact" prefHeight="496.0" prefWidth="257.0" />
             </VBox>
             <GridPane fx:id="chatArea" layoutX="450" layoutY="-2.0" prefHeight="600.0" prefWidth="555.0">
                 <columnConstraints>
@@ -63,7 +63,7 @@
                             <Insets left="5.0" top="5.0" />
                         </padding>
                     </TextArea>
-                    <Button fx:id="sendButton" minWidth="49.0" mnemonicParsing="false" prefHeight="36.0" prefWidth="53.0" style="-fx-border-radius: 30; -fx-background-radius: 30; -fx-font-size: 18; -fx-font-weight: bold; -fx-font-family: Comic Sans MS; -fx-background-color: #1e82dc; -fx-text-fill: white; ">
+                    <Button fx:id="sendButton" minWidth="49.0" mnemonicParsing="false" onAction="#send" prefHeight="36.0" prefWidth="53.0" style="-fx-border-radius: 30; -fx-background-radius: 30; -fx-font-size: 18; -fx-font-weight: bold; -fx-font-family: Comic Sans MS; -fx-background-color: #1e82dc; -fx-text-fill: white; ">
                         <HBox.margin>
                             <Insets left="20.0" top="15.0" />
                         </HBox.margin>
@@ -103,7 +103,7 @@
                             <Insets right="15.0" top="35.0" />
                         </HBox.margin>
                     </FontIcon>
-                    <FontIcon iconColor="#1e82dc" iconLiteral="dashicons-paperclip" iconSize="30" wrappingWidth="28.25">
+                    <FontIcon  onMouseClicked="#chooseFile" iconColor="#1e82dc" iconLiteral="dashicons-paperclip" iconSize="30" wrappingWidth="28.25">
                         <HBox.margin>
                             <Insets top="35.0" />
                         </HBox.margin>

@@ -135,19 +135,25 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     }
 
     @Override
-    public void sendFile(RemoteInputStream inFile, String suffix) throws RemoteException {
+    public void sendFile(RemoteInputStream inFile, String suffix,int friendId ,Message message) throws RemoteException {
         try {
-            //,int senderID,int userID
             InputStream istream = RemoteInputStreamClient.wrap(inFile);
-            final File tempFile = File.createTempFile("tmp", suffix, new File("C:\\Users\\Aya\\Desktop"));
+            final File tempFile = File.createTempFile(message.getMesssagecontent(), suffix, new File("E:\\"));
             tempFile.deleteOnExit();
             try (FileOutputStream out = new FileOutputStream(tempFile)) {
                 IOUtils.copy(istream, out);
-              /*  BufferedWriter outWrite = new BufferedWriter(new FileWriter("C:\\Users\\Aya\\Desktop\\ids.txt", true));
-                String str=String.valueOf(senderID+userID);
-                outWrite.write(tempFile.getName());
-                outWrite.write(str);
-                outWrite.close();*/
+                BufferedWriter outWrite = new BufferedWriter(new FileWriter("E:\\ids.txt", true));
+                String str=String.valueOf(friendId)+"-"+String.valueOf(message.getUserId());
+                outWrite.write("\n");
+                outWrite.append(str);
+                outWrite.write("\n");
+                outWrite.append(tempFile.getName());
+                outWrite.close();
+                IClientService me = onlineUsers.get(message.getUserId());
+                IClientService myFriend = onlineUsers.get(friendId);
+                me.recieveFileMessage(message);
+                myFriend.recieveFileMessage(message);
+                System.out.println("Server " + message.getMesssagecontent());
             }
         } catch (IOException e) {
             System.out.println("Something went wrong with the client");
@@ -156,14 +162,31 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     }
 
     @Override
-    public void getFile(String filePath) throws RemoteException {
+    public void getFile(int friendId,int userId,int clickerId) throws RemoteException {
+        String str=String.valueOf(friendId)+"-"+String.valueOf(userId);
+        File file = new File("E:\\ids.txt");
+        BufferedReader br = null;
         RemoteInputStreamServer istream = null;
+        boolean loop=true;
         try {
-            istream = new GZIPRemoteInputStream(new BufferedInputStream(new FileInputStream(filePath)));
-            //chatService.sendFile(istream.export(),extension);
+            br = new BufferedReader(new FileReader(file));
+            String st;
+            while ((st = br.readLine()) != null&&loop) {
+                if(st.equals(str)) {
+                    st = br.readLine();
+                    istream = new GZIPRemoteInputStream(new BufferedInputStream(new FileInputStream(st)));
+                    loop=false;
+                     /*
+                     String fileName = selectedFile.getName();
+                     String fileExtension = fileName.substring(fileName.lastIndexOf("."), fileName.length());
+                     IClientService clicker = onlineUsers.get(clickerId);
+                     clicker.dowloadTheFileMessage(istream ,fileExtension,fileName);*/
+                }
+
+            }
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
+        }finally {
             if (istream != null) istream.close();
         }
     }
@@ -183,5 +206,29 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
             receiverMessages.get(receiverId).add(message);
         }
     }
+
+    /* ِ start  Abdo */
+
+    /* end Abdo */
+
+    /* start sayed */
+
+    /* end sayed */
+
+    /* start nehal */
+
+    /* end nehal */
+
+    /* start aya */
+
+    /* end aya */
+
+    /* start abeer */
+
+    /* end abeer */
+
+    /* start shimaa */
+
+    /* end shimaa */
 
 }

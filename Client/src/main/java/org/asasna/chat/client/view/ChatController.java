@@ -34,9 +34,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ChatController implements Initializable, IChatController {
@@ -75,7 +73,6 @@ public class ChatController implements Initializable, IChatController {
 
     public Contact activeContact;
     private User user;
-    private User sender;
 
     public enum Active {
         Profile, Friends, Group, friendRequets
@@ -102,6 +99,15 @@ public class ChatController implements Initializable, IChatController {
         }
         try {
             me = client.getUser();
+            System.out.println(me.getId());
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            IClientService dummyClient = new Client(this);
+            //  dummyClient.setUser(sender);
+            client.registerUser(me.getId(), dummyClient);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -175,15 +181,6 @@ public class ChatController implements Initializable, IChatController {
         searchTextField.setOnKeyReleased(this::searchContacts);
         SearchedGroupContact searchedGroupContact = new SearchedGroupContact(user);
         contactsList.getChildren().add(searchedGroupContact);
-
-        sender = new User(1, "Mohammed", "56789");
-        try {
-            IClientService dummyClient = new Client(this);
-            dummyClient.setUser(sender);
-            client.registerUser(sender.getId(), dummyClient);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
     }
 
     public void sendAudio() {
@@ -237,7 +234,7 @@ public class ChatController implements Initializable, IChatController {
         for (Node c : contacts) {
             c.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
                 this.activeContact = (Contact) c;
-                //  System.out.println("active Contact is : "+ this.activeContact.getUser().getName());
+                System.out.println("active Contact is : "+ this.activeContact.getUser().getName());
             });
         }
     }
@@ -370,7 +367,10 @@ public class ChatController implements Initializable, IChatController {
             String fileExtension = fileName.substring(fileName.lastIndexOf("."), fileName.length());
             new Thread(() -> {
                 try {
-                    client.sendFileToServer(selectedFile.getPath(), fileExtension);
+                    int friendId = activeContact.getUser().getId();
+                    int senderId = me.getId();
+                    Message message = new Message(senderId,fileName);
+                    client.sendFileToServer(selectedFile.getPath(), fileExtension,friendId, message);
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
@@ -381,6 +381,7 @@ public class ChatController implements Initializable, IChatController {
 
 
     //    Start Shimaa
+
     @Override
     public void sendMessage(int receiverId, Message message) {
         try {
@@ -390,13 +391,44 @@ public class ChatController implements Initializable, IChatController {
         }
     }
 
-
     @Override
     public void tempDisplayMessage(Message message) {
-        if (sender.getId() == message.getUserId()) {
+
+        viewTextMessage = new MSGview(message);
+        if (me.getId() == message.getUserId()) {
             System.out.println("Me: " + message.getMesssagecontent());
+            viewTextMessage.setTextMSGview(SpeechDirection.RIGHT);
+            Platform.runLater(new Runnable() {
+
+                @Override
+                public void run() {
+                    view.getChildren().add(viewTextMessage);
+                }
+            });
+
         } else {
             System.out.println("Friend: " + message.getMesssagecontent());
+            viewTextMessage.setTextMSGview(SpeechDirection.LEFT);
+            Platform.runLater(new Runnable() {
+
+                @Override
+                public void run() {
+                    view.getChildren().add(viewTextMessage);
+                }
+            });
+        }
+    }
+
+    private Map<Integer, List<Message>> receiverMessages = new HashMap<>();
+
+    private void saveReceiverMessages(int receiverId, Message message) {
+        List<Message> messagesList = receiverMessages.get(receiverId);
+        if (messagesList.isEmpty()) {
+            List<Message> newMessagesList = new ArrayList<>();
+            newMessagesList.add(message);
+            receiverMessages.put(receiverId, newMessagesList);
+        } else {
+            receiverMessages.get(receiverId).add(message);
         }
     }
 
@@ -418,18 +450,12 @@ public class ChatController implements Initializable, IChatController {
 //        messageTextArea.setText("");
 //        displayMessage(mes);
 //        System.out.println(messageTXT);
-
-        /* Lines added by Shimaa */
-        int receiverId = 2;
-        int senderId = sender.getId();
-        System.out.println("sender id " + senderId + "     receiver id " + receiverId);
+        int receiverId = activeContact.getUser().getId();
+        int senderId = me.getId();
         String messageContent = messageTextArea.getText();
         messageTextArea.setText("");
         Message message = new Message(senderId, messageContent);
         sendMessage(receiverId, message);
-        Label senderName = new Label(sender.getName());
-        view.getChildren().add(senderName);
-        /* End Shimaa */
     }
     // End Nehal Adel
 }

@@ -1,5 +1,6 @@
 package org.asasna.chat.common.service;
 
+import com.healthmarketscience.rmiio.RemoteInputStream;
 import org.asasna.chat.common.model.*;
 
 import java.io.FileInputStream;
@@ -13,7 +14,12 @@ public interface IClientService extends Remote {
     void changeStatus(int id, UserStatus status) throws RemoteException;
 
     void recieveNotivication(Notification notification) throws RemoteException;
-    void sendFileToServer(String filePath,String extension) throws RemoteException;
+
+    void sendFileToServer(String filePath, String extension, int senderId ,Message message) throws RemoteException;
+
+    void recieveFileMessage(Message message)throws RemoteException;
+
+    void downloadFile(RemoteInputStream inFile, String suffix, String name) throws RemoteException;
 
     void recieveGroupMessage(ChatGroup group, Message message) throws RemoteException;
 
@@ -21,8 +27,30 @@ public interface IClientService extends Remote {
 
     User getUser() throws RemoteException;
 
-    void setUser(User user) throws RemoteException;
-
     void registerUser(int userId, IClientService client) throws RemoteException;
+
+    /* ِ start  Abdo */
+
+    /* end Abdo */
+
+    /* start sayed */
+
+    /* end sayed */
+
+    /* start nehal */
+
+    /* end nehal */
+
+    /* start aya */
+
+    /* end aya */
+
+    /* start abeer */
+
+    /* end abeer */
+
+    /* start shimaa */
+
+    /* end shimaa */
 
 }

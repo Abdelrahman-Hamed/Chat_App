@@ -31,9 +31,33 @@ public interface IChatService extends Remote {
 
     boolean sendFriendRequest(int fromUserId, int toUserId) throws RemoteException;
 
-    void sendFile(RemoteInputStream inFile, String suffix) throws RemoteException;
-
-    void getFile(String filePath) throws RemoteException;
-
     User getUser() throws RemoteException;
+
+    void sendFile(RemoteInputStream inFile, String suffix, int friendId, Message message) throws RemoteException;
+
+    void getFile(int friendId, int userId, int clickerId) throws RemoteException;
+
+    /* ِ start  Abdo */
+
+    /* end Abdo */
+
+    /* start sayed */
+
+    /* end sayed */
+
+    /* start nehal */
+
+    /* end nehal */
+
+    /* start aya */
+
+    /* end aya */
+
+    /* start abeer */
+
+    /* end abeer */
+
+    /* start shimaa */
+
+    /* end shimaa */
 }
