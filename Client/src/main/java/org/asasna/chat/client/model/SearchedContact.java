@@ -20,22 +20,32 @@ public class SearchedContact extends Contact {
     private String userPhone;
     private Client client;
 
-    public SearchedContact(String name, Image image, UserStatus userStatus) {
+    public SearchedContact(String name, Image image, UserStatus userStatus, boolean friendRequest) {
         super(name, image, userStatus);
 
         Button addBtn = new Button("+");
-        addBtn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                boolean done = client.sendFriendRequest(userId);
-                if(done) addBtn.setText("-");
-            }
-        });
+        if(friendRequest)
+            addBtn.setText("-");
+//        addBtn.setOnAction(new EventHandler<ActionEvent>() {
+//            @Override
+//            public void handle(ActionEvent actionEvent) {
+//                boolean done = client.sendFriendRequest(userId);
+//                if(done){
+//                    addBtn.setText("-");
+//                    addBtn.setOnAction(new EventHandler<ActionEvent>() {
+//                        @Override
+//                        public void handle(ActionEvent actionEvent) {
+//                            boolean done = client.cancelFriendRequest(userId);
+//                        }
+//                    });
+//                }
+//            }
+//        });
         getChildren().add(addBtn);
     }
 
-    public SearchedContact(Client client, User user) {
-        this(user.getName(), user.getImage(), user.getStatus());
+    public SearchedContact(Client client, User user, boolean friendRequest) {
+        this(user.getName(), user.getImage(), user.getStatus(), friendRequest);
         userId = user.getId();
         this.client = client;
     }

@@ -105,17 +105,21 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     }
 
     @Override
-    public List<User> search(String phoneNumber) throws RemoteException {
+    public Map<Boolean, List<User>> search(String phoneNumber) throws RemoteException {
         List<User> searchList = new ArrayList<User>();
+        Map<Boolean, List<User>> map = new HashMap<>();
         UserDao userdao = null;
         try {
             userdao = new UserDao();
-            searchList = userdao.getNonContactUsers(user.getPhone());
-            searchList = searchList.stream().filter(user -> user.getPhone().contains(phoneNumber)).collect(Collectors.toList());
+            map = userdao.getNonContactUsers(user.getId());
+            map.put(true, map.get(true).stream().filter(user -> user.getPhone().contains(phoneNumber)).collect(Collectors.toList()));
+            map.put(false, map.get(false).stream().filter(user -> user.getPhone().contains(phoneNumber)).collect(Collectors.toList()));
+//            searchList = searchList.stream().filter(user -> user.getPhone().contains(phoneNumber)).collect(Collectors.toList());
+            return map;
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return searchList;
+        return map;
     }
 
     @Override
@@ -128,6 +132,18 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
                 // Call Receive Notification On Client Side
 //            }
 
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public boolean cancelFriendRequest(int fromUserId, int toUserId) throws RemoteException {
+        try {
+            UserDao userDao = new UserDao();
+            boolean notified = userDao.cancelNotification(fromUserId, toUserId);
+            return notified;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;

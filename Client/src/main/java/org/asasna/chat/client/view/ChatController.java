@@ -308,10 +308,13 @@ public class ChatController implements Initializable, IChatController {
 
 
         if (active == Active.friendRequets) {
-            List<User> users = client.search(searchedMessage);
+            Map<Boolean, List<User>> map = client.search(searchedMessage);
             contactsList.getChildren().clear();
-            users.forEach(user -> {
-                contactsList.getChildren().add(new SearchedContact(client, user));
+            map.get(true).forEach(user -> {
+                contactsList.getChildren().add(new SearchedContact(client, user, true));
+            });
+            map.get(false).forEach(user -> {
+                contactsList.getChildren().add(new SearchedContact(client, user, false));
             });
         } else if (active == Active.Group) {
 

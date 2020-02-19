@@ -19,6 +19,8 @@ import java.rmi.registry.Registry;
 import java.rmi.server.RemoteRef;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.io.IOUtils;
 
 import com.healthmarketscience.rmiio.*;
@@ -90,7 +92,7 @@ public class Client extends UnicastRemoteObject implements IClientService {
         chatController.recieveGroupMessage(group, message);
     }
 
-    public List<User> search(String phoneNumber) {
+    public Map<Boolean, List<User>> search(String phoneNumber) {
         try {
 
             return chatService.search(phoneNumber);
@@ -104,7 +106,6 @@ public class Client extends UnicastRemoteObject implements IClientService {
 
     public boolean sendFriendRequest(int toUserId) {
         try {
-            System.out.println("Send Friend Request");
             boolean done = chatService.sendFriendRequest(chatService.getUser().getId(), toUserId);
             return done;
         } catch (RemoteException e) {
@@ -167,6 +168,16 @@ public class Client extends UnicastRemoteObject implements IClientService {
     @Override
     public void recieveFileMessage(Message message) throws RemoteException {//reciver ID !
         chatController.tempDisplayMessage(message);
+    }
+
+    public boolean cancelFriendRequest(int userId) {
+        try {
+            boolean done = chatService.cancelFriendRequest(chatService.getUser().getId(), userId);
+            return done;
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     /* ِ start  Abdo */
