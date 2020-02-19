@@ -69,8 +69,9 @@ public class App extends Application {
         //launch();
         try {
             IAuthenticationService iAuthenticationService=new AuthenticationService();
-            Registry reg= LocateRegistry.createRegistry(2000);
+            Registry reg= LocateRegistry.createRegistry(5000);
             reg.rebind("AuthenticationService", iAuthenticationService );
+
         }
         catch (RemoteException ex) {
             ex.printStackTrace();

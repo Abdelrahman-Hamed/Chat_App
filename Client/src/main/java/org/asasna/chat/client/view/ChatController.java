@@ -37,7 +37,7 @@ import java.rmi.RemoteException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ChatController implements Initializable, IChatController {
+public class ChatController extends Controller implements Initializable, IChatController {
 
     Client client;
     @FXML
