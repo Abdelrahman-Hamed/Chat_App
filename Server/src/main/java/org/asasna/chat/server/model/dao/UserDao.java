@@ -90,15 +90,16 @@ public class UserDao implements IUserDao {
     @Override
     public User getUser(String phoneNumber, String password) {
         try {
-            preparedStatement = conn.prepareStatement("select * from users where phone_number = ?");
+            preparedStatement = conn.prepareStatement("select * from users where phone_number = ? and password = ?");
             preparedStatement.setString(1, phoneNumber);
+            preparedStatement.setString(2, password);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 User user =  extractUser(resultSet);
-                PasswordAuthentication passwordAuthentication = new PasswordAuthentication();
-                boolean found = passwordAuthentication.authenticate(password, user.getPassword());
-                if(found) return user;
-                return null;
+//                PasswordAuthentication passwordAuthentication = new PasswordAuthentication();
+//                boolean found = passwordAuthentication.authenticate(password, user.getPassword());
+//                if(found) return user;
+                return user;
             }
         } catch (SQLException e) {
             e.printStackTrace();
