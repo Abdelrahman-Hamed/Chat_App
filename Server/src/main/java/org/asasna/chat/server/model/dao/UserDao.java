@@ -8,6 +8,7 @@ import org.asasna.chat.common.model.Gender;
 import org.asasna.chat.common.model.User;
 import org.asasna.chat.common.model.UserStatus;
 import org.asasna.chat.server.model.db.DBConnection;
+import org.asasna.chat.server.view.PasswordAuthentication;
 
 
 import javax.sql.RowSet;
@@ -89,12 +90,15 @@ public class UserDao implements IUserDao {
     @Override
     public User getUser(String phoneNumber, String password) {
         try {
-            preparedStatement = conn.prepareStatement("select * from users where phone_number = ? and password = ?");
+            preparedStatement = conn.prepareStatement("select * from users where phone_number = ?");
             preparedStatement.setString(1, phoneNumber);
-            preparedStatement.setString(2, password);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                return extractUser(resultSet);
+                User user =  extractUser(resultSet);
+                PasswordAuthentication passwordAuthentication = new PasswordAuthentication();
+                boolean found = passwordAuthentication.authenticate(password, user.getPassword());
+                if(found) return user;
+                return null;
             }
         } catch (SQLException e) {
             e.printStackTrace();
