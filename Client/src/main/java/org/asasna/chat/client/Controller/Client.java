@@ -1,6 +1,7 @@
 package org.asasna.chat.client.Controller;
 
 import org.asasna.chat.client.model.IChatController;
+import org.asasna.chat.client.view.Controller;
 import org.asasna.chat.client.view.PrimaryController;
 import org.asasna.chat.common.model.Message;
 import org.asasna.chat.common.model.Notification;
@@ -24,6 +25,7 @@ import org.apache.commons.io.IOUtils;
 import com.healthmarketscience.rmiio.*;
 
 public class Client extends UnicastRemoteObject implements IClientService {
+    private Controller Controller;
     IChatController chatController;
     IChatService chatService;
     IAuthenticationService authenticationService;
@@ -41,11 +43,11 @@ public class Client extends UnicastRemoteObject implements IClientService {
 //        }
 //    }
 
-    public Client(IChatController chatController) throws RemoteException {
-        this.chatController = chatController;
+    public Client(Controller chatController) throws RemoteException {
+        this.Controller = chatController;
         Registry reg = null;
 //        try {
-        reg = LocateRegistry.getRegistry(2000);
+        reg = LocateRegistry.getRegistry(5000);
 //            this.user = new User(4, "Mohamed", "01027420575");
 //            chatService.register(this.user.getId(), this);
 //        } catch (RemoteException | NotBoundException e) {
@@ -169,6 +171,7 @@ public class Client extends UnicastRemoteObject implements IClientService {
         chatController.tempDisplayMessage(message);
     }
 
+
     /* ِ start  Abdo */
 
     /* end Abdo */
@@ -178,6 +181,13 @@ public class Client extends UnicastRemoteObject implements IClientService {
     /* end sayed */
 
     /* start nehal */
+    public void addUser(User me) throws RemoteException {
+        authenticationService.addUser(me);
+    }
+
+    public boolean isvalidUser(User me) throws RemoteException {
+       return authenticationService.isValid(me);
+    }
 
     /* end nehal */
 

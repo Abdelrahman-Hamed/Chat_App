@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.chart.PieChart;
+import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
@@ -16,6 +17,12 @@ import java.util.ResourceBundle;
 public class ServerHomeController implements Initializable {
     @FXML
     PieChart chart;
+    @FXML
+    Button gender ;
+    @FXML
+    Button country ;
+    @FXML
+    Button status ;
     ObservableList<PieChart.Data> data ;
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {

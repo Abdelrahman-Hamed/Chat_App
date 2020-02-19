@@ -1,14 +1,21 @@
 package org.asasna.chat.server;
 
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import javafx.stage.WindowEvent;
 import org.asasna.chat.common.service.IAuthenticationService;
 import org.asasna.chat.server.controller.AuthenticationService;
 
 import java.io.IOException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -23,18 +30,28 @@ public class App extends Application {
     private static Stage primaryStage;
     private double xOffset = 0;
     private double yOffset = 0;
-
+    Registry reg;
+    IAuthenticationService iAuthenticationService ;
     @Override
-    public void start(Stage stage) throws IOException {
-       /* try {
+    public void start(Stage primaryStage) throws IOException {
+        /*try {
             IChatService iChatService=new ChatService();
             Registry reg= LocateRegistry.createRegistry(5000);
             reg.rebind("ChatService",iChatService );
         }
         catch (RemoteException ex) {
             ex.printStackTrace();
+        }*/
+        try {
+            iAuthenticationService=new AuthenticationService();
+            reg= LocateRegistry.createRegistry(9000);
+            reg.rebind("AuthenticationService", iAuthenticationService );
+
         }
-        scene = new Scene(loadFXML("login"));
+        catch (RemoteException ex) {
+            ex.printStackTrace();
+        }
+        scene = new Scene(loadFXML("serverHome"));
         AnchorPane root= (AnchorPane) scene.lookup("#root");
         root.setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override
@@ -52,8 +69,17 @@ public class App extends Application {
         });
         primaryStage.setScene(scene);
         primaryStage.initStyle(StageStyle.TRANSPARENT);
-        stage.setScene(scene);
-        stage.show();*/
+        primaryStage.setScene(scene);
+        primaryStage.show();
+        primaryStage.setOnCloseRequest((WindowEvent event1) -> {
+            try {
+                reg.unbind("AuthenticationService");
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            } catch (NotBoundException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     public static void setRoot(String fxml) throws IOException {
@@ -66,15 +92,8 @@ public class App extends Application {
     }
 
     public static void main(String[] args) {
-        //launch();
-        try {
-            IAuthenticationService iAuthenticationService=new AuthenticationService();
-            Registry reg= LocateRegistry.createRegistry(2000);
-            reg.rebind("AuthenticationService", iAuthenticationService );
-        }
-        catch (RemoteException ex) {
-            ex.printStackTrace();
-        }
+        launch();
+
 
     }
 

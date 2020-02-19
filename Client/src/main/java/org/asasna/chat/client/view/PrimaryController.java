@@ -19,7 +19,7 @@ import org.asasna.chat.common.service.IChatService;
 import java.io.IOException;
 import java.rmi.RemoteException;
 
-public class PrimaryController {
+public class PrimaryController  extends Controller {
 
     Client client;
 
