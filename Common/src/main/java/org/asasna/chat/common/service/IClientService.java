@@ -42,6 +42,7 @@ public interface IClientService extends Remote {
     /* end nehal */
 
     /* start aya */
+    void getFile(String fileName,int senderId)throws RemoteException;
 
     /* end aya */
 

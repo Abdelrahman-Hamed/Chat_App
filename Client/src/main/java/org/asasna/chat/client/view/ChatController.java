@@ -377,6 +377,44 @@ public class ChatController implements Initializable, IChatController {
             }).start();
         }
     }
+    @Override
+    public void tempFileDisplayMessage(Message message) {
+        viewTextMessage = new MSGview(message,this);
+        if (me.getId() == message.getUserId()) {
+            System.out.println("Me: " + message.getMesssagecontent());
+            viewTextMessage.setTextMSGview(SpeechDirection.RIGHT);
+            Platform.runLater(new Runnable() {
+
+                @Override
+                public void run() {
+                    view.getChildren().add(viewTextMessage);
+                }
+            });
+
+        } else {
+            System.out.println("Friend: " + message.getMesssagecontent());
+            viewTextMessage.setTextMSGview(SpeechDirection.LEFT);
+            Platform.runLater(new Runnable() {
+
+                @Override
+                public void run() {
+                    view.getChildren().add(viewTextMessage);
+                }
+            });
+        }
+    }
+    public void reciveFile(String fileName){
+
+            new Thread(() -> {
+                try {
+                client.getFile(fileName, me.getId());
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+
+
+    }
     // End Aya
 
 

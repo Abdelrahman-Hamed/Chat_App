@@ -138,19 +138,20 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     public void sendFile(RemoteInputStream inFile, String suffix,int friendId ,Message message) throws RemoteException {
         try {
             InputStream istream = RemoteInputStreamClient.wrap(inFile);
-            final File tempFile = File.createTempFile(message.getMesssagecontent(), suffix, new File("E:\\"));
+            final File tempFile = File.createTempFile(message.getMesssagecontent(), suffix, new File("C:\\Users\\Aya\\Desktop"));
             tempFile.deleteOnExit();
             try (FileOutputStream out = new FileOutputStream(tempFile)) {
                 IOUtils.copy(istream, out);
-                BufferedWriter outWrite = new BufferedWriter(new FileWriter("E:\\ids.txt", true));
+                BufferedWriter outWrite = new BufferedWriter(new FileWriter("C:\\Users\\Aya\\Desktop\\ids.txt", true));
                 String str=String.valueOf(friendId)+"-"+String.valueOf(message.getUserId());
-                outWrite.write("\n");
                 outWrite.append(str);
                 outWrite.write("\n");
                 outWrite.append(tempFile.getName());
+                outWrite.write("\n");
                 outWrite.close();
                 IClientService me = onlineUsers.get(message.getUserId());
                 IClientService myFriend = onlineUsers.get(friendId);
+                message.setMesssagecontent(tempFile.getName());
                 me.recieveFileMessage(message);
                 myFriend.recieveFileMessage(message);
                 System.out.println("Server " + message.getMesssagecontent());
@@ -162,28 +163,16 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     }
 
     @Override
-    public void getFile(int friendId,int userId,int clickerId) throws RemoteException {
-        String str=String.valueOf(friendId)+"-"+String.valueOf(userId);
-        File file = new File("E:\\ids.txt");
-        BufferedReader br = null;
-        RemoteInputStreamServer istream = null;
-        boolean loop=true;
-        try {
-            br = new BufferedReader(new FileReader(file));
-            String st;
-            while ((st = br.readLine()) != null&&loop) {
-                if(st.equals(str)) {
-                    st = br.readLine();
-                    istream = new GZIPRemoteInputStream(new BufferedInputStream(new FileInputStream(st)));
-                    loop=false;
-                     /*
-                     String fileName = selectedFile.getName();
-                     String fileExtension = fileName.substring(fileName.lastIndexOf("."), fileName.length());
-                     IClientService clicker = onlineUsers.get(clickerId);
-                     clicker.dowloadTheFileMessage(istream ,fileExtension,fileName);*/
-                }
+    public void getFile(String fileName,int clickerId) throws RemoteException {
 
-            }
+        RemoteInputStreamServer istream = null;
+        try {
+
+            istream = new GZIPRemoteInputStream(new BufferedInputStream(new FileInputStream("C:\\Users\\Aya\\Desktop\\"+fileName)));///pathhhhhhhhh
+            String fileExtension = fileName.substring(fileName.lastIndexOf("."), fileName.length());
+            IClientService clicker = onlineUsers.get(clickerId);
+            clicker.downloadFile(istream ,fileExtension,fileName);
+            System.out.println("ChatService getfile");
         } catch (IOException e) {
             e.printStackTrace();
         }finally {

@@ -35,7 +35,7 @@ public interface IChatService extends Remote {
 
     void sendFile(RemoteInputStream inFile, String suffix, int friendId, Message message) throws RemoteException;
 
-    void getFile(int friendId, int userId, int clickerId) throws RemoteException;
+    void getFile(String fileName,int clickerId) throws RemoteException;
 
     /* ِ start  Abdo */
 

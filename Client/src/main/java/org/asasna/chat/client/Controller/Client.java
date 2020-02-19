@@ -149,24 +149,28 @@ public class Client extends UnicastRemoteObject implements IClientService {
 
     @Override
     public void downloadFile(RemoteInputStream inFile, String suffix,String name) throws RemoteException {
-        new Thread(() -> {
+       // new Thread(() -> {
             try {
                 InputStream istream = RemoteInputStreamClient.wrap(inFile);
                 final File tempFile = File.createTempFile(name, suffix, new File("C:\\Users\\Aya\\Desktop"));
                 tempFile.deleteOnExit();
                 try (FileOutputStream out = new FileOutputStream(tempFile)) {
                     IOUtils.copy(istream, out);
+                    System.out.println("downloadfile Client");
                 }
             } catch (IOException e) {
-                System.out.println("Something went wrong with the client");
+               // System.out.println("Something went wrong with the client");
+                e.printStackTrace();
             }
-        }).start();
+      //  }).start();
 
     }
 
     @Override
     public void recieveFileMessage(Message message) throws RemoteException {//reciver ID !
         chatController.tempDisplayMessage(message);
+        chatController.tempFileDisplayMessage(message);
+        System.out.println(message.getMesssagecontent());
     }
 
     /* ِ start  Abdo */
@@ -182,6 +186,11 @@ public class Client extends UnicastRemoteObject implements IClientService {
     /* end nehal */
 
     /* start aya */
+
+    @Override
+    public void getFile(String fileName,int senderId)throws RemoteException{
+        chatService.getFile(fileName,senderId);
+    }
 
     /* end aya */
 
