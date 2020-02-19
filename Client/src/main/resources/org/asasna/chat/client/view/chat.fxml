@@ -22,7 +22,7 @@
                 <FontIcon fx:id="logoutIcon" iconColor="WHITE" iconLiteral="oi-account-logout" iconSize="30" layoutX="30.0" layoutY="555.0" selectionFill="#1e82dc" styleClass="sidebar_icon" />
                 <FontIcon fx:id="friendRequest" iconColor="WHITE" iconLiteral="enty-add-user" iconSize="30" layoutX="29.0" layoutY="260.0" selectionFill="#1e82dc" styleClass="sidebar_icon" />
                 <FontIcon fx:id="notificationIcon" iconColor="WHITE" iconLiteral="gmi-notifications" iconSize="35" layoutX="23.0" layoutY="315.0" selectionFill="#1e82dc" styleClass="sidebar_icon" />
-                <FontIcon fx:id="saveChatIcon" iconColor="WHITE" iconLiteral="oct-file" iconSize="30" layoutX="29.0" layoutY="367.0" selectionFill="#1e82dc" styleClass="sidebar_icon" />
+                <FontIcon fx:id="saveChatIcon" iconColor="WHITE" iconLiteral="oct-file" iconSize="30" layoutX="29.0" layoutY="367.0" onMouseClicked="#saveChat" selectionFill="#1e82dc" styleClass="sidebar_icon" />
             </Pane>
             <Circle fx:id="userImage" fill="WHITE" layoutX="42.0" layoutY="45.0" radius="31.0" stroke="#7eff21" strokeType="INSIDE" strokeWidth="5.0" />
             <VBox fx:id="contactsView" layoutX="86.0" prefHeight="600.0" prefWidth="350" style="-fx-background-color: #1e82dc;">
@@ -103,7 +103,7 @@
                             <Insets right="15.0" top="35.0" />
                         </HBox.margin>
                     </FontIcon>
-                    <FontIcon  onMouseClicked="#chooseFile" iconColor="#1e82dc" iconLiteral="dashicons-paperclip" iconSize="30" wrappingWidth="28.25">
+                    <FontIcon iconColor="#1e82dc" iconLiteral="dashicons-paperclip" iconSize="30" onMouseClicked="#chooseFile" wrappingWidth="28.25">
                         <HBox.margin>
                             <Insets top="35.0" />
                         </HBox.margin>

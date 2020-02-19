@@ -28,14 +28,24 @@ import org.asasna.chat.common.model.*;
 import org.asasna.chat.common.service.IClientService;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.w3c.dom.*;
+import org.xml.sax.SAXException;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class ChatController implements Initializable, IChatController {
 
@@ -105,9 +115,8 @@ public class ChatController implements Initializable, IChatController {
         }
 
         try {
-            IClientService dummyClient = new Client(this);
-            //  dummyClient.setUser(sender);
-            client.registerUser(me.getId(), dummyClient);
+            IClientService registeredUser = new Client(this);
+            client.registerUser(me.getId(), registeredUser);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -188,7 +197,13 @@ public class ChatController implements Initializable, IChatController {
     }
 
     public void saveChat() {
-
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save File");
+        File file = fileChooser.showSaveDialog(null);
+        if(file != null){
+            savedFilePath = file.getAbsolutePath();
+        }
+        saveXmlFile(receiverMessages.get(activeContact.getUser().getId()));
     }
 
     public void updateProfile() {
@@ -382,6 +397,9 @@ public class ChatController implements Initializable, IChatController {
 
     //    Start Shimaa
 
+    String savedFilePath = null;
+    private Map<Integer, List<Message>> receiverMessages = new HashMap<>();
+
     @Override
     public void sendMessage(int receiverId, Message message) {
         try {
@@ -393,42 +411,85 @@ public class ChatController implements Initializable, IChatController {
 
     @Override
     public void tempDisplayMessage(Message message) {
-
         viewTextMessage = new MSGview(message);
         if (me.getId() == message.getUserId()) {
-            System.out.println("Me: " + message.getMesssagecontent());
             viewTextMessage.setTextMSGview(SpeechDirection.RIGHT);
             Platform.runLater(new Runnable() {
-
                 @Override
                 public void run() {
                     view.getChildren().add(viewTextMessage);
                 }
             });
-
         } else {
-            System.out.println("Friend: " + message.getMesssagecontent());
             viewTextMessage.setTextMSGview(SpeechDirection.LEFT);
             Platform.runLater(new Runnable() {
-
                 @Override
                 public void run() {
                     view.getChildren().add(viewTextMessage);
                 }
             });
         }
+        saveReceiverMessages(message.getUserId(), message);
+        if (receiverMessages.get(message.getUserId()) != null ) {
+            for (int i = 0; i < receiverMessages.get(message.getUserId()).size(); i++) {
+                System.out.println(receiverMessages.get(message.getUserId()).get(i));
+            }
+        }
     }
 
-    private Map<Integer, List<Message>> receiverMessages = new HashMap<>();
-
     private void saveReceiverMessages(int receiverId, Message message) {
-        List<Message> messagesList = receiverMessages.get(receiverId);
-        if (messagesList.isEmpty()) {
+        if (receiverMessages.get(receiverId) == null) {
             List<Message> newMessagesList = new ArrayList<>();
             newMessagesList.add(message);
             receiverMessages.put(receiverId, newMessagesList);
         } else {
-            receiverMessages.get(receiverId).add(message);
+             receiverMessages.get(receiverId).add(message);
+        }
+    }
+
+    public void saveXmlFile(List<Message> list) {
+        try {
+            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder build = documentBuilderFactory.newDocumentBuilder();
+            Document document = build.newDocument();
+
+            Element root = document.createElement("ChatMessage");
+            document.appendChild(root);
+
+            for (Message message : list) {
+                Element messageNode = document.createElement("Message");
+                Element id = document.createElement("Id");
+                Element content = document.createElement("Content");
+
+                id.appendChild(document.createTextNode(String.valueOf(message.getUserId())));
+                messageNode.appendChild(id);
+
+                content.appendChild(document.createTextNode(String.valueOf(message.getMesssagecontent())));
+                messageNode.appendChild(content);
+                root.appendChild(messageNode);
+            }
+            // Save the document to the disk file
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+
+            transformer.setOutputProperty(OutputKeys.ENCODING, "ISO-8859-1");
+
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+
+            DOMSource source = new DOMSource(document);
+            try {
+                // location and name of XML file you can change as per need
+                FileWriter fileWriter = new FileWriter(savedFilePath);
+                StreamResult result = new StreamResult(fileWriter);
+                transformer.transform(source, result);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (TransformerException ex) {
+            System.out.println("Error outputting document");
+        } catch (ParserConfigurationException ex) {
+            System.out.println("Error building document");
         }
     }
 
@@ -441,21 +502,15 @@ public class ChatController implements Initializable, IChatController {
 
     //    Start Nehal Adel
 
+    @FXML
     public void send() throws RemoteException {
-//        String messageTXT = messageTextArea.getText();
-//        Contact contact = activeContact;
-//        Message mes = new Message(1, messageTXT);
-//        if (contact.isGroup())
-//            client.sendGroupMessage(((GroupContact) contact).getChatGroup(), mes);
-//        messageTextArea.setText("");
-//        displayMessage(mes);
-//        System.out.println(messageTXT);
         int receiverId = activeContact.getUser().getId();
         int senderId = me.getId();
         String messageContent = messageTextArea.getText();
         messageTextArea.setText("");
         Message message = new Message(senderId, messageContent);
         sendMessage(receiverId, message);
+        saveReceiverMessages(receiverId, message);
     }
     // End Nehal Adel
 }
