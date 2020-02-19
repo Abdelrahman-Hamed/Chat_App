@@ -6,6 +6,7 @@ import org.asasna.chat.common.service.IChatService;
 import org.asasna.chat.server.model.dao.IUserDao;
 import org.asasna.chat.server.model.dao.UserDao;
 import org.asasna.chat.server.services.ChatService;
+import org.asasna.chat.server.view.PasswordAuthentication;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -48,6 +49,8 @@ public class AuthenticationService extends UnicastRemoteObject implements IAuthe
         }
 
         if(userDao.getUser(user.getPhone()) == null) {
+            PasswordAuthentication passwordAuthentication = new PasswordAuthentication();
+            user.setPassword(passwordAuthentication.hash(user.getPassword()));
             userDao.addUser(user);
         }
     }
