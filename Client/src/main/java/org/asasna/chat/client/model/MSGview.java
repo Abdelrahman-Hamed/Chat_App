@@ -3,6 +3,7 @@ package org.asasna.chat.client.model;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -143,22 +144,31 @@ public class MSGview extends HBox {
         displayedText.setAlignment(Pos.CENTER_LEFT);
         directionIndicator.setContent("M0 0 L10 0 L10 10 Z");
         directionIndicator.setFill(DEFAULT_RECEIVER_COLOR);
-        HBox container = new HBox(directionIndicator, displayedText);
-        //Use at most 75% of the width provided to the SpeechBox for displaying the message
-        container.maxWidthProperty().bind(widthProperty().multiply(0.75));
+        HBox container;
+
         if(file) {
             Image image = new Image(getClass().getResource("file.png").toExternalForm());
             displayedText  = new Label(message.getMesssagecontent());
             ImageView imageView = new ImageView(image);
             imageView.setFitHeight(30);
             imageView.setFitWidth(30);
-            container.getChildren().add(imageView);
+             container = new HBox(imageView,directionIndicator, displayedText);
+             container.setBackground(DEFAULT_RECEIVER_BACKGROUND);
+            // container.setFillHeight(a);
+            //Use at most 75% of the width provided to the SpeechBox for displaying the message
+            container.maxWidthProperty().bind(widthProperty().multiply(0.75));
+            //container.getChildren().add(imageView);
 
             container.setOnMouseClicked((e) -> {
                 System.out.println("file");
                 cController.reciveFile(message.getMesssagecontent());
             });
             file=false;
+        }
+        else{
+             container = new HBox(directionIndicator, displayedText);
+            //Use at most 75% of the width provided to the SpeechBox for displaying the message
+            container.maxWidthProperty().bind(widthProperty().multiply(0.75));
         }
         getChildren().setAll(container);
         setAlignment(Pos.CENTER_LEFT);

@@ -168,7 +168,7 @@ public class Client extends UnicastRemoteObject implements IClientService {
 
     @Override
     public void recieveFileMessage(Message message) throws RemoteException {//reciver ID !
-        chatController.tempDisplayMessage(message);
+      //  chatController.tempDisplayMessage(message);
         chatController.tempFileDisplayMessage(message);
         System.out.println(message.getMesssagecontent());
     }
