@@ -1,8 +1,6 @@
 package org.asasna.chat.client.Controller;
 
 import org.asasna.chat.client.model.IChatController;
-import org.asasna.chat.client.view.Controller;
-import org.asasna.chat.client.view.PrimaryController;
 import org.asasna.chat.common.model.Message;
 import org.asasna.chat.common.model.Notification;
 import org.asasna.chat.common.model.User;
@@ -17,7 +15,6 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.rmi.server.RemoteRef;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 import org.apache.commons.io.IOUtils;
@@ -25,7 +22,7 @@ import org.apache.commons.io.IOUtils;
 import com.healthmarketscience.rmiio.*;
 
 public class Client extends UnicastRemoteObject implements IClientService {
-    private Controller Controller;
+    //private Controller Controller;
     IChatController chatController;
     IChatService chatService;
     IAuthenticationService authenticationService;
@@ -43,11 +40,11 @@ public class Client extends UnicastRemoteObject implements IClientService {
 //        }
 //    }
 
-    public Client(Controller chatController) throws RemoteException {
-        this.Controller = chatController;
+    public Client(IChatController chatController) throws RemoteException {
+        this.chatController = chatController;
         Registry reg = null;
 //        try {
-        reg = LocateRegistry.getRegistry(5000);
+        reg = LocateRegistry.getRegistry(2000);
 //            this.user = new User(4, "Mohamed", "01027420575");
 //            chatService.register(this.user.getId(), this);
 //        } catch (RemoteException | NotBoundException e) {

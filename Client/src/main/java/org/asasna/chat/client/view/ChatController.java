@@ -6,6 +6,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
@@ -102,11 +103,11 @@ public class ChatController implements Initializable, IChatController {
         list.add(new User(5, "Sayed", "54663"));
         ChatGroup chatGroup = new ChatGroup(1, list.stream().map(u -> u.getId()).collect(Collectors.toList()), "Group1");
 
-        try {
-            client.sendGroupMessage(chatGroup, message);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            client.sendGroupMessage(chatGroup, message);
+//        } catch (RemoteException e) {
+//            e.printStackTrace();
+//        }
         try {
             me = client.getUser();
             System.out.println(me.getId());
@@ -430,11 +431,6 @@ public class ChatController implements Initializable, IChatController {
             });
         }
         saveReceiverMessages(message.getUserId(), message);
-        if (receiverMessages.get(message.getUserId()) != null ) {
-            for (int i = 0; i < receiverMessages.get(message.getUserId()).size(); i++) {
-                System.out.println(receiverMessages.get(message.getUserId()).get(i));
-            }
-        }
     }
 
     private void saveReceiverMessages(int receiverId, Message message) {

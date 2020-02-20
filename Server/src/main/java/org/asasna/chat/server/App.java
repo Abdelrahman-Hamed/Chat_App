@@ -44,7 +44,7 @@ public class App extends Application {
         }*/
         try {
             iAuthenticationService=new AuthenticationService();
-            reg= LocateRegistry.createRegistry(9000);
+            reg= LocateRegistry.createRegistry(2000);
             reg.rebind("AuthenticationService", iAuthenticationService );
 
         }

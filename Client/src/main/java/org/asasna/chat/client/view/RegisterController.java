@@ -10,6 +10,7 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import org.asasna.chat.client.App;
 import org.asasna.chat.client.Controller.Client;
+import org.asasna.chat.client.model.IChatController;
 import org.asasna.chat.client.util.Validation;
 import org.asasna.chat.common.model.Gender;
 import org.asasna.chat.common.model.User;
@@ -27,7 +28,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-public class RegisterController  extends Controller implements Initializable {
+public class RegisterController implements Initializable {
     @FXML
     ComboBox<String> countryBox;
     @FXML
@@ -320,7 +321,7 @@ public class RegisterController  extends Controller implements Initializable {
 
     {
         try {
-            myContoller = new Client(this);
+            myContoller = new Client((IChatController) this);
         } catch (RemoteException e) {
             e.printStackTrace();
         }

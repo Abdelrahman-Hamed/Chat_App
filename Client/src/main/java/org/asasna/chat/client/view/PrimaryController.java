@@ -19,7 +19,7 @@ import org.asasna.chat.common.service.IChatService;
 import java.io.IOException;
 import java.rmi.RemoteException;
 
-public class PrimaryController  extends Controller {
+public class PrimaryController{
 
     Client client;
 
@@ -27,10 +27,6 @@ public class PrimaryController  extends Controller {
     public PrimaryController(){
     }
 
-
-    public void setScene(Scene scene){
-        this.scene = scene;
-    }
     @FXML
     private TextField phoneNumber;
 
