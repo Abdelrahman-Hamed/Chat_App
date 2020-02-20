@@ -13,6 +13,7 @@ import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import org.asasna.chat.common.service.IAuthenticationService;
 import org.asasna.chat.server.controller.AuthenticationService;
+import org.asasna.chat.server.view.ServerHomeController;
 
 import java.io.IOException;
 import java.rmi.NotBoundException;
@@ -27,21 +28,14 @@ import java.rmi.registry.Registry;
 public class App extends Application {
 
     private static Scene scene;
-    private static Stage primaryStage;
+    //private static Stage primaryStage;
     private double xOffset = 0;
     private double yOffset = 0;
     Registry reg;
+    public static ServerHomeController controller;
     IAuthenticationService iAuthenticationService ;
     @Override
     public void start(Stage primaryStage) throws IOException {
-        /*try {
-            IChatService iChatService=new ChatService();
-            Registry reg= LocateRegistry.createRegistry(5000);
-            reg.rebind("ChatService",iChatService );
-        }
-        catch (RemoteException ex) {
-            ex.printStackTrace();
-        }*/
         try {
             iAuthenticationService=new AuthenticationService();
             reg= LocateRegistry.createRegistry(2000);
@@ -52,6 +46,7 @@ public class App extends Application {
             ex.printStackTrace();
         }
         scene = new Scene(loadFXML("serverHome"));
+        /*
         AnchorPane root= (AnchorPane) scene.lookup("#root");
         root.setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override
@@ -68,6 +63,8 @@ public class App extends Application {
             }
         });
         primaryStage.setScene(scene);
+
+         */
         primaryStage.initStyle(StageStyle.TRANSPARENT);
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -88,13 +85,17 @@ public class App extends Application {
 
     private static Parent loadFXML(String fxml) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
-        return fxmlLoader.load();
+        Parent parent = fxmlLoader.load();
+        controller = (ServerHomeController) fxmlLoader.getController();
+        return parent;
+    }
+
+    public Registry getReg() {
+        return reg;
     }
 
     public static void main(String[] args) {
         launch();
-
-
     }
 
 }

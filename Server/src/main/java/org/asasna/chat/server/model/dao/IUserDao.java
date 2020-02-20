@@ -5,11 +5,12 @@ import javafx.scene.chart.PieChart;
 import org.asasna.chat.common.model.User;
 
 import java.util.List;
+import java.util.Map;
 
 public interface IUserDao {
     List<User> getAllUsers();
 
-    List<User> getNonContactUsers(String mePhoneNumber);
+    Map<Boolean, List<User>> getNonContactUsers(int meUserId);
 
     User getUser(int id);
 
@@ -35,5 +36,5 @@ public interface IUserDao {
 
     boolean setNotification(int fromUserId, int toUserId);
 
-
+    boolean cancelNotification(int fromUserId, int toUserId);
 }
