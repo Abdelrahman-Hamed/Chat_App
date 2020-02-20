@@ -1,5 +1,7 @@
 package org.asasna.chat.server.controller;
 
+import javafx.collections.ObservableList;
+import javafx.scene.chart.PieChart;
 import org.asasna.chat.common.model.User;
 import org.asasna.chat.common.service.IAuthenticationService;
 import org.asasna.chat.common.service.IChatService;
@@ -57,4 +59,14 @@ public class AuthenticationService extends UnicastRemoteObject implements IAuthe
     public boolean isValid(User me) throws RemoteException{
         return ( userDao.getUser(me.getPhone()) == null );
     }
+
+    public ObservableList<PieChart.Data> getGenderData() throws RemoteException, SQLException {
+        userDao = new UserDao();
+        return  userDao.getUsersByGender();
+    }
+    public ObservableList<PieChart.Data> getStatusData() throws RemoteException, SQLException {
+        userDao = new UserDao();
+        return  userDao.getUsersByStatus();
+    }
+
 }

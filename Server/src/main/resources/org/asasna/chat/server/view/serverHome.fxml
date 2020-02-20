@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.*?>
 <?import javafx.scene.chart.*?>
 <?import javafx.scene.control.*?>
@@ -9,28 +10,23 @@
 <?import org.controlsfx.control.*?>
 <?import org.kordamp.ikonli.javafx.*?>
 
-<AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="495.0" prefWidth="390.0" style="-fx-background-radius: 50; -fx-border-radius: 50; -fx-background-color: white;" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.asasna.chat.server.view.ServerHomeController">
+
+<AnchorPane fx:id="root" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.asasna.chat.server.view.ServerHomeController">
    <children>
-      <ToggleSwitch alignment="CENTER" ellipsisString="service" layoutX="255.0" layoutY="75.0" selected="true" style="-fx-border-color: #25c7d9; -fx-border-radius: 60;" text="  Service" textAlignment="CENTER" textFill="#25c7d9" textOverrun="CENTER_ELLIPSIS" viewOrder="1.0">
-         <font>
-            <Font name="Curlz MT" size="16.0" />
-         </font>
-         <effect>
-            <Glow />
-         </effect>
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor></ToggleSwitch>
-      <FontIcon iconColor="#25c7d9" iconLiteral="mdi-window-minimize" iconSize="23" layoutX="311.0" layoutY="34.0" onMouseClicked="#min" stroke="#ebe8e8">
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <effect>
-            <Glow />
-         </effect></FontIcon>
-      <Button layoutX="343.0" layoutY="9.0" mnemonicParsing="false" onAction="#close" style="-fx-border-color: transparent; -fx-background-color: transparent;">
-         <graphic>
-            <FontIcon iconColor="#25c7d9" iconLiteral="mdi-window-close" iconSize="23" stroke="#ebe8e8">
+      <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="495.0" prefWidth="390.0" style="-fx-background-radius: 50; -fx-border-radius: 50; -fx-background-color: white;">
+         <children>
+            <ToggleSwitch alignment="CENTER" ellipsisString="service" layoutX="255.0" layoutY="75.0" onDragDetected="#closeService" selected="true" style="-fx-border-color: #25c7d9; -fx-border-radius: 60;" text="  Service" textAlignment="CENTER" textFill="#25c7d9" textOverrun="CENTER_ELLIPSIS" viewOrder="1.0">
+               <font>
+                  <Font name="Curlz MT" size="16.0" />
+               </font>
+               <effect>
+                  <Glow />
+               </effect>
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+            </ToggleSwitch>
+            <FontIcon iconColor="#25c7d9" iconLiteral="mdi-window-minimize" iconSize="23" layoutX="311.0" layoutY="34.0" onMouseClicked="#min" stroke="#ebe8e8">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
@@ -38,14 +34,42 @@
                   <Glow />
                </effect>
             </FontIcon>
-         </graphic>
-      </Button>
-      <PieChart fx:id="chart" layoutX="11.0" layoutY="276.0" prefHeight="211.0" prefWidth="368.0" style="-fx-background-color: white; -fx-background-radius: 30; -fx-border-color: #25c7d9; -fx-border-radius: 30;" stylesheets="@colors.css" title="Statistics" />
-      <Button fx:id="gender" layoutX="306.0" layoutY="234.0" mnemonicParsing="false" style="-fx-background-radius: 30; -fx-border-color: #25c7d9; -fx-border-radius: 30;" text="Gender" textFill="#2b2f2f" />
-      <Button fx:id="country" layoutX="220.0" layoutY="234.0" mnemonicParsing="false" style="-fx-background-radius: 30; -fx-border-color: #25c7d9; -fx-border-radius: 30;" text="Country" textFill="#2b2f2f" />
-      <Button fx:id="status" layoutX="99.0" layoutY="234.0" mnemonicParsing="false" style="-fx-background-radius: 30; -fx-border-color: #25c7d9; -fx-border-radius: 30;" text="Online/OffLine" textFill="#2b2f2f" />
+            <Button layoutX="343.0" layoutY="9.0" mnemonicParsing="false" onAction="#close" style="-fx-border-color: transparent; -fx-background-color: transparent;">
+               <graphic>
+                  <FontIcon iconColor="#25c7d9" iconLiteral="mdi-window-close" iconSize="23" stroke="#ebe8e8">
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                     <effect>
+                        <Glow />
+                     </effect>
+                  </FontIcon>
+               </graphic>
+            </Button>
+            <PieChart fx:id="chart" layoutX="11.0" layoutY="276.0" prefHeight="211.0" prefWidth="368.0" style="-fx-background-color: white; -fx-background-radius: 30; -fx-border-color: #25c7d9; -fx-border-radius: 30;" stylesheets="@colors.css" title="Statistics" />
+            <HBox layoutX="29.0" layoutY="234.0" prefHeight="27.0" prefWidth="336.0">
+               <children>
+                  <Button fx:id="statusButton" mnemonicParsing="false" onAction="#getStatusData" style="-fx-background-radius: 30; -fx-border-color: #25c7d9; -fx-border-radius: 30;" text="Online/OffLine" textFill="#2b2f2f">
+                     <opaqueInsets>
+                        <Insets left="10.0" />
+                     </opaqueInsets>
+                  </Button>
+                  <Button mnemonicParsing="false" style="-fx-background-radius: 30; -fx-border-color: #25c7d9; -fx-border-radius: 30;" text="Country" textFill="#2b2f2f">
+                     <HBox.margin>
+                        <Insets left="30.0" />
+                     </HBox.margin>
+                  </Button>
+                  <Button fx:id="genderButton" mnemonicParsing="false" onAction="#getGenderData" style="-fx-background-radius: 30; -fx-border-color: #25c7d9; -fx-border-radius: 30;" text="Gender" textFill="#2b2f2f">
+                     <HBox.margin>
+                        <Insets left="30.0" />
+                     </HBox.margin>
+                  </Button>
+               </children>
+            </HBox>
+         </children>
+         <effect>
+            <Glow />
+         </effect>
+      </AnchorPane>
    </children>
-   <effect>
-      <Glow />
-   </effect>
 </AnchorPane>
