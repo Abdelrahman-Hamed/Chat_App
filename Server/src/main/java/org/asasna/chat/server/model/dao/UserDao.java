@@ -15,7 +15,9 @@ import javax.sql.RowSet;
 import javax.xml.transform.Result;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class UserDao implements IUserDao {
     private RowSet rowSet = null;
@@ -49,27 +51,41 @@ public class UserDao implements IUserDao {
     }
 
     @Override
-    public List<User> getNonContactUsers(String mePhoneNumber) {
+    public Map<Boolean, List<User>> getNonContactUsers(int meUserId) {
         List<User> users = new ArrayList<>();
+        Map<Boolean, List<User>> map = new HashMap<>();
         try {
-            System.out.println(mePhoneNumber);
             String sql = "select * from users\n" +
-                    "left join contacts\n" +
-                    "on users.id = contacts.first_member\n" +
-                    "or users.id = contacts.second_member\n" +
-                    "where contacts.first_member is null\n" +
-                    "and users.phone_number <> '" + mePhoneNumber + "';";
+                    "join invitations\n" +
+                    "on users.id = invitations.to_id \n" +
+                    "where invitations.from_id = " + meUserId;
             ResultSet resultSet = statement.executeQuery(sql);
             while (resultSet.next()) {
                 User user = extractUser(resultSet);
                 users.add(user);
-
             }
-            //System.out.println(users.size());
+            map.put(true, users);
+            users = new ArrayList<>();
+            sql = "select * from users\n" +
+                    "where users.id not in (\n" +
+                    "select users.id from users\n" +
+                    "join contacts\n" +
+                    "on (users.id = contacts.first_member\n" +
+                    "or users.id = contacts.second_member)\n" +
+                    "and users.id <> " + meUserId +" )\n" +
+                    "and users.id <> "+ meUserId + ";\n";
+            resultSet = statement.executeQuery(sql);
+            while (resultSet.next()) {
+                User user = extractUser(resultSet);
+                if(!map.get(true).contains(user))
+                    users.add(user);
+            }
+            map.put(false, users);
+            return map;
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return users;
+        return map;
     }
 
     @Override
@@ -291,6 +307,34 @@ public class UserDao implements IUserDao {
                 } else {
                     return false;
                 }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean cancelNotification(int fromUserId, int toUserId) {
+
+        try {
+            String sql = "select * from invitations where from_id = ? and to_id = ?";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE);
+            preparedStatement.setInt(1, fromUserId);
+            preparedStatement.setInt(2, toUserId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                sql = "delete from invitations\n" +
+                        "where from_id = ? and to_id = ?";
+                preparedStatement = conn.prepareStatement(sql);
+                preparedStatement.setInt(1, fromUserId);
+                preparedStatement.setInt(2, toUserId);
+                int effectedRows = preparedStatement.executeUpdate();
+                System.out.println(effectedRows);
+                return true;
+            } else {
+                return false;
             }
         } catch (SQLException e) {
             e.printStackTrace();
