@@ -129,10 +129,15 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
         try {
             UserDao userDao = new UserDao();
             boolean notified = userDao.setNotification(fromUserId, toUserId);
+            if (notified) {
+//                 Call Receive Notification On Client Side
+                IClientService toClient = onlineUsers.get(toUserId);
+                if( toClient != null){
+                    System.out.println("Get In Here");
+                    toClient.recieveNotivication(new Notification(NotificationType.FRIEND_REQUEST, userDao.getUser(fromUserId)));
+                }
+            }
             return notified;
-//            if (notified) {
-                // Call Receive Notification On Client Side
-//            }
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -207,6 +212,27 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
         }finally {
             if (istream != null) istream.close();
         }
+    }
+
+    @Override
+    public void acceptRequest(int fromUserId, int id) throws RemoteException {
+        sendFriendRequest(id, fromUserId);
+    }
+
+    @Override
+    public void cancelRequest(int fromUserId, int id) throws RemoteException {
+        cancelFriendRequest(id, fromUserId);
+    }
+
+    @Override
+    public List<Notification> loadNotifications(int id) throws RemoteException {
+        try {
+            UserDao userDao = new UserDao();
+            return userDao.getNotification(id);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override

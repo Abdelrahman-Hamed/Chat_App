@@ -23,6 +23,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
+import org.apache.commons.io.FileDeleteStrategy;
 import org.asasna.chat.client.Controller.Client;
 import org.asasna.chat.client.model.*;
 import org.asasna.chat.common.model.Message;
@@ -37,6 +38,11 @@ import org.controlsfx.control.Notifications;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.File;
+import javax.sound.sampled.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.*;
@@ -96,14 +102,28 @@ public class ChatController implements Initializable, IChatController {
     Circle receiverImage;
     @FXML
     Label receiverNameLabel;
+
+
+    @FXML
+    FontIcon microphoneId;
+    private long start, end;
+    private TargetDataLine line;
     MSGview viewTextMessage;
     private User me;
-
+    private List<Notification> notifications = new ArrayList<>();
     public Contact activeContact;
     private User user;
 
+    public List<Notification> getNotifications() {
+        return notifications;
+    }
+
+    public void setNotifications(List<Notification> notifications) {
+        this.notifications = notifications;
+    }
+
     public enum Active {
-        Profile, Friends, Group, friendRequets
+        Profile, Friends, Group, friendRequets, Notifications
     }
 
     private Active active;
@@ -211,6 +231,9 @@ public class ChatController implements Initializable, IChatController {
             friendRequest.setOnMouseClicked(e -> {
                 active = Active.friendRequets;
             });
+            notificationIcon.setOnMouseClicked(e -> {
+                active = Active.Notifications;
+            });
             this.root.prefHeightProperty().bind(root.getScene().heightProperty());
             this.root.prefWidthProperty().bind(root.getScene().widthProperty());
             this.messageTextArea.prefHeightProperty().bind(root.getScene().heightProperty());
@@ -248,6 +271,10 @@ public class ChatController implements Initializable, IChatController {
                 e.printStackTrace();
             }
         }).start();
+        new Thread(() -> {
+            this.notifications = client.loadNotifications();
+            System.out.println("Size: " + notifications.size());
+        }).start();
         searchTextField.setOnKeyReleased(this::searchContacts);
         /*SearchedGroupContact searchedGroupContact = new SearchedGroupContact(user);
         contactsList.getChildren().add(searchedGroupContact);*/
@@ -263,7 +290,102 @@ public class ChatController implements Initializable, IChatController {
 
         setListnerForPressingEnter(); // shimaa
         messageTextArea.setStyle("-fx-font-size:14");
+        SearchedGroupContact searchedGroupContact = new SearchedGroupContact(user);
+        contactsList.getChildren().add(searchedGroupContact);
+
+
+//        Sayed Start
+        microphoneId.setOnMousePressed(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                new Thread(() -> {
+                    microphoneId.setIconLiteral("dashicons-marker");
+                    start();
+                }).start();
+            }
+        });
+        microphoneId.setOnMouseReleased(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                new Thread(() -> {
+                    stop();
+                    microphoneId.setIconLiteral("dashicons-microphone");
+                }).start();
+            }
+        });
+
+
+
+
+//        Sayed End
     }
+//      Sayed Start
+private AudioFormat getAudioFormat(){
+    float sampleRate = 16000;
+    int sampleSizeInBits = 8;
+    int channels = 2;
+    boolean signed = true;
+    boolean bigEndian = true;
+    AudioFormat format = new AudioFormat(sampleRate, sampleSizeInBits,
+            channels, signed, bigEndian);
+    return format;
+}
+    private void start(){
+        try {
+            AudioFormat format = getAudioFormat();
+            DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
+
+            // checks if system supports the data line
+            if (!AudioSystem.isLineSupported(info)) {
+                System.out.println("Line not supported");
+                System.exit(0);
+            }
+            line = (TargetDataLine) AudioSystem.getLine(info);
+            line.open(format);
+            line.start();   // start capturing
+            start = System.currentTimeMillis();
+            System.out.println("Start capturing...");
+
+            AudioInputStream ais = new AudioInputStream(line);
+
+            System.out.println("Start recording...");
+
+            // start recording
+            File wavFile = new File("./Client/src/main/resources/org/asasna/chat/client/audio/record.wav");
+            AudioSystem.write(ais, AudioFileFormat.Type.WAVE, wavFile);
+
+        } catch (LineUnavailableException ex) {
+            ex.printStackTrace();
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+//        SearchedGroupContact searchedGroupContact = new SearchedGroupContact(user);
+//        contactsList.getChildren().add(searchedGroupContact);
+
+        setListnerForPressingEnter(); // shimaa
+        messageTextArea.setStyle("-fx-font-size:14");
+    }
+    private void stop(){
+        line.stop();
+        line.close();
+        end = System.currentTimeMillis();
+        System.out.println("Finished");
+        if(end - start < 1000){
+            System.out.println("Hold To Record, Release To Send");
+            removeWavFile();
+        }
+    }
+    private void removeWavFile(){
+        try {
+            File wavFile = new File("./Client/src/main/resources/org/asasna/chat/client/audio/record.wav");
+            FileDeleteStrategy.FORCE.delete(wavFile);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+//    Sayed End
 
     public void sendAudio() {
 
@@ -404,7 +526,7 @@ public class ChatController implements Initializable, IChatController {
 
     @Override
     public void recieveNotification(Notification notification) {
-
+        notifications.add(notification);
     }
 
 
@@ -438,8 +560,15 @@ public class ChatController implements Initializable, IChatController {
                         contactsList.getChildren().add(contact);
                     });
 
+        }else if(active == Active.Notifications){
+            contactsList.getChildren().clear();
+            notifications.stream().forEach(notification -> {
+                contactsList.getChildren().add(new NotificationView(client, notification));
+            });
         }
     }
+
+
     // End Elsayed Nabil
 
 
@@ -547,6 +676,13 @@ public class ChatController implements Initializable, IChatController {
         saveReceiverMessages(message.getUserId(), message);
     }
 
+    @Override
+    public void addNotification(Notification notification){
+        this.notifications.add(notification);
+    }
+
+//    private Map<Integer, List<Message>> receiverMessages = new HashMap<>();
+
     private void saveReceiverMessages(int receiverId, Message message) {
         if (receiverMessages.get(receiverId) == null) {
             List<Message> newMessagesList = new ArrayList<>();
@@ -601,33 +737,6 @@ public class ChatController implements Initializable, IChatController {
         } catch (ParserConfigurationException ex) {
             System.out.println("Error building document");
         }
-    }
-
-    @FXML
-    private void getSelectedContact() {
-        ObservableList<Node> contacts;
-        contacts = contactsList.getChildren();
-        for (Node c : contacts) {
-            c.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-                this.activeContact = (Contact) c;
-            });
-        }
-        System.out.println("active Contact is : " + this.activeContact.getUser().getName());
-        receiverImage.setFill(new ImagePattern(activeContact.getUser().getImage()));
-        receiverNameLabel.setText(activeContact.getUser().getName());
-        final Background focusBackground = new Background(new BackgroundFill(Color.valueOf("#045ba5"), CornerRadii.EMPTY, Insets.EMPTY));
-        final Background unfocusBackground = new Background(new BackgroundFill(Color.valueOf("#1e82dc"), CornerRadii.EMPTY, Insets.EMPTY));
-
-        activeContact.setOnMouseClicked((e) ->
-        {
-            activeContact.requestFocus();
-            //activeContact.setBackground(focusBackground);
-            activeContact.backgroundProperty().bind(Bindings
-                    .when(activeContact.focusedProperty())
-                    .then(focusBackground)
-                    .otherwise(unfocusBackground));
-        });
-        //loadMessageChat();
     }
 
     int currentUserId = 0;

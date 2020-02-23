@@ -2,6 +2,7 @@ package org.asasna.chat.server.model.dao;
 
 import javafx.collections.ObservableList;
 import javafx.scene.chart.PieChart;
+import org.asasna.chat.common.model.Notification;
 import org.asasna.chat.common.model.User;
 
 import java.util.List;
@@ -37,4 +38,6 @@ public interface IUserDao {
     boolean setNotification(int fromUserId, int toUserId);
 
     boolean cancelNotification(int fromUserId, int toUserId);
+
+    List<Notification> getNotification(int id);
 }

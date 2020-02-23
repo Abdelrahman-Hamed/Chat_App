@@ -4,9 +4,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.PieChart;
 import javafx.scene.image.Image;
-import org.asasna.chat.common.model.Gender;
-import org.asasna.chat.common.model.User;
-import org.asasna.chat.common.model.UserStatus;
+import org.asasna.chat.common.model.*;
 import org.asasna.chat.server.model.db.DBConnection;
 import org.asasna.chat.server.view.PasswordAuthentication;
 
@@ -79,8 +77,9 @@ public class UserDao implements IUserDao {
             resultSet = statement.executeQuery(sql);
             while (resultSet.next()) {
                 User user = extractUser(resultSet);
-                if(!map.get(true).contains(user))
+                if(!(map.get(true).stream().anyMatch(userItem -> userItem.getId() == user.getId()))){
                     users.add(user);
+                }
             }
             map.put(false, users);
             return map;
@@ -342,6 +341,28 @@ public class UserDao implements IUserDao {
             e.printStackTrace();
         }
         return false;
+    }
+
+    @Override
+    public List<Notification> getNotification(int id) {
+        List<Notification> notifications = new ArrayList<>();
+        try {
+            String sql = "select * from users\n" +
+                    "join invitations\n" +
+                    "on users.id = invitations.from_id\n" +
+                    "where invitations.to_id = " + id;
+            ResultSet resultSet = statement.executeQuery(sql);
+            while (resultSet.next()) {
+                User user = extractUser(resultSet);
+                notifications.add(new Notification(NotificationType.FRIEND_REQUEST, user));
+            }
+            return notifications;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return notifications;
+
+
     }
 
     private User extractUser(ResultSet resultSet) {

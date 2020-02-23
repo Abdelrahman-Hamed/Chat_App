@@ -45,7 +45,7 @@
                     <RowConstraints maxHeight="193.0" minHeight="3.0" prefHeight="96.0" vgrow="SOMETIMES" />
                 </rowConstraints>
                 <HBox fx:id="chatArea_hbox" prefHeight="95.0" prefWidth="555.0" GridPane.rowIndex="2">
-                    <FontIcon iconColor="#1e82dc" iconLiteral="dashicons-microphone" iconSize="35">
+                    <FontIcon fx:id="microphoneId" iconColor="#1e82dc" iconLiteral="dashicons-microphone" iconSize="35">
                         <HBox.margin>
                             <Insets left="15.0" top="25.0" />
                         </HBox.margin>
