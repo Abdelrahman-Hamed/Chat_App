@@ -38,7 +38,7 @@ public class Client extends UnicastRemoteObject implements IClientService {
     public Client() throws RemoteException {
     }
 
-//    public Client(PrimaryController primaryController) throws RemoteException {
+    //    public Client(PrimaryController primaryController) throws RemoteException {
 //        try {
 //            Registry reg = LocateRegistry.getRegistry(5000);
 //            authenticationService = (IAuthenticationService) reg.lookup("AuthenticationService");
@@ -46,17 +46,26 @@ public class Client extends UnicastRemoteObject implements IClientService {
 //            e.printStackTrace();
 //        }
 //    }
+    public Client(RegisterController registerController) throws RemoteException {
+        try {
+            this.registerController = registerController;
+            Registry reg = LocateRegistry.getRegistry(2000);
+            authenticationService = (IAuthenticationService) reg.lookup("AuthenticationService");
+        } catch (RemoteException | NotBoundException e) {
+            e.printStackTrace();
+        }
+    }
 
     public Client(IChatController chatController) throws RemoteException {
         this.chatController = chatController;
         Registry reg = null;
 //        try {
-        System.setProperty("javax.net.ssl.keyStore","/home/abdulrahman/IdeaProjects/ITI_Chat/sysdmsim.ks");
-        System.setProperty("javax.net.ssl.keyStorePassword","123456");
-        System.setProperty("javax.net.ssl.trustStore","/home/abdulrahman/IdeaProjects/ITI_Chat/sysdmtruststore.ks");
-        System.setProperty("javax.net.ssl.trustStorePassword","123456");
+        System.setProperty("javax.net.ssl.keyStore", "/home/abdulrahman/IdeaProjects/ITI_Chat/sysdmsim.ks");
+        System.setProperty("javax.net.ssl.keyStorePassword", "123456");
+        System.setProperty("javax.net.ssl.trustStore", "/home/abdulrahman/IdeaProjects/ITI_Chat/sysdmtruststore.ks");
+        System.setProperty("javax.net.ssl.trustStorePassword", "123456");
 
-        reg = LocateRegistry.getRegistry("10.145.4.235",5001,new SslRMIClientSocketFactory());
+        reg = LocateRegistry.getRegistry("10.145.4.235", 5001, new SslRMIClientSocketFactory());
 //            this.user = new User(4, "Mohamed", "01027420575");
 //            chatService.register(this.user.getId(), this);
 //        } catch (RemoteException | NotBoundException e) {
@@ -78,11 +87,11 @@ public class Client extends UnicastRemoteObject implements IClientService {
     }
 
     @Override
-    public void sendFileToServer(String filePath, String extension,int senderId ,Message message) throws RemoteException {
+    public void sendFileToServer(String filePath, String extension, int senderId, Message message) throws RemoteException {
         RemoteInputStreamServer istream = null;
         try {
             istream = new GZIPRemoteInputStream(new BufferedInputStream(new FileInputStream(filePath)));
-            chatService.sendFile(istream.export(), extension,senderId , message);
+            chatService.sendFile(istream.export(), extension, senderId, message);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -100,7 +109,7 @@ public class Client extends UnicastRemoteObject implements IClientService {
         chatController.recieveGroupMessage(group, message);
     }
 
-    public List<User> search(String phoneNumber) {
+    public Map<Boolean, List<User>> search(String phoneNumber) {
         try {
 
             return chatService.search(phoneNumber);
@@ -158,7 +167,7 @@ public class Client extends UnicastRemoteObject implements IClientService {
     }
 
     @Override
-    public void downloadFile(RemoteInputStream inFile, String suffix,String name) throws RemoteException {
+    public void downloadFile(RemoteInputStream inFile, String suffix, String name) throws RemoteException {
         new Thread(() -> {
             try {
                 InputStream istream = RemoteInputStreamClient.wrap(inFile);
@@ -203,7 +212,7 @@ public class Client extends UnicastRemoteObject implements IClientService {
     }
 
     public boolean isvalidUser(User me) throws RemoteException {
-       return authenticationService.isValid(me);
+        return authenticationService.isValid(me);
     }
 
     /* end nehal */

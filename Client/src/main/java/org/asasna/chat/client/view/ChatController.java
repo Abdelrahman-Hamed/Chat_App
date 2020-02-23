@@ -33,6 +33,7 @@ import org.asasna.chat.client.model.SearchedContact;
 import org.asasna.chat.common.model.*;
 
 import org.asasna.chat.common.service.IClientService;
+import org.controlsfx.control.Notifications;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.File;
@@ -272,7 +273,7 @@ public class ChatController implements Initializable, IChatController {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save File");
         File file = fileChooser.showSaveDialog(null);
-        if(file != null){
+        if (file != null) {
             savedFilePath = file.getAbsolutePath();
         }
         saveXmlFile(receiverMessages.get(activeContact.getUser().getId()));
@@ -325,7 +326,7 @@ public class ChatController implements Initializable, IChatController {
             });
         }
     }*/
-            });
+        /*    });
         }
         System.out.println("active Contact is : "+ this.activeContact.getUser().getName());
         receiverImage.setFill(new ImagePattern(activeContact.getUser().getImage()));
@@ -343,7 +344,7 @@ public class ChatController implements Initializable, IChatController {
                 .otherwise(unfocusBackground));
         } );
         //loadMessageChat();
-    }
+    }*/
 
     private void setToolTip() {
         Tooltip profileTooltip, groupTooltip, addFriendTooltip, notificationTooltip, saveChatTooltip, logoutTooltip;
@@ -530,7 +531,7 @@ public class ChatController implements Initializable, IChatController {
                 }
             });
         } else {
-            if(activeContact.getUser().getId() == message.getUserId()) {
+            if (activeContact.getUser().getId() == message.getUserId()) {
                 messageView.setDirection(SpeechDirection.LEFT);
                 messageView.setImage(activeContact.getUser().getImage());
                 Platform.runLater(new Runnable() {
@@ -540,7 +541,7 @@ public class ChatController implements Initializable, IChatController {
                     }
                 });
             } else {
-                System.out.println("Message:  " + message.getMesssagecontent() + " from  "+ message.getUserId());
+                System.out.println("Message:  " + message.getMesssagecontent() + " from  " + message.getUserId());
             }
         }
         saveReceiverMessages(message.getUserId(), message);
@@ -552,7 +553,7 @@ public class ChatController implements Initializable, IChatController {
             newMessagesList.add(message);
             receiverMessages.put(receiverId, newMessagesList);
         } else {
-             receiverMessages.get(receiverId).add(message);
+            receiverMessages.get(receiverId).add(message);
         }
     }
 
@@ -602,18 +603,46 @@ public class ChatController implements Initializable, IChatController {
         }
     }
 
+    @FXML
+    private void getSelectedContact() {
+        ObservableList<Node> contacts;
+        contacts = contactsList.getChildren();
+        for (Node c : contacts) {
+            c.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+                this.activeContact = (Contact) c;
+            });
+        }
+        System.out.println("active Contact is : " + this.activeContact.getUser().getName());
+        receiverImage.setFill(new ImagePattern(activeContact.getUser().getImage()));
+        receiverNameLabel.setText(activeContact.getUser().getName());
+        final Background focusBackground = new Background(new BackgroundFill(Color.valueOf("#045ba5"), CornerRadii.EMPTY, Insets.EMPTY));
+        final Background unfocusBackground = new Background(new BackgroundFill(Color.valueOf("#1e82dc"), CornerRadii.EMPTY, Insets.EMPTY));
+
+        activeContact.setOnMouseClicked((e) ->
+        {
+            activeContact.requestFocus();
+            //activeContact.setBackground(focusBackground);
+            activeContact.backgroundProperty().bind(Bindings
+                    .when(activeContact.focusedProperty())
+                    .then(focusBackground)
+                    .otherwise(unfocusBackground));
+        });
+        //loadMessageChat();
+    }
+
     int currentUserId = 0;
-    public void loadMessageChat(){
-        if(currentUserId != activeContact.getUser().getId()) {
+
+    public void loadMessageChat() {
+        if (currentUserId != activeContact.getUser().getId()) {
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
                     view.getChildren().removeAll();
                 }
             });
-            if(receiverMessages.get(activeContact.getUser().getId()) != null){
+            if (receiverMessages.get(activeContact.getUser().getId()) != null) {
                 List<Message> messages = receiverMessages.get(activeContact.getUser().getId());
-                for (Message m : messages){
+                for (Message m : messages) {
                     tempDisplayMessage(m);
                 }
             }
@@ -622,7 +651,7 @@ public class ChatController implements Initializable, IChatController {
     }
 
     @FXML
-    private void cleanchat(){
+    private void cleanchat() {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -631,7 +660,7 @@ public class ChatController implements Initializable, IChatController {
         });
     }
 
-    private void setListnerForPressingEnter(){
+    private void setListnerForPressingEnter() {
         messageTextArea.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent t) {
@@ -657,13 +686,31 @@ public class ChatController implements Initializable, IChatController {
 
     @FXML
     public void send() throws RemoteException {
-        int receiverId = activeContact.getUser().getId();
+        /*int receiverId = activeContact.getUser().getId();
         int senderId = me.getId();
         String messageContent = messageTextArea.getText();
         messageTextArea.setText("");
         Message message = new Message(senderId, messageContent);
         sendMessage(receiverId, message);
-        saveReceiverMessages(receiverId, message);
+        saveReceiverMessages(receiverId, message);*/
+        /*int receiverId = activeContact.getUser().getId();
+        int senderId = me.getId();
+        String messageContent = messageTextArea.getText();
+        messageTextArea.setText("");
+        Message message = new Message(senderId, messageContent);
+        sendMessage(receiverId, message);*/
+        if (activeContact instanceof GroupContact) {
+            System.out.println("inner");
+            client.sendGroupMessage(((GroupContact) activeContact).getChatGroup(), new Message(client.getUser().getId(), messageTextArea.getText()));
+        } else {
+            System.out.println(activeContact);
+            int receiverId = activeContact.getUser().getId();
+            int senderId = me.getId();
+            String messageContent = messageTextArea.getText();
+            messageTextArea.setText("");
+            Message message = new Message(senderId, messageContent);
+            sendMessage(receiverId, message);
+        }
     }
     // End Nehal Adel
 }

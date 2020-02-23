@@ -120,7 +120,4 @@ public class PrimaryController{
             System.out.println("no chat.fxml file");
         }
     }
-    public void setScene(Scene scene) {
-        this.scene= scene ;
-    }
 }
