@@ -19,7 +19,7 @@ import org.asasna.chat.common.service.IChatService;
 import java.io.IOException;
 import java.rmi.RemoteException;
 
-public class PrimaryController  extends Controller {
+public class PrimaryController{
 
     Client client;
 
@@ -27,10 +27,6 @@ public class PrimaryController  extends Controller {
     public PrimaryController(){
     }
 
-
-    public void setScene(Scene scene){
-        this.scene = scene;
-    }
     @FXML
     private TextField phoneNumber;
 
@@ -45,10 +41,16 @@ public class PrimaryController  extends Controller {
 
     @FXML
     private Button loginButton;
+
     @FXML
     public void switchToLogin()  {
         try {
-            App.setRoot("register");
+            //App.setRoot("register");
+            RegisterController registerController = new RegisterController();
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("register" + ".fxml"));
+            fxmlLoader.setController(registerController);
+            Parent parent = fxmlLoader.load();
+            scene.setRoot(parent);
         }
         catch(IOException e){
             System.out.println("no fxml file");
@@ -106,12 +108,7 @@ public class PrimaryController  extends Controller {
         }
     }
 
-    public void loadChatPage(ActionEvent event){
-        try {
-            App.setRoot("chat");
-        }
-            catch(IOException e){
-            System.out.println("no chat.fxml file");
-        }
+    public void setScene(Scene scene) {
+        this.scene= scene ;
     }
 }

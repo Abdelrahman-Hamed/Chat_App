@@ -8,7 +8,8 @@
 <?import org.kordamp.ikonli.javafx.*?>
 
 
-<AnchorPane  fx:id="root" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.asasna.chat.server.view.PrimaryController">
+<AnchorPane  fx:id="root" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1"
+             fx:controller="org.asasna.chat.server.view.PrimaryController">
    <children>
       <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="700.0" stylesheets="@login.css">
          <children>

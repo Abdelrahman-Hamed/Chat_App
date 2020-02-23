@@ -46,15 +46,16 @@ public class AuthenticationService extends UnicastRemoteObject implements IAuthe
 
         try {
             userDao = new UserDao();
+            userDao.addUser(user);
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        if(userDao.getUser(user.getPhone()) == null) {
-            PasswordAuthentication passwordAuthentication = new PasswordAuthentication();
-            user.setPassword(passwordAuthentication.hash(user.getPassword()));
-            userDao.addUser(user);
-        }
+//        if(userDao.getUser(user.getPhone()) == null) {
+//            //PasswordAuthentication passwordAuthentication = new PasswordAuthentication();
+//            //user.setPassword(passwordAuthentication.hash(user.getPassword()));
+//            userDao.addUser(user);
+//        }
     }
     public boolean isValid(User me) throws RemoteException{
         return ( userDao.getUser(me.getPhone()) == null );
