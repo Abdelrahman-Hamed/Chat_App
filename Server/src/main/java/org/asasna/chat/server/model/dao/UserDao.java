@@ -13,6 +13,8 @@ import org.asasna.chat.server.view.PasswordAuthentication;
 
 import javax.sql.RowSet;
 import javax.xml.transform.Result;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;

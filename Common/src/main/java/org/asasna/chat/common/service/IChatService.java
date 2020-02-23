@@ -61,6 +61,6 @@ public interface IChatService extends Remote {
     /* end abeer */
 
     /* start shimaa */
-
+    public User getUser(int id) throws RemoteException;
     /* end shimaa */
 }

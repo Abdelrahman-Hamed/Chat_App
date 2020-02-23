@@ -232,7 +232,10 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     /* end abeer */
 
     /* start shimaa */
-
+    @Override
+    public User getUser(int id) throws RemoteException {
+        return userDao.getUser(id);
+    }
     /* end shimaa */
 
 }

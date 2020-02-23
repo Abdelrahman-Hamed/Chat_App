@@ -1,6 +1,7 @@
 package org.asasna.chat.client.Controller;
 
 import org.asasna.chat.client.model.IChatController;
+import org.asasna.chat.client.view.RegisterController;
 import org.asasna.chat.common.model.Message;
 import org.asasna.chat.common.model.Notification;
 import org.asasna.chat.common.model.User;
@@ -24,38 +25,34 @@ import org.apache.commons.io.IOUtils;
 import com.healthmarketscience.rmiio.*;
 
 public class Client extends UnicastRemoteObject implements IClientService {
-    //private Controller Controller;
     IChatController chatController;
+    RegisterController registerController;
     IChatService chatService;
     IAuthenticationService authenticationService;
     private User user;
 
-    protected Client() throws RemoteException {
+    public Client() throws RemoteException {
     }
 
-//    public Client(PrimaryController primaryController) throws RemoteException {
-//        try {
-//            Registry reg = LocateRegistry.getRegistry(5000);
-//            authenticationService = (IAuthenticationService) reg.lookup("AuthenticationService");
-//        } catch (RemoteException | NotBoundException e) {
-//            e.printStackTrace();
-//        }
-//    }
+    public Client(RegisterController registerController) throws RemoteException {
+        try {
+            this.registerController = registerController;
+            Registry reg = LocateRegistry.getRegistry(2000);
+            authenticationService = (IAuthenticationService) reg.lookup("AuthenticationService");
+        } catch (RemoteException | NotBoundException e) {
+            e.printStackTrace();
+        }
+    }
 
     public Client(IChatController chatController) throws RemoteException {
         this.chatController = chatController;
         Registry reg = null;
-//        try {
         reg = LocateRegistry.getRegistry(2000);
-//            this.user = new User(4, "Mohamed", "01027420575");
-//            chatService.register(this.user.getId(), this);
-//        } catch (RemoteException | NotBoundException e) {
         try {
             authenticationService = (IAuthenticationService) reg.lookup("AuthenticationService");
         } catch (NotBoundException ex) {
             ex.printStackTrace();
         }
-//        }
     }
 
     @Override
@@ -145,7 +142,6 @@ public class Client extends UnicastRemoteObject implements IClientService {
     @Override
     public void registerUser(int userId, IClientService client) throws RemoteException {
         chatService.register(userId, client);
-        System.out.println("Resister at client");
     }
 
     @Override
@@ -208,6 +204,12 @@ public class Client extends UnicastRemoteObject implements IClientService {
     /* end abeer */
 
     /* start shimaa */
+
+    @Override
+    public User getUser(int id) throws RemoteException {
+        User user2 = chatService.getUser(id);
+        return user2;
+    }
 
     /* end shimaa */
 }

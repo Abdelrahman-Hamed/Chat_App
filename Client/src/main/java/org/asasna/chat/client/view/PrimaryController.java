@@ -41,10 +41,16 @@ public class PrimaryController{
 
     @FXML
     private Button loginButton;
+
     @FXML
     public void switchToLogin()  {
         try {
-            App.setRoot("register");
+            //App.setRoot("register");
+            RegisterController registerController = new RegisterController();
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("register" + ".fxml"));
+            fxmlLoader.setController(registerController);
+            Parent parent = fxmlLoader.load();
+            scene.setRoot(parent);
         }
         catch(IOException e){
             System.out.println("no fxml file");
@@ -102,12 +108,7 @@ public class PrimaryController{
         }
     }
 
-    public void loadChatPage(ActionEvent event){
-        try {
-            App.setRoot("chat");
-        }
-            catch(IOException e){
-            System.out.println("no chat.fxml file");
-        }
+    public void setScene(Scene scene) {
+        this.scene= scene ;
     }
 }

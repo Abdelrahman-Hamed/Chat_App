@@ -321,13 +321,14 @@ public class RegisterController implements Initializable {
 
     {
         try {
-            myContoller = new Client((IChatController) this);
+            myContoller = new Client(this); // edited by shimaa
         } catch (RemoteException e) {
             e.printStackTrace();
         }
     }
 
     public boolean addingUser(User me) throws RemoteException {
+        System.out.println("ide = " + me.getId());
         System.out.println("name =" + me.getName());
         System.out.println("phone =" + me.getPhone());
         System.out.println("mail =" + me.getEmail());

@@ -45,7 +45,8 @@ public class App extends Application {
         catch (RemoteException ex) {
             ex.printStackTrace();
         }
-        scene = new Scene(loadFXML("serverHome"));
+        scene = new Scene(loadFXML("serverHome")); // shimaa
+
         /*
         AnchorPane root= (AnchorPane) scene.lookup("#root");
         root.setOnMousePressed(new EventHandler<MouseEvent>() {
@@ -66,8 +67,8 @@ public class App extends Application {
 
          */
         primaryStage.initStyle(StageStyle.TRANSPARENT);
-        primaryStage.setScene(scene);
-        primaryStage.show();
+        //primaryStage.setScene(scene);
+        //primaryStage.show();
         primaryStage.setOnCloseRequest((WindowEvent event1) -> {
             try {
                 reg.unbind("AuthenticationService");

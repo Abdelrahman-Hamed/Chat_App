@@ -2,13 +2,17 @@ package org.asasna.chat.client.view;
 
 import com.jfoenix.controls.JFXButton;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
@@ -48,6 +52,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+
 public class ChatController implements Initializable, IChatController {
 
     Client client;
@@ -79,6 +84,10 @@ public class ChatController implements Initializable, IChatController {
     VBox view;
     @FXML
     Circle userImage;
+    @FXML
+    Circle receiverImage;
+    @FXML
+    Label receiverNameLabel;
     MSGview viewTextMessage;
     private User me;
 
@@ -95,10 +104,10 @@ public class ChatController implements Initializable, IChatController {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         setToolTip();
-        user = new User(4, "Ahmed", "01027420575");
+        //user = new User(4, "Ahmed", "01027420575");
         Message message = new Message(3, "Hello");
         List<User> list = new ArrayList<>();
-        list.add(user);
+        //list.add(user);
         list.add(new User(1, "Khaled", "014587"));
         list.add(new User(5, "Sayed", "54663"));
         ChatGroup chatGroup = new ChatGroup(1, list.stream().map(u -> u.getId()).collect(Collectors.toList()), "Group1");
@@ -125,7 +134,9 @@ public class ChatController implements Initializable, IChatController {
         contactsList.getChildren().add(contact);
         SearchedContact searchedContact = new SearchedContact("Sayed Nabil", new Image(getClass().getResource("abdo.jpg").toExternalForm()), UserStatus.ONLINE);
         contactsList.getChildren().add(searchedContact);*/
-        userImage.setFill(new ImagePattern(me.getImage()));
+        if(me.getImage() != null) {
+            userImage.setFill(new ImagePattern(me.getImage()));
+        }
         new Thread(() -> {
             while (root.getScene() == null) {
                 try {
@@ -146,6 +157,7 @@ public class ChatController implements Initializable, IChatController {
                 this.searchArea.getChildren().add(create);
 
             });
+
             friendList.setOnMouseClicked(e -> {
                 active = Active.Friends;
             });
@@ -161,12 +173,12 @@ public class ChatController implements Initializable, IChatController {
             this.contactsView.prefHeightProperty().bind(root.getScene().heightProperty());
             this.chatArea.prefHeightProperty().bind(root.getScene().heightProperty());
             this.chatArea.prefWidthProperty().bind(root.getScene().widthProperty());
-            this.chatArea_hbox.prefWidthProperty().bind(root.getScene().widthProperty());
-            //this.chatArea_hbox.prefHeightProperty().bind(root.getScene().heightProperty());
             this.chatArea_scroll.prefWidthProperty().bind(root.getScene().widthProperty().multiply(.5));
             this.chatArea_scroll.prefHeightProperty().bind(root.getScene().heightProperty());
-            this.view.prefHeightProperty().bind(root.getScene().heightProperty());
-            this.view.prefWidthProperty().bind(root.getScene().widthProperty().multiply(.5));
+            //this.chatArea_scroll.vvalueProperty().bind(this.view.heightProperty());
+            //this.chatArea_scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER); // shimaa
+            this.view.prefHeightProperty().bind(this.root.getScene().heightProperty());
+            this.view.prefWidthProperty().bind(this.root.getScene().widthProperty().multiply(.5));
             this.messageTextArea.prefHeightProperty().bind(root.getScene().heightProperty());
             this.messageTextArea.prefWidthProperty().bind(root.getScene().widthProperty().multiply(.66).subtract(120));
 
@@ -189,8 +201,11 @@ public class ChatController implements Initializable, IChatController {
             }
         }).start();
         searchTextField.setOnKeyReleased(this::searchContacts);
-        SearchedGroupContact searchedGroupContact = new SearchedGroupContact(user);
-        contactsList.getChildren().add(searchedGroupContact);
+//        SearchedGroupContact searchedGroupContact = new SearchedGroupContact(user);
+//        contactsList.getChildren().add(searchedGroupContact);
+
+        setListnerForPressingEnter(); // shimaa
+        messageTextArea.setStyle("-fx-font-size:14");
     }
 
     public void sendAudio() {
@@ -250,9 +265,24 @@ public class ChatController implements Initializable, IChatController {
         for (Node c : contacts) {
             c.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
                 this.activeContact = (Contact) c;
-                System.out.println("active Contact is : "+ this.activeContact.getUser().getName());
             });
         }
+        System.out.println("active Contact is : "+ this.activeContact.getUser().getName());
+        receiverImage.setFill(new ImagePattern(activeContact.getUser().getImage()));
+        receiverNameLabel.setText(activeContact.getUser().getName());
+        final Background focusBackground = new Background( new BackgroundFill( Color.valueOf("#045ba5"), CornerRadii.EMPTY, Insets.EMPTY ) );
+        final Background unfocusBackground = new Background( new BackgroundFill( Color.valueOf("#1e82dc"), CornerRadii.EMPTY, Insets.EMPTY ) );
+
+        activeContact.setOnMouseClicked( ( e ) ->
+        {
+            activeContact.requestFocus();
+            //activeContact.setBackground(focusBackground);
+            activeContact.backgroundProperty().bind(Bindings
+                .when(activeContact.focusedProperty())
+                .then(focusBackground)
+                .otherwise(unfocusBackground));
+        } );
+        //loadMessageChat();
     }
 
     private void setToolTip() {
@@ -402,6 +432,7 @@ public class ChatController implements Initializable, IChatController {
     //    Start Shimaa
 
     String savedFilePath = null;
+    MessageView messageView;
     private Map<Integer, List<Message>> receiverMessages = new HashMap<>();
 
     @Override
@@ -415,23 +446,28 @@ public class ChatController implements Initializable, IChatController {
 
     @Override
     public void tempDisplayMessage(Message message) {
-        viewTextMessage = new MSGview(message);
+        messageView = new MessageView(message);
         if (me.getId() == message.getUserId()) {
-            viewTextMessage.setTextMSGview(SpeechDirection.RIGHT);
+            messageView.setDirection(SpeechDirection.RIGHT);
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
-                    view.getChildren().add(viewTextMessage);
+                    view.getChildren().add(messageView);
                 }
             });
         } else {
-            viewTextMessage.setTextMSGview(SpeechDirection.LEFT);
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                    view.getChildren().add(viewTextMessage);
-                }
-            });
+            if(activeContact.getUser().getId() == message.getUserId()) {
+                messageView.setDirection(SpeechDirection.LEFT);
+                messageView.setImage(activeContact.getUser().getImage());
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        view.getChildren().add(messageView);
+                    }
+                });
+            } else {
+                System.out.println("Message:  " + message.getMesssagecontent() + " from  "+ message.getUserId());
+            }
         }
         saveReceiverMessages(message.getUserId(), message);
     }
@@ -492,6 +528,50 @@ public class ChatController implements Initializable, IChatController {
         }
     }
 
+    int currentUserId = 0;
+    public void loadMessageChat(){
+        if(currentUserId != activeContact.getUser().getId()) {
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    view.getChildren().removeAll();
+                }
+            });
+            if(receiverMessages.get(activeContact.getUser().getId()) != null){
+                List<Message> messages = receiverMessages.get(activeContact.getUser().getId());
+                for (Message m : messages){
+                    tempDisplayMessage(m);
+                }
+            }
+            currentUserId = activeContact.getUser().getId();
+        }
+    }
+
+    @FXML
+    private void cleanchat(){
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                view.getChildren().clear();
+            }
+        });
+    }
+
+    private void setListnerForPressingEnter(){
+        messageTextArea.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent t) {
+                if (t.getCode().equals(KeyCode.ENTER)) {
+                    try {
+                        send();
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+        });
+    }
     // End shimaa
 
 
