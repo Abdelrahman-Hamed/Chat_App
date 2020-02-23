@@ -33,15 +33,6 @@ public class PrimaryController {
 
     @FXML
     private Button loginButton;
-    @FXML
-    private void switchToLogin()  {
-        try {
-            setRoot("register");
-        }
-        catch(IOException e){
-            System.out.println("no fxml file");
-        }
-    }
 
     @FXML
     private void phoneNumberChanged(KeyEvent evnet){

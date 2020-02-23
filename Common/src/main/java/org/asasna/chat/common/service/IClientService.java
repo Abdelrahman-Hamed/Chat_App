@@ -50,7 +50,7 @@ public interface IClientService extends Remote {
     /* end abeer */
 
     /* start shimaa */
-
+    public User getUser(int id) throws RemoteException;
     /* end shimaa */
 
 }

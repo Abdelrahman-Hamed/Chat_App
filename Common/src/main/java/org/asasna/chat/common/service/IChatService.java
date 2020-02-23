@@ -6,6 +6,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.RemoteRef;
 import java.util.List;
+import java.util.Map;
 
 import com.healthmarketscience.rmiio.*;
 
@@ -27,9 +28,11 @@ public interface IChatService extends Remote {
 
     void sendGroupMsg(ChatGroup group, Message groupMessage) throws RemoteException;
 
-    List<User> search(String phoneNumber) throws RemoteException;
+    Map<Boolean, List<User>> search(String phoneNumber) throws RemoteException;
 
     boolean sendFriendRequest(int fromUserId, int toUserId) throws RemoteException;
+
+    boolean cancelFriendRequest(int fromUserId, int toUserId) throws RemoteException;
 
     User getUser() throws RemoteException;
 
@@ -58,6 +61,6 @@ public interface IChatService extends Remote {
     /* end abeer */
 
     /* start shimaa */
-
+    public User getUser(int id) throws RemoteException;
     /* end shimaa */
 }

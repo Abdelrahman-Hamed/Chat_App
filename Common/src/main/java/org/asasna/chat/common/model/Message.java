@@ -28,4 +28,8 @@ public class Message implements Serializable {
         return messsagecontent;
     }
 
+    public String toString(){
+        return "User Id is " + userId + " , and Message content is " + messsagecontent;
+    }
+
 }

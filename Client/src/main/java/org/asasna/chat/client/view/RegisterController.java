@@ -9,13 +9,22 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import org.asasna.chat.client.App;
+import org.asasna.chat.client.Controller.Client;
+import org.asasna.chat.client.model.IChatController;
 import org.asasna.chat.client.util.Validation;
-
+import org.asasna.chat.common.model.Gender;
+import org.asasna.chat.common.model.User;
+import org.asasna.chat.common.model.UserStatus;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
+import java.rmi.RemoteException;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -62,7 +71,15 @@ public class RegisterController implements Initializable {
     TextArea bio;
     ToggleGroup tg;
     ArrayList<String> countries;
-    Image defaultImage = new Image("file:/C:/Users/Aya/Desktop/IO/Icon.jpg");
+    Image defaultImage;
+
+    {
+        try {
+            defaultImage = new Image(new FileInputStream("./client/src/main/resources/org/asasna/chat/client/view/abdo.jpg"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
     //Image defaultImage = new Image("files:resources.org.example.Icon.jpg");
 
 
@@ -222,7 +239,13 @@ public class RegisterController implements Initializable {
     public void handleSubmitAction() {
         if (checkingPhoneNum() & checkingRadioButtons() & checkComboBox() & checkBio() & checkingName() & checkingEmail() & checkingPassword() & checkingConfirmPassword() & checkDatePicker()) {
             try {
-                App.setRoot("login");
+                User me = new User(name.getText(), phoneNumber.getText(), email.getText(), password.getText(), getSelectedGender(), countryBox.getValue(), convertToDateViaSqlDate(dateOfBirth.getValue()), bio.getText(), UserStatus.ONLINE, "abdo.jpg", true, false);
+                me.setImage(defaultImage);
+                if (addingUser(me)) {
+                    App.setRoot("login");
+                } else {
+                    phoneNumber.setText("phone already registered !");
+                }
             } catch (IOException e) {
                 System.out.println("no fxml file");
             }
@@ -288,4 +311,44 @@ public class RegisterController implements Initializable {
 
     public RegisterController() {
     }
+
+    /*nehal register*/
+    private Gender getSelectedGender() {
+        return male.isSelected() ? Gender.Male : Gender.Female;
+    }
+
+    Client myContoller;
+
+    {
+        try {
+            myContoller = new Client(this); // edited by shimaa
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean addingUser(User me) throws RemoteException {
+        System.out.println("ide = " + me.getId());
+        System.out.println("name =" + me.getName());
+        System.out.println("phone =" + me.getPhone());
+        System.out.println("mail =" + me.getEmail());
+        System.out.println("password =" + me.getPassword());
+        System.out.println("gender =" + me.getGender());
+        System.out.println("country =" + me.getCountry());
+        System.out.println("bio =" + me.getBio());
+        System.out.println("birth Date =" + me.getDateOfBirth());
+        System.out.println("status =" + me.getStatus());
+        System.out.println("image URL =" + me.getImageURL());
+        System.out.println("verified =" + me.isVerified());
+        System.out.println("chat bot  =" + me.isChatbotOption());
+        if (myContoller.isvalidUser(me)) {
+            myContoller.addUser(me);
+            return true;
+        } else return false;
+    }
+
+    public Date convertToDateViaSqlDate(LocalDate dateToConvert) {
+        return java.sql.Date.valueOf(dateToConvert);
+    }
+
 }

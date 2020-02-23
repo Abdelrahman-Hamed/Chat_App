@@ -1,7 +1,7 @@
 package org.asasna.chat.client.Controller;
 
 import org.asasna.chat.client.model.IChatController;
-import org.asasna.chat.client.view.PrimaryController;
+import org.asasna.chat.client.view.RegisterController;
 import org.asasna.chat.common.model.Message;
 import org.asasna.chat.common.model.Notification;
 import org.asasna.chat.common.model.User;
@@ -20,6 +20,8 @@ import java.rmi.server.RMIClientSocketFactory;
 import java.rmi.server.RemoteRef;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.io.IOUtils;
 
 import com.healthmarketscience.rmiio.*;
@@ -28,11 +30,12 @@ import javax.rmi.ssl.SslRMIClientSocketFactory;
 
 public class Client extends UnicastRemoteObject implements IClientService {
     IChatController chatController;
+    RegisterController registerController;
     IChatService chatService;
     IAuthenticationService authenticationService;
     private User user;
 
-    protected Client() throws RemoteException {
+    public Client() throws RemoteException {
     }
 
 //    public Client(PrimaryController primaryController) throws RemoteException {
@@ -62,7 +65,6 @@ public class Client extends UnicastRemoteObject implements IClientService {
         } catch (NotBoundException ex) {
             ex.printStackTrace();
         }
-//        }
     }
 
     @Override
@@ -177,6 +179,16 @@ public class Client extends UnicastRemoteObject implements IClientService {
         chatController.tempDisplayMessage(message);
     }
 
+    public boolean cancelFriendRequest(int userId) {
+        try {
+            boolean done = chatService.cancelFriendRequest(chatService.getUser().getId(), userId);
+            return done;
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     /* ِ start  Abdo */
 
     /* end Abdo */
@@ -186,6 +198,13 @@ public class Client extends UnicastRemoteObject implements IClientService {
     /* end sayed */
 
     /* start nehal */
+    public void addUser(User me) throws RemoteException {
+        authenticationService.addUser(me);
+    }
+
+    public boolean isvalidUser(User me) throws RemoteException {
+       return authenticationService.isValid(me);
+    }
 
     /* end nehal */
 
@@ -198,6 +217,12 @@ public class Client extends UnicastRemoteObject implements IClientService {
     /* end abeer */
 
     /* start shimaa */
+
+    @Override
+    public User getUser(int id) throws RemoteException {
+        User user2 = chatService.getUser(id);
+        return user2;
+    }
 
     /* end shimaa */
 }
