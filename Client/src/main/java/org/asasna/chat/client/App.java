@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.asasna.chat.client.Controller.Client;
 import org.asasna.chat.client.model.IChatController;
+import org.asasna.chat.client.view.Controller;
 import org.asasna.chat.client.view.PrimaryController;
 
 import java.io.IOException;
@@ -18,7 +19,7 @@ import java.rmi.RemoteException;
 public class App extends Application {
 
     private static Scene scene;
-    private  static PrimaryController primaryController;
+    private  static PrimaryController primaryController; // edited
     @Override
     public void start(Stage stage) throws IOException {
         scene = new Scene(loadFXML("login"), 900, 600);
@@ -33,24 +34,13 @@ public class App extends Application {
 
     private static Parent loadFXML(String fxml) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
-
         Parent parent = fxmlLoader.load();
         primaryController = (PrimaryController) fxmlLoader.getController();
-
         return parent;
     }
 
     public static void main(String[] args) {
-        FXMLLoader loader = new FXMLLoader(App.class.getResource("chat.fxml"));
-        IChatController chatController=loader.getController();
-        /*try {
-            Client c = new Client(chatController);
-        }
-        catch(RemoteException e){
-            e.printStackTrace();
-        }*/
         launch();
-
     }
 
 }

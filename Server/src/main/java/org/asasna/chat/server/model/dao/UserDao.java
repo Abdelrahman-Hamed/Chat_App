@@ -6,10 +6,13 @@ import javafx.scene.chart.PieChart;
 import javafx.scene.image.Image;
 import org.asasna.chat.common.model.*;
 import org.asasna.chat.server.model.db.DBConnection;
+import org.asasna.chat.server.view.PasswordAuthentication;
 
 
 import javax.sql.RowSet;
 import javax.xml.transform.Result;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -109,7 +112,11 @@ public class UserDao implements IUserDao {
             preparedStatement.setString(2, password);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                return extractUser(resultSet);
+                User user =  extractUser(resultSet);
+//                PasswordAuthentication passwordAuthentication = new PasswordAuthentication();
+//                boolean found = passwordAuthentication.authenticate(password, user.getPassword());
+//                if(found) return user;
+                return user;
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -221,14 +228,17 @@ public class UserDao implements IUserDao {
     public ObservableList<PieChart.Data> getUsersByGender() {
         int females = 0;
         int males = 0;
-        ResultSet resultSet;
+        ResultSet resultSet ;
         ObservableList<PieChart.Data> genderData = FXCollections.observableArrayList();
-        String femaleSql = "select count(gender) from contacts where gender =" + Gender.Female + ")";
-        String maleSql = "select count(gender) from contacts where gender =" + Gender.Male + ")";
         try {
-            resultSet = statement.executeQuery(femaleSql);
+            preparedStatement = conn.prepareStatement("select count(gender) from users where gender = ?");
+            preparedStatement.setString(1, "Female");
+            resultSet = preparedStatement.executeQuery();
+            resultSet.next();
             females = resultSet.getInt(1);
-            resultSet = statement.executeQuery(maleSql);
+            preparedStatement.setString(1, "Male");
+            resultSet = preparedStatement.executeQuery();
+            resultSet.next();
             males = resultSet.getInt(1);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -249,14 +259,16 @@ public class UserDao implements IUserDao {
     public ObservableList<PieChart.Data> getUsersByStatus() {
         int online = 0;
         int offline = 0;
-        ResultSet resultSet;
+        ResultSet resultSet ;
         ObservableList<PieChart.Data> statusData = FXCollections.observableArrayList();
-        String onlineSql = "select count(status) from contacts where status =" + UserStatus.ONLINE + ")";
-        String offlineSql = "select count(status) from contacts where status <>" + UserStatus.ONLINE + ")";
+        String onlineSql = "select count(status_id) from users where status_id =1" ;
+        String offlineSql = "select count(status_id) from users where status_id <> 1"  ;
         try {
             resultSet = statement.executeQuery(onlineSql);
+            resultSet.next();
             online = resultSet.getInt(1);
             resultSet = statement.executeQuery(offlineSql);
+            resultSet.next();
             offline = resultSet.getInt(1);
         } catch (SQLException e) {
             e.printStackTrace();

@@ -1,7 +1,7 @@
 package org.asasna.chat.client.Controller;
 
 import org.asasna.chat.client.model.IChatController;
-import org.asasna.chat.client.view.PrimaryController;
+import org.asasna.chat.client.view.RegisterController;
 import org.asasna.chat.common.model.Message;
 import org.asasna.chat.common.model.Notification;
 import org.asasna.chat.common.model.User;
@@ -16,7 +16,6 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.rmi.server.RemoteRef;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 import java.util.Map;
@@ -27,25 +26,28 @@ import com.healthmarketscience.rmiio.*;
 
 public class Client extends UnicastRemoteObject implements IClientService {
     IChatController chatController;
+    RegisterController registerController;
     IChatService chatService;
     IAuthenticationService authenticationService;
     private User user;
 
-    protected Client() throws RemoteException {
+    public Client() throws RemoteException {
     }
 
-//    public Client(PrimaryController primaryController) throws RemoteException {
-//        try {
-//            Registry reg = LocateRegistry.getRegistry(5000);
-//            authenticationService = (IAuthenticationService) reg.lookup("AuthenticationService");
-//        } catch (RemoteException | NotBoundException e) {
-//            e.printStackTrace();
-//        }
-//    }
+    public Client(RegisterController registerController) throws RemoteException {
+        try {
+            this.registerController = registerController;
+            Registry reg = LocateRegistry.getRegistry(2000);
+            authenticationService = (IAuthenticationService) reg.lookup("AuthenticationService");
+        } catch (RemoteException | NotBoundException e) {
+            e.printStackTrace();
+        }
+    }
 
     public Client(IChatController chatController) throws RemoteException {
         this.chatController = chatController;
         Registry reg = null;
+        reg = LocateRegistry.getRegistry(2000);
 //        try {
 //        reg = LocateRegistry.getRegistry("10.145.3.221", 9000);
         reg  =LocateRegistry.getRegistry(5000);
@@ -107,6 +109,7 @@ public class Client extends UnicastRemoteObject implements IClientService {
 
     public boolean sendFriendRequest(int toUserId) {
         try {
+            System.out.println("Send Friend Request");
             boolean done = chatService.sendFriendRequest(chatService.getUser().getId(), toUserId);
             return done;
         } catch (RemoteException e) {
@@ -202,7 +205,6 @@ public class Client extends UnicastRemoteObject implements IClientService {
     }
     public boolean cancelFriendRequest(int userId) {
         try {
-            System.out.println("UserId: " + userId);
             boolean done = chatService.cancelFriendRequest(chatService.getUser().getId(), userId);
             return done;
         } catch (RemoteException e) {
@@ -220,6 +222,13 @@ public class Client extends UnicastRemoteObject implements IClientService {
     /* end sayed */
 
     /* start nehal */
+    public void addUser(User me) throws RemoteException {
+        authenticationService.addUser(me);
+    }
+
+    public boolean isvalidUser(User me) throws RemoteException {
+       return authenticationService.isValid(me);
+    }
 
     /* end nehal */
 
@@ -232,6 +241,12 @@ public class Client extends UnicastRemoteObject implements IClientService {
     /* end abeer */
 
     /* start shimaa */
+
+    @Override
+    public User getUser(int id) throws RemoteException {
+        User user2 = chatService.getUser(id);
+        return user2;
+    }
 
     /* end shimaa */
 }

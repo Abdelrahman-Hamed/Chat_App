@@ -7,7 +7,7 @@ import org.asasna.chat.common.model.UserStatus;
 
 import java.rmi.RemoteException;
 
-public interface IChatController {
+public interface IChatController{
     void displayMessage(Message msg);
 
     void changeStatus(UserStatus status);
