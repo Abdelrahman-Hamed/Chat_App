@@ -7,7 +7,7 @@ import org.asasna.chat.common.model.UserStatus;
 
 import java.rmi.RemoteException;
 
-public interface IChatController {
+public interface IChatController{
     void displayMessage(Message msg);
 
     void changeStatus(UserStatus status);
@@ -19,6 +19,6 @@ public interface IChatController {
     void sendMessage(int receiverId, Message message);
 
     void tempDisplayMessage(Message message);
-    public void tempFileDisplayMessage(Message message);
-    public void reciveFile(String fileName);
+
+    void addNotification(Notification notification);
 }

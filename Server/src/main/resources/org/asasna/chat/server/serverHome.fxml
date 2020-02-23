@@ -41,9 +41,9 @@
          </graphic>
       </Button>
       <PieChart fx:id="chart" layoutX="11.0" layoutY="276.0" prefHeight="211.0" prefWidth="368.0" style="-fx-background-color: white; -fx-background-radius: 30; -fx-border-color: #25c7d9; -fx-border-radius: 30;" stylesheets="@colors.css" title="Statistics" />
-      <Button layoutX="306.0" layoutY="234.0" mnemonicParsing="false" style="-fx-background-radius: 30; -fx-border-color: #25c7d9; -fx-border-radius: 30;" text="Gender" textFill="#2b2f2f" />
-      <Button layoutX="220.0" layoutY="234.0" mnemonicParsing="false" style="-fx-background-radius: 30; -fx-border-color: #25c7d9; -fx-border-radius: 30;" text="Country" textFill="#2b2f2f" />
-      <Button layoutX="99.0" layoutY="234.0" mnemonicParsing="false" style="-fx-background-radius: 30; -fx-border-color: #25c7d9; -fx-border-radius: 30;" text="Online/OffLine" textFill="#2b2f2f" />
+      <Button fx:id="gender" layoutX="306.0" layoutY="234.0" mnemonicParsing="false" style="-fx-background-radius: 30; -fx-border-color: #25c7d9; -fx-border-radius: 30;" text="Gender" textFill="#2b2f2f" />
+      <Button fx:id="country" layoutX="220.0" layoutY="234.0" mnemonicParsing="false" style="-fx-background-radius: 30; -fx-border-color: #25c7d9; -fx-border-radius: 30;" text="Country" textFill="#2b2f2f" />
+      <Button fx:id="status" layoutX="99.0" layoutY="234.0" mnemonicParsing="false" style="-fx-background-radius: 30; -fx-border-color: #25c7d9; -fx-border-radius: 30;" text="Online/OffLine" textFill="#2b2f2f" />
    </children>
    <effect>
       <Glow />

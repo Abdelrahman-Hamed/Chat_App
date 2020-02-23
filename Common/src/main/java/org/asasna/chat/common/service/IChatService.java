@@ -6,6 +6,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.RemoteRef;
 import java.util.List;
+import java.util.Map;
 
 import com.healthmarketscience.rmiio.*;
 
@@ -27,15 +28,23 @@ public interface IChatService extends Remote {
 
     void sendGroupMsg(ChatGroup group, Message groupMessage) throws RemoteException;
 
-    List<User> search(String phoneNumber) throws RemoteException;
+    Map<Boolean, List<User>> search(String phoneNumber) throws RemoteException;
 
     boolean sendFriendRequest(int fromUserId, int toUserId) throws RemoteException;
+
+    boolean cancelFriendRequest(int fromUserId, int toUserId) throws RemoteException;
 
     User getUser() throws RemoteException;
 
     void sendFile(RemoteInputStream inFile, String suffix, int friendId, Message message) throws RemoteException;
 
     void getFile(String fileName,int clickerId) throws RemoteException;
+
+    void acceptRequest(int fromUserId, int id) throws RemoteException;
+
+    void cancelRequest(int fromUserId, int id) throws RemoteException;
+
+    List<Notification> loadNotifications(int id) throws RemoteException;
 
     /* ِ start  Abdo */
 
@@ -58,6 +67,6 @@ public interface IChatService extends Remote {
     /* end abeer */
 
     /* start shimaa */
-
+    public User getUser(int id) throws RemoteException;
     /* end shimaa */
 }

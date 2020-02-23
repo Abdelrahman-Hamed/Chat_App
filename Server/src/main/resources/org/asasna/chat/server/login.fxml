@@ -56,11 +56,7 @@
                         <Button fx:id="loginButton" disable="true" mnemonicParsing="false" onAction="#loginButtonClicked" prefHeight="32.0" prefWidth="89.0" style="-fx-border-radius: 15px;" styleClass="color-white, main-background-color" text="Login" />
                      </children>
                   </HBox>
-                  <HBox alignment="CENTER" prefHeight="37.0" prefWidth="390.0">
-                     <children>
-                        <Hyperlink onAction="#switchToLogin" text="Create Account" />
-                     </children>
-                  </HBox>
+                  <HBox alignment="CENTER" prefHeight="37.0" prefWidth="390.0" />
                </children>
             </VBox>
          </center>
@@ -78,7 +74,7 @@
                            </graphic></Button>
                         <Button fx:id="close" mnemonicParsing="false" onAction="#close" onMouseClicked="#close" style="-fx-background-color: transparent; -fx-background-color: transparent;">
                            <graphic>
-                              <FontIcon fx:id="close" iconColor="#27cad9" iconLiteral="mdi-window-close" iconSize="23" strokeType="OUTSIDE" strokeWidth="0.0" text="">
+                              <FontIcon iconColor="#27cad9" iconLiteral="mdi-window-close" iconSize="23" strokeType="OUTSIDE" strokeWidth="0.0" text="">
                                  <effect>
                                     <Glow />
                                  </effect></FontIcon>
