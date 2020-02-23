@@ -7,6 +7,8 @@ module org.asasna.client {
     requires rmiio;
     requires com.jfoenix;
     requires commons.io;
+    requires java.xml;
+    requires java.desktop;
     opens org.asasna.chat.client;
     opens org.asasna.chat.client.view to javafx.fxml;
     exports org.asasna.chat.client;

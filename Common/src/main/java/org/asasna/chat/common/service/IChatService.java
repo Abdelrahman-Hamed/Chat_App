@@ -40,6 +40,12 @@ public interface IChatService extends Remote {
 
     void getFile(int friendId, int userId, int clickerId) throws RemoteException;
 
+    void acceptRequest(int fromUserId, int id) throws RemoteException;
+
+    void cancelRequest(int fromUserId, int id) throws RemoteException;
+
+    List<Notification> loadNotifications(int id) throws RemoteException;
+
     /* ِ start  Abdo */
 
     /* end Abdo */

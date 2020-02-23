@@ -47,7 +47,7 @@ public class Client extends UnicastRemoteObject implements IClientService {
         this.chatController = chatController;
         Registry reg = null;
 //        try {
-        reg = LocateRegistry.getRegistry(2000);
+        reg = LocateRegistry.getRegistry("10.145.3.221", 9000);
 //            this.user = new User(4, "Mohamed", "01027420575");
 //            chatService.register(this.user.getId(), this);
 //        } catch (RemoteException | NotBoundException e) {
@@ -84,7 +84,7 @@ public class Client extends UnicastRemoteObject implements IClientService {
 
     @Override
     public void recieveNotivication(Notification notification) throws RemoteException {
-
+        chatController.addNotification(notification);
     }
 
     @Override
@@ -149,6 +149,25 @@ public class Client extends UnicastRemoteObject implements IClientService {
     }
 
     @Override
+    public void acceptRequest(int fromUserId) {
+        try {
+            chatService.acceptRequest(fromUserId, user.getId());
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public List<Notification> loadNotifications() {
+        try {
+            return chatService.loadNotifications(user.getId());
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
     public void downloadFile(RemoteInputStream inFile, String suffix,String name) throws RemoteException {
         new Thread(() -> {
             try {
@@ -170,8 +189,19 @@ public class Client extends UnicastRemoteObject implements IClientService {
         chatController.tempDisplayMessage(message);
     }
 
+    public boolean rejectFriendRequest(int userId) {
+        try {
+            System.out.println("UserId: " + userId);
+            boolean done = chatService.cancelFriendRequest(userId, chatService.getUser().getId());
+            return done;
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
     public boolean cancelFriendRequest(int userId) {
         try {
+            System.out.println("UserId: " + userId);
             boolean done = chatService.cancelFriendRequest(chatService.getUser().getId(), userId);
             return done;
         } catch (RemoteException e) {

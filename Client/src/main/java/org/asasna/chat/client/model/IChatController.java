@@ -19,4 +19,6 @@ public interface IChatController {
     void sendMessage(int receiverId, Message message);
 
     void tempDisplayMessage(Message message);
+
+    void addNotification(Notification notification);
 }
