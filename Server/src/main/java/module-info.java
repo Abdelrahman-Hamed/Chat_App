@@ -12,6 +12,7 @@ module org.asasna.server {
     requires commons.io;
     requires log4j;
     requires org.kordamp.ikonli.javafx;
+    requires javafx.swing;
     opens org.asasna.chat.server to javafx.fxml;
     opens org.asasna.chat.server.view to javafx.fxml;
     exports org.asasna.chat.server;

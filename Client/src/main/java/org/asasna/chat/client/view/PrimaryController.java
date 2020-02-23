@@ -41,7 +41,6 @@ public class PrimaryController implements Initializable{
     Scene scene;
 
     public PrimaryController() {
-    public PrimaryController(){
 
     }
     @Override
@@ -71,9 +70,6 @@ public class PrimaryController implements Initializable{
                 e.printStackTrace();
             }
         }
-    }
-    public void setScene(Scene scene){
-        this.scene = scene;
     }
 
 
@@ -184,7 +180,6 @@ public class PrimaryController implements Initializable{
                 IChatService chatService = client.login(phoneNumber.getText(), password.getText());
                 if (chatService == null) {
                     System.out.println("Phone Number OR Password is Incorrect");
-                } else {
                 }else{
                     if(rememberMe.isSelected()){
                         createRememberMeFile(phoneNumber.getText(), password.getText());

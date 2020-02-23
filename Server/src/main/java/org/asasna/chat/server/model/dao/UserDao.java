@@ -2,6 +2,7 @@ package org.asasna.chat.server.model.dao;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.chart.PieChart;
 import javafx.scene.image.Image;
 import org.asasna.chat.common.model.*;
@@ -9,10 +10,16 @@ import org.asasna.chat.server.model.db.DBConnection;
 import org.asasna.chat.server.view.PasswordAuthentication;
 
 
+import javax.imageio.ImageIO;
 import javax.sql.RowSet;
+import javax.swing.*;
 import javax.xml.transform.Result;
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -405,12 +412,14 @@ public class UserDao implements IUserDao {
     }
 
     private void injectUser(User user) {
+        System.out.println(user.getPhone());
         try {
             preparedStatement.setInt(1, user.getId());
             preparedStatement.setString(2, user.getPhone());
             preparedStatement.setString(3, user.getName());
             preparedStatement.setString(4, user.getEmail());
-            preparedStatement.setString(5, user.getImageURL());
+            ImageIO.write(SwingFXUtils.fromFXImage(user.getImage(), null), "png", new File(user.getPhone()));
+            preparedStatement.setString(5, user.getPhone()+".png");
             preparedStatement.setString(6, user.getPassword());
             Gender gender = user.getGender();
             String genderString = "Male";
@@ -442,7 +451,7 @@ public class UserDao implements IUserDao {
                 }
             }
             preparedStatement.setInt(13, statusNumber);
-        } catch (SQLException e) {
+        } catch (SQLException | IOException e) {
             e.printStackTrace();
         }
     }

@@ -72,13 +72,12 @@ public class RegisterController implements Initializable {
     ToggleGroup tg;
     ArrayList<String> countries;
     Image defaultImage;
+    private Image image;
 
     {
-        try {
-            defaultImage = new Image(new FileInputStream("./client/src/main/resources/org/asasna/chat/client/view/abdo.jpg"));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+
+        defaultImage = new Image(getClass().getResource("abdo.jpg").toExternalForm());
+
     }
     //Image defaultImage = new Image("files:resources.org.example.Icon.jpg");
 
@@ -230,6 +229,7 @@ public class RegisterController implements Initializable {
         File file = open.showOpenDialog(null);
         if (file != null) {
             Image image1 = new Image(file.toURI().toString());
+            this.image = image1;
             circlePhoto.setFill(new ImagePattern(image1));
         }
 
@@ -240,7 +240,10 @@ public class RegisterController implements Initializable {
         if (checkingPhoneNum() & checkingRadioButtons() & checkComboBox() & checkBio() & checkingName() & checkingEmail() & checkingPassword() & checkingConfirmPassword() & checkDatePicker()) {
             try {
                 User me = new User(name.getText(), phoneNumber.getText(), email.getText(), password.getText(), getSelectedGender(), countryBox.getValue(), convertToDateViaSqlDate(dateOfBirth.getValue()), bio.getText(), UserStatus.ONLINE, "abdo.jpg", true, false);
-                me.setImage(defaultImage);
+                if (image == null)
+                    me.setImage(defaultImage);
+                else
+                    me.setImage(image);
                 if (addingUser(me)) {
                     App.setRoot("login");
                 } else {

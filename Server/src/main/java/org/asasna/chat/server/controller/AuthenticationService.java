@@ -52,7 +52,7 @@ public class AuthenticationService extends UnicastRemoteObject implements IAuthe
 
         try {
             userDao = new UserDao();
-            userDao.addUser(user);
+            userDao.addUser(me);
         } catch (SQLException e) {
             e.printStackTrace();
         }

@@ -104,14 +104,16 @@ public class App extends Application {
     public static void main(String[] args) {
 
         try {
-            System.setProperty("javax.net.ssl.keyStore","/home/abdulrahman/IdeaProjects/ITI_Chat/sysdmsim.ks");
+            /*System.setProperty("javax.net.ssl.keyStore","/home/abdulrahman/IdeaProjects/ITI_Chat/sysdmsim.ks");
             System.setProperty("javax.net.ssl.keyStorePassword","123456");
             System.setProperty("javax.net.ssl.trustStore","/home/abdulrahman/IdeaProjects/ITI_Chat/sysdmtruststore.ks");
             System.setProperty("javax.net.ssl.trustStorePassword","123456");
-            System.setProperty("java.rmi.server.hostname", "10.145.4.235");
+            //System.setProperty("java.rmi.server.hostname", "10.145.4.235");
             RMIClientSocketFactory rmicsf = new SslRMIClientSocketFactory();
             RMIServerSocketFactory rmissf = new SslRMIServerSocketFactory();
             Registry reg = LocateRegistry.createRegistry(5001, rmicsf, rmissf);
+            IAuthenticationService iAuthenticationService = new AuthenticationService();*/
+            Registry reg = LocateRegistry.createRegistry(5001);
             IAuthenticationService iAuthenticationService = new AuthenticationService();
             Logger logger= LogManager.getLogger(App.class);
             //BasicConfigurator.configure();

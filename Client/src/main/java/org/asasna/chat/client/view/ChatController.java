@@ -290,8 +290,8 @@ public class ChatController implements Initializable, IChatController {
 
         setListnerForPressingEnter(); // shimaa
         messageTextArea.setStyle("-fx-font-size:14");
-        SearchedGroupContact searchedGroupContact = new SearchedGroupContact(user);
-        contactsList.getChildren().add(searchedGroupContact);
+        /*SearchedGroupContact searchedGroupContact = new SearchedGroupContact(user);
+        contactsList.getChildren().add(searchedGroupContact);*/
 
 
 //        Sayed Start
@@ -437,7 +437,7 @@ private AudioFormat getAudioFormat(){
         this.client = client;
     }
 
-    /*@FXML
+    @FXML
     private void getSelectedContact() {
         ObservableList<Node> contacts;
         contacts = contactsList.getChildren();
@@ -447,7 +447,7 @@ private AudioFormat getAudioFormat(){
                 System.out.println("active Contact is : " + this.activeContact.getUser().getName());
             });
         }
-    }*/
+    }
         /*    });
         }
         System.out.println("active Contact is : "+ this.activeContact.getUser().getName());
