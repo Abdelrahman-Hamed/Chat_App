@@ -16,6 +16,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.RemoteRef;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 import java.util.Map;
@@ -48,9 +49,10 @@ public class Client extends UnicastRemoteObject implements IClientService {
         this.chatController = chatController;
         Registry reg = null;
         reg = LocateRegistry.getRegistry(2000);
+//        reg = LocateRegistry.getRegistry(2000);
 //        try {
 //        reg = LocateRegistry.getRegistry("10.145.3.221", 9000);
-        reg  =LocateRegistry.getRegistry(5000);
+//        reg  =LocateRegistry.getRegistry(2000);
 //            this.user = new User(4, "Mohamed", "01027420575");
 //            chatService.register(this.user.getId(), this);
 //        } catch (RemoteException | NotBoundException e) {
@@ -205,6 +207,7 @@ public class Client extends UnicastRemoteObject implements IClientService {
     }
     public boolean cancelFriendRequest(int userId) {
         try {
+            System.out.println("UserId: " + userId);
             boolean done = chatService.cancelFriendRequest(chatService.getUser().getId(), userId);
             return done;
         } catch (RemoteException e) {

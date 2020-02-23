@@ -73,6 +73,7 @@ public class PrimaryController{
     public void setScene(Scene scene){
         this.scene = scene;
     }
+
     @FXML
     private TextField phoneNumber;
 

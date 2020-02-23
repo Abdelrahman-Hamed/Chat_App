@@ -8,6 +8,7 @@ module org.asasna.client {
     requires com.jfoenix;
     requires commons.io;
     requires java.xml;
+    requires java.sql;
     requires java.desktop;
     requires java.xml;
     requires java.sql;

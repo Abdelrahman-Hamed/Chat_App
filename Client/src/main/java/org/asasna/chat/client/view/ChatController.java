@@ -228,6 +228,11 @@ public class ChatController implements Initializable, IChatController {
             System.out.println("Size: " + notifications.size());
         }).start();
         searchTextField.setOnKeyReleased(this::searchContacts);
+//        SearchedGroupContact searchedGroupContact = new SearchedGroupContact(user);
+//        contactsList.getChildren().add(searchedGroupContact);
+
+        setListnerForPressingEnter(); // shimaa
+        messageTextArea.setStyle("-fx-font-size:14");
         SearchedGroupContact searchedGroupContact = new SearchedGroupContact(user);
         contactsList.getChildren().add(searchedGroupContact);
 
@@ -601,7 +606,7 @@ private AudioFormat getAudioFormat(){
         this.notifications.add(notification);
     }
 
-    private Map<Integer, List<Message>> receiverMessages = new HashMap<>();
+//    private Map<Integer, List<Message>> receiverMessages = new HashMap<>();
 
     private void saveReceiverMessages(int receiverId, Message message) {
         if (receiverMessages.get(receiverId) == null) {
@@ -714,6 +719,14 @@ private AudioFormat getAudioFormat(){
 
     @FXML
     public void send() throws RemoteException {
+//        String messageTXT = messageTextArea.getText();
+//        Contact contact = activeContact;
+//        Message mes = new Message(1, messageTXT);
+//        if (contact.isGroup())
+//            client.sendGroupMessage(((GroupContact) contact).getChatGroup(), mes);
+//        messageTextArea.setText("");
+//        displayMessage(mes);
+//        System.out.println(messageTXT);
         int receiverId = activeContact.getUser().getId();
         int senderId = me.getId();
         String messageContent = messageTextArea.getText();
