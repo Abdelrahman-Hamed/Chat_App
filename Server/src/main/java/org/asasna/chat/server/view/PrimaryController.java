@@ -64,10 +64,10 @@ public class PrimaryController {
 
     private void loadHomePage(ActionEvent event){
         try {
-            setRoot("serverHome");
+            setRoot("server");
         }
             catch(IOException e){
-            System.out.println("no serverHome.fxml file");
+            System.out.println("no server.fxml file");
         }
     }
 

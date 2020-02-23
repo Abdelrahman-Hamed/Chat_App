@@ -10,6 +10,7 @@ import javafx.scene.Node;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import org.asasna.chat.server.App;
 import org.asasna.chat.server.controller.AuthenticationService;
@@ -22,6 +23,29 @@ import java.util.ResourceBundle;
 public class ServerHomeController implements Initializable {
     @FXML
     PieChart chart;
+
+    @FXML
+    Button genderButton ;
+    @FXML
+    Button statusButton ;
+
+    @FXML
+    Pane chatsPane;
+    @FXML
+    Pane settingPane;
+    @FXML
+    Pane announcmentPane;
+
+
+    public Button getGenderButton() {
+        return genderButton;
+    }
+
+    public Button getStatusButton() {
+        return statusButton;
+    }
+
+    App app;
     ObservableList<PieChart.Data> data;
     AuthenticationService authenticationService;
 
@@ -33,38 +57,34 @@ public class ServerHomeController implements Initializable {
         }
     }
 
-    App app;
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-      /*  data = FXCollections.observableArrayList(new PieChart.Data("Males", 10)
+        data = FXCollections.observableArrayList(new PieChart.Data("Males", 10)
                 , new PieChart.Data("Females", 90));
-        */
-        try {
+                 chart.setData(data);
+
+
+        genderButton.setOnAction((actionEvent)->{try {
             data = authenticationService.getGenderData();
         } catch (RemoteException e) {
             e.printStackTrace();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        Platform.runLater(()->{
-            chart.setData(data);
-        });
+            Platform.runLater(()->{
+                chart.setData(data);
+            });});
+        statusButton.setOnAction((actionEvent)->{try {
+            data = authenticationService.getStatusData();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+            Platform.runLater(()->{
+                chart.setData(data);
+            });});
 
-        this.getStatusData();
-
-    }
-
-
-    @FXML
-    private void close(ActionEvent event) {
-        Stage stage = (Stage) (((Node) event.getSource()).getScene().getWindow());
-        stage.close();
-    }
-
-    @FXML
-    private void min(MouseEvent event) {
-        Stage stage = (Stage) (((Node) event.getSource()).getScene().getWindow());
-        stage.setIconified(true);
     }
 
     @FXML
@@ -95,5 +115,41 @@ public class ServerHomeController implements Initializable {
     @FXML
     public void closeService() throws RemoteException, NotBoundException {
         app.getReg().unbind("AuthenticationService");
+    }
+    @FXML
+    public void chartsPage(){
+        chatsPane.setDisable(false);
+        chatsPane.setOpacity(1);
+        settingPane.setDisable(true);
+        settingPane.setOpacity(0);
+        announcmentPane.setDisable(true);
+        announcmentPane.setOpacity(0);
+    }
+    @FXML
+    public void homePage(){
+        chatsPane.setDisable(true);
+        chatsPane.setOpacity(0);
+        settingPane.setDisable(true);
+        settingPane.setOpacity(0);
+        announcmentPane.setDisable(true);
+        announcmentPane.setOpacity(0);
+    }
+    @FXML
+    public void settingsPage(){
+        chatsPane.setDisable(true);
+        chatsPane.setOpacity(0);
+        settingPane.setDisable(false);
+        settingPane.setOpacity(1);
+        announcmentPane.setDisable(true);
+        announcmentPane.setOpacity(0);
+    }
+    @FXML
+    public void announcementsPage(){
+        chatsPane.setDisable(true);
+        chatsPane.setOpacity(0);
+        settingPane.setDisable(true);
+        settingPane.setOpacity(0);
+        announcmentPane.setDisable(false);
+        announcmentPane.setOpacity(1);
     }
 }

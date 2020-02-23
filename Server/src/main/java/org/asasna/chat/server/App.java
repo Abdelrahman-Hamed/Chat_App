@@ -29,8 +29,6 @@ public class App extends Application {
 
     private static Scene scene;
     //private static Stage primaryStage;
-    private double xOffset = 0;
-    private double yOffset = 0;
     Registry reg;
     public static ServerHomeController controller;
     IAuthenticationService iAuthenticationService ;
@@ -38,39 +36,21 @@ public class App extends Application {
     public void start(Stage primaryStage) throws IOException {
         try {
             iAuthenticationService=new AuthenticationService();
-            reg= LocateRegistry.createRegistry(9000);
+            reg= LocateRegistry.createRegistry(5000);
             reg.rebind("AuthenticationService", iAuthenticationService );
 
         }
         catch (RemoteException ex) {
             ex.printStackTrace();
         }
-        scene = new Scene(loadFXML("serverHome"));
-        /*
-        AnchorPane root= (AnchorPane) scene.lookup("#root");
-        root.setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                xOffset = event.getSceneX();
-                yOffset = event.getSceneY();
-            }
-        });
-        root.setOnMouseDragged(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                primaryStage.setX(event.getScreenX() - xOffset);
-                primaryStage.setY(event.getScreenY() - yOffset);
-            }
-        });
-        primaryStage.setScene(scene);
-
-         */
-        primaryStage.initStyle(StageStyle.TRANSPARENT);
+        scene = new Scene(loadFXML("server"));
         primaryStage.setScene(scene);
         primaryStage.show();
         primaryStage.setOnCloseRequest((WindowEvent event1) -> {
             try {
                 reg.unbind("AuthenticationService");
+                Platform.exit();
+                System.exit(0);
             } catch (RemoteException e) {
                 e.printStackTrace();
             } catch (NotBoundException e) {
