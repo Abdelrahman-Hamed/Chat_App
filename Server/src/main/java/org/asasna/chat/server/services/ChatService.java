@@ -244,6 +244,36 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
 
     /* start aya */
 
+    public void changeUserStatus(int id,UserStatus status)throws RemoteException{
+        System.out.println("chatServer");
+        userDao.updateUserStatues(id, status);
+    }
+    public void notifyMyfriends(int myId)throws RemoteException{
+        List<User> myFriends=getMyFriendList(myId);
+        System.out.println(" id "+myId);
+        System.out.println(" size "+myFriends.size());
+        User me=userDao.getUser(myId);
+        for(int i=0;i<myFriends.size();i++){
+            if(myFriends.get(i).getStatus()!=UserStatus.OFFLINE) {
+                IClientService myFriend = onlineUsers.get(myFriends.get(i).getId());
+                System.out.println(" id "+myId);
+                System.out.println(" i"+i);
+                if(myFriend==null){
+                    System.out.println(" null friend ");
+                }else{
+                    System.out.println(" not null friend ");
+                }
+                myFriend.reciveUpateNotification(me);
+            }
+        }
+    }
+    @Override
+    public List<User> getMyFriendList(int id) throws RemoteException {
+        User friend=new User();
+        friend.setId(id);
+        return userDao.getFriendList(friend);
+    }
+
     /* end aya */
 
     /* start abeer */

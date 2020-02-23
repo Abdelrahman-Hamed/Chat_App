@@ -161,7 +161,7 @@ public class MSGview extends HBox {
 
             container.setOnMouseClicked((e) -> {
                 System.out.println("file");
-                cController.reciveFile(message.getMesssagecontent());
+               // cController.reciveFile(message.getMesssagecontent());
             });
             file=false;
         }

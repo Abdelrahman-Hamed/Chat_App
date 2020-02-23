@@ -47,6 +47,8 @@ public interface IClientService extends Remote {
 
     /* start aya */
     void getFile(String fileName,int senderId)throws RemoteException;
+    public void reciveUpateNotification(User updatedUser)  throws RemoteException;
+    public void changeStatus(User me, UserStatus status) throws RemoteException;
 
     /* end aya */
 

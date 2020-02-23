@@ -103,6 +103,9 @@ public class ChatController implements Initializable, IChatController {
     @FXML
     Label receiverNameLabel;
 
+    @FXML
+    Circle status;
+
 
     @FXML
     FontIcon microphoneId;
@@ -150,6 +153,12 @@ public class ChatController implements Initializable, IChatController {
         }*/
         try {
             me = client.getUser();
+            if(me.getStatus()==UserStatus.ONLINE){
+                status.setStyle("-fx-fill:  #33FF4B");
+            }
+            else{
+                status.setStyle("-fx-fill:  #FF8C00");
+            }
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -630,7 +639,7 @@ private AudioFormat getAudioFormat(){
             }).start();
         }
     }
-    @Override
+   // @Override
     public void tempFileDisplayMessage(Message message) {
         viewTextMessage = new MSGview(message,this);
         if (me.getId() == message.getUserId()) {
@@ -668,6 +677,53 @@ private AudioFormat getAudioFormat(){
 
 
     }
+    @FXML
+    public void changeUserStatus(){
+        UserStatus myStatus;
+        try {
+            System.out.println("chatController");
+            if(me.getStatus()==UserStatus.ONLINE){
+                status.setStyle("-fx-fill:  #FF8C00");
+                myStatus=UserStatus.BUSY;
+            }
+            else{
+                status.setStyle("-fx-fill:  #33FF4B");
+                myStatus=UserStatus.ONLINE;
+            }
+            me.setStatus(myStatus);
+            client.changeStatus(me,myStatus);
+            System.out.println("chatController2");
+            //circle.setfill()//wel list bta3tha
+
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
+    }
+    @Override
+    public void updateMyContactList(User updatedUser){
+        Platform.runLater(() -> {
+            ObservableList<Node> contacts;
+            contacts = contactsList.getChildren();
+            Contact myContact;
+            for (Node c : contacts) {
+                myContact=(Contact)c;
+                if(updatedUser.getId()==myContact.getUser().getId()){
+
+                    contactsList.getChildren().remove(myContact);
+                    if(updatedUser.getStatus()!=UserStatus.OFFLINE) {
+                        myContact = new Contact(updatedUser);
+                        contactsList.getChildren().add(myContact);
+                    }
+
+                    break;
+                }
+            }
+        });
+
+
+    }
+
     // End Aya
 
 

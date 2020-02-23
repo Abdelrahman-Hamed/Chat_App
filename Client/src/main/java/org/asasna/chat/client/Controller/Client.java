@@ -185,6 +185,11 @@ public class Client extends UnicastRemoteObject implements IClientService {
     }
 
     @Override
+    public void getFile(String fileName, int senderId) throws RemoteException {
+
+    }
+
+    @Override
     public void downloadFile(RemoteInputStream inFile, String suffix, String name) throws RemoteException {
         new Thread(() -> {
             try {
@@ -247,6 +252,36 @@ public class Client extends UnicastRemoteObject implements IClientService {
     /* end nehal */
 
     /* start aya */
+    //List<User> myFriends=getFriendList();
+    public List<Integer> setMyFriendsIds(List<User> myFriends) {
+        List<Integer> myFriendsIds = null;
+        for (int i = 0; i < myFriends.size(); i++) {
+            myFriendsIds.add(myFriends.get(i).getId());
+        }
+        return myFriendsIds;
+    }
+
+    /*public List<User> getMyFriendList(int id) throws RemoteException {
+
+        return chatService.getMyFriendList(id);
+    }*/
+    @Override
+    public void changeStatus(User me, UserStatus status) throws RemoteException {
+        System.out.println("client");
+        // List<User> myFriends=getMyFriendList(id);
+        //List<Integer> myFriendsIds=setMyFriendsIds(myFriends);
+        chatService.changeUserStatus(me.getId(), status);
+        chatService.notifyMyfriends(me.getId());
+
+    }
+
+    @Override
+    public void reciveUpateNotification(User updatedUser) throws RemoteException {
+
+        System.out.println("Recived");
+        chatController.updateMyContactList(updatedUser);
+        System.out.println("Recived2");
+    }
 
     /* end aya */
 
