@@ -2,7 +2,10 @@ package org.asasna.chat.client.view;
 
 import com.jfoenix.controls.JFXButton;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableSet;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -13,7 +16,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
-import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import org.asasna.chat.client.Controller.Client;
@@ -26,15 +28,14 @@ import org.asasna.chat.client.model.SearchedContact;
 import org.asasna.chat.common.model.*;
 
 import org.asasna.chat.common.service.IClientService;
+import org.controlsfx.control.Notifications;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 public class ChatController implements Initializable, IChatController {
@@ -68,42 +69,55 @@ public class ChatController implements Initializable, IChatController {
     VBox view;
     @FXML
     Circle userImage;
+    @FXML
+    JFXButton createbtn;
+    @FXML
+    Button sendButton;
     MSGview viewTextMessage;
     private User me;
-
     public Contact activeContact;
     private User user;
 
+    //ObservableList<GroupContact> groupContacts;
     public enum Active {
         Profile, Friends, Group, friendRequets
     }
 
     private Active active;
     private List<User> friends;
+    ObservableSet<Contact> oContacts = FXCollections.observableSet();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         setToolTip();
-        user = new User(4, "Ahmed", "01027420575");
+        /*user = new User(4, "Ahmed", "01027420575");
         Message message = new Message(3, "Hello");
         List<User> list = new ArrayList<>();
         list.add(user);
+        //groupContacts = FXCollections.observableArrayList();
+
         list.add(new User(1, "Khaled", "014587"));
         list.add(new User(5, "Sayed", "54663"));
-        ChatGroup chatGroup = new ChatGroup(1, list.stream().map(u -> u.getId()).collect(Collectors.toList()), "Group1");
-
-        try {
+        ChatGroup chatGroup = new ChatGroup(1, list.stream().map(u -> u.getId()).collect(Collectors.toList()), new Image(getClass().getResource("group.png").toExternalForm()), "Group1");
+*/
+        /*try {
             client.sendGroupMessage(chatGroup, message);
         } catch (RemoteException e) {
             e.printStackTrace();
-        }
+        }*/
         try {
             me = client.getUser();
-            System.out.println(me.getId());
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-
+        searchArea.setStyle("-fx-padding: 20 0 0 0");
+        searchArea.setSpacing(20);
+        createbtn = new JFXButton("+");
+        //create.setStyle("");
+        createbtn.getStyleClass().clear();
+        createbtn.getStyleClass().add("group-create-btn");
+        this.searchArea.getChildren().add(createbtn);
+        createbtn.setVisible(false);
         try {
             IClientService dummyClient = new Client(this);
             //  dummyClient.setUser(sender);
@@ -115,7 +129,7 @@ public class ChatController implements Initializable, IChatController {
         contactsList.getChildren().add(contact);
         SearchedContact searchedContact = new SearchedContact("Sayed Nabil", new Image(getClass().getResource("abdo.jpg").toExternalForm()), UserStatus.ONLINE);
         contactsList.getChildren().add(searchedContact);*/
-        userImage.setFill(new ImagePattern(me.getImage()));
+        //userImage.setFill(new ImagePattern(me.getImage()));
         new Thread(() -> {
             while (root.getScene() == null) {
                 try {
@@ -127,17 +141,49 @@ public class ChatController implements Initializable, IChatController {
             groupIcon.setOnMouseClicked((e) -> {
                 active = Active.Group;
                 groupIcon.setIconColor(Color.BLACK);
-                searchArea.setStyle("-fx-padding: 20 0 0 0");
-                searchArea.setSpacing(20);
-                JFXButton create = new JFXButton("+");
-                //create.setStyle("");
-                create.getStyleClass().clear();
-                create.getStyleClass().add("group-create-btn");
-                this.searchArea.getChildren().add(create);
+                createbtn.setVisible(true);
+                createbtn.setOnAction(e1 -> {
+                    ChatGroup chatGroup1 = new ChatGroup(1, (List<Integer>)
+                            contactsList.getChildren().stream()
+                                    .filter(c -> ((SearchedGroupContact) c).getSelected())
+                                    .map(c -> ((SearchedGroupContact) c).getUser())
+                                    .peek(System.out::println)
+                                    .mapToInt(u -> u.getId())
+                                    .boxed()
+                                    .collect(Collectors.toList())
+                            , null, "Group1");
+                    chatGroup1.getParticipents().add(me.getId());
+                    GroupContact groupContact = new GroupContact(chatGroup1);
+                    groupContact.setOnMouseClicked(ec -> {
+                        activeContact = groupContact;
+                    });
+                    try {
+                        contactsList.getChildren().clear();
+                        friends = client.getFriendList();
+                        friends.forEach(u -> {
+                            Contact contact1 = new Contact(u);
+                            contact1.setOnMouseClicked(ev -> {
+                                activeContact = contact1;
+                            });
+                            oContacts.add(contact1);
+                            contactsList.getChildren().add(contact1);
 
+
+                        });
+                    } catch (RemoteException er) {
+                        er.printStackTrace();
+                    }
+                    contactsList.getChildren().add(groupContact);
+                    oContacts.add(groupContact);
+                    createbtn.setVisible(false);
+                    active = Active.Friends;
+                    Bindings.bindContentBidirectional(FXCollections.observableArrayList(oContacts), contactsList.getChildren());
+                    //oContacts.forEach(System.out::println);
+                });
             });
             friendList.setOnMouseClicked(e -> {
                 active = Active.Friends;
+                Bindings.bindContentBidirectional(FXCollections.observableArrayList(oContacts), contactsList.getChildren());
             });
             friendRequest.setOnMouseClicked(e -> {
                 active = Active.friendRequets;
@@ -169,6 +215,7 @@ public class ChatController implements Initializable, IChatController {
                     contact1.setOnMouseClicked(e -> {
                         activeContact = contact1;
                     });
+                    oContacts.add(contact1);
                     Platform.runLater(() -> {
                         contactsList.getChildren().add(contact1);
                     });
@@ -179,8 +226,15 @@ public class ChatController implements Initializable, IChatController {
             }
         }).start();
         searchTextField.setOnKeyReleased(this::searchContacts);
-        SearchedGroupContact searchedGroupContact = new SearchedGroupContact(user);
-        contactsList.getChildren().add(searchedGroupContact);
+        /*SearchedGroupContact searchedGroupContact = new SearchedGroupContact(user);
+        contactsList.getChildren().add(searchedGroupContact);*/
+        sendButton.setOnAction(e -> {
+            try {
+                send();
+            } catch (RemoteException ex) {
+                ex.printStackTrace();
+            }
+        });
     }
 
     public void sendAudio() {
@@ -227,17 +281,17 @@ public class ChatController implements Initializable, IChatController {
         this.client = client;
     }
 
-    @FXML
+    /*@FXML
     private void getSelectedContact() {
         ObservableList<Node> contacts;
         contacts = contactsList.getChildren();
         for (Node c : contacts) {
             c.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
                 this.activeContact = (Contact) c;
-                System.out.println("active Contact is : "+ this.activeContact.getUser().getName());
+                System.out.println("active Contact is : " + this.activeContact.getUser().getName());
             });
         }
-    }
+    }*/
 
     private void setToolTip() {
         Tooltip profileTooltip, groupTooltip, addFriendTooltip, notificationTooltip, saveChatTooltip, logoutTooltip;
@@ -335,17 +389,31 @@ public class ChatController implements Initializable, IChatController {
 
     //    Start Abdo
     public void recieveGroupMessage(ChatGroup group, Message message) {
-        System.out.println("Message from group : ");
-        System.out.println(message.getMesssagecontent());
-        System.out.println("Group : " + group.getName());
-        Platform.runLater(() -> {
-            Contact contact = new Contact(group.getName(), null, UserStatus.ONLINE);
-            contact.setOnMouseClicked((e) -> {
-                this.activeContact = contact;
-                System.out.println(activeContact.getName());
+        if (!contactsList.getChildren().parallelStream().filter(c -> c instanceof GroupContact).mapToInt(c -> ((GroupContact) c).getChatGroup().getGroupId()).anyMatch(i -> i == group.getGroupId())) {
+            Platform.runLater(() -> {
+                GroupContact contact = new GroupContact(group);
+                contact.setOnMouseClicked((e) -> {
+                    this.activeContact = contact;
+                });
+                contactsList.getChildren().add(0, contact);
+                view.getChildren().add(new Label(message.getMesssagecontent()));
             });
-            contactsList.getChildren().add(contact);
-        });
+        } else {
+            Platform.runLater(() -> {
+                contactsList.getChildren().parallelStream()
+                        .filter(c -> c instanceof GroupContact)
+                        .filter(g -> ((GroupContact) g).getChatGroup().getGroupId() == group.getGroupId())
+                        .findFirst()
+                        .ifPresent(n -> {
+                            contactsList.getChildren().remove(n);
+                            contactsList.getChildren().add(0, n);
+                        });
+                view.getChildren().add(new Label(message.getMesssagecontent()));
+                Notifications.create().title("New Message").text("Message from " + message.getUserId()).graphic(new Circle()).show();
+            });
+
+        }
+
     }
 
     public void sendGroupMessage(ChatGroup group, Message message) throws RemoteException {
@@ -369,8 +437,8 @@ public class ChatController implements Initializable, IChatController {
                 try {
                     int friendId = activeContact.getUser().getId();
                     int senderId = me.getId();
-                    Message message = new Message(senderId,fileName);
-                    client.sendFileToServer(selectedFile.getPath(), fileExtension,friendId, message);
+                    Message message = new Message(senderId, fileName);
+                    client.sendFileToServer(selectedFile.getPath(), fileExtension, friendId, message);
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
@@ -450,12 +518,18 @@ public class ChatController implements Initializable, IChatController {
 //        messageTextArea.setText("");
 //        displayMessage(mes);
 //        System.out.println(messageTXT);
-        int receiverId = activeContact.getUser().getId();
-        int senderId = me.getId();
-        String messageContent = messageTextArea.getText();
-        messageTextArea.setText("");
-        Message message = new Message(senderId, messageContent);
-        sendMessage(receiverId, message);
+        if (activeContact instanceof GroupContact) {
+            System.out.println("inner");
+            client.sendGroupMessage(((GroupContact) activeContact).getChatGroup(), new Message(client.getUser().getId(), messageTextArea.getText()));
+        } else {
+            System.out.println(activeContact);
+            int receiverId = activeContact.getUser().getId();
+            int senderId = me.getId();
+            String messageContent = messageTextArea.getText();
+            messageTextArea.setText("");
+            Message message = new Message(senderId, messageContent);
+            sendMessage(receiverId, message);
+        }
     }
     // End Nehal Adel
 }

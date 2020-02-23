@@ -24,13 +24,15 @@ public class PrimaryController {
     Client client;
 
     Scene scene;
-    public PrimaryController(){
+
+    public PrimaryController() {
     }
 
 
-    public void setScene(Scene scene){
+    public void setScene(Scene scene) {
         this.scene = scene;
     }
+
     @FXML
     private TextField phoneNumber;
 
@@ -45,39 +47,38 @@ public class PrimaryController {
 
     @FXML
     private Button loginButton;
+
     @FXML
-    public void switchToLogin()  {
+    public void switchToLogin() {
         try {
             App.setRoot("register");
-        }
-        catch(IOException e){
+        } catch (IOException e) {
             System.out.println("no fxml file");
         }
     }
 
     @FXML
-    public void phoneNumberChanged(KeyEvent evnet){
-        if(!Validation.validatePhoneNumber(phoneNumber.getText())){
+    public void phoneNumberChanged(KeyEvent evnet) {
+        if (!Validation.validatePhoneNumber(phoneNumber.getText())) {
             errorPhoneNumber.setVisible(true);
             password.setDisable(true);
             loginButton.setDisable(true);
             errorPhoneNumber.setText("Not A Valid Phone Number");
-        }
-        else{
+        } else {
             password.setDisable(false);
             loginButton.setDisable(false);
             errorPhoneNumber.setVisible(false);
         }
 
     }
-    @FXML
-    public void loginButtonClicked(ActionEvent event){
 
-        if(!Validation.validatePhoneNumber(phoneNumber.getText())){
+    @FXML
+    public void loginButtonClicked(ActionEvent event) {
+
+        if (!Validation.validatePhoneNumber(phoneNumber.getText())) {
             errorPhoneNumber.setVisible(true);
             errorPhoneNumber.setText("Not A Valid Phone Number");
-        }
-        else{
+        } else {
             System.out.println("Clicked");
             try {
                 ChatController chatController = new ChatController();
@@ -85,9 +86,9 @@ public class PrimaryController {
                 password.setDisable(false);
                 errorPhoneNumber.setVisible(false);
                 IChatService chatService = client.login(phoneNumber.getText(), password.getText());
-                if(chatService == null){
+                if (chatService == null) {
                     System.out.println("Phone Number OR Password is Incorrect");
-                }else{
+                } else {
                     chatController.setClient(client);
                     FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("chat" + ".fxml"));
                     fxmlLoader.setController(chatController);
@@ -106,11 +107,10 @@ public class PrimaryController {
         }
     }
 
-    public void loadChatPage(ActionEvent event){
+    public void loadChatPage(ActionEvent event) {
         try {
             App.setRoot("chat");
-        }
-            catch(IOException e){
+        } catch (IOException e) {
             System.out.println("no chat.fxml file");
         }
     }

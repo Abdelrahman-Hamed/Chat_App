@@ -4,6 +4,7 @@ module org.asasna.client {
     requires org.asasna.common;
     requires java.rmi;
     requires org.kordamp.ikonli.javafx;
+    requires org.controlsfx.controls;
     requires rmiio;
     requires com.jfoenix;
     requires commons.io;

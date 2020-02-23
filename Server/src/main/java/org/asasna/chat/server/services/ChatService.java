@@ -1,9 +1,11 @@
 package org.asasna.chat.server.services;
 
-import com.mysql.cj.xdevapi.Client;
+
+import org.apache.log4j.Logger;
 import org.asasna.chat.common.model.*;
 import org.asasna.chat.common.service.IChatService;
 import org.asasna.chat.common.service.IClientService;
+import org.asasna.chat.server.App;
 import org.asasna.chat.server.model.dao.IUserDao;
 import org.asasna.chat.server.model.dao.UserDao;
 
@@ -70,7 +72,9 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     @Override
     public void register(int userId, IClientService client) throws RemoteException {
         onlineUsers.put(userId, client);
-        System.out.println(onlineUsers);
+        Logger.getLogger(App.class).info("Client Connected : "+client);
+
+        //System.out.println(onlineUsers);
     }
 
     @Override

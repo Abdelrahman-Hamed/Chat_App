@@ -16,12 +16,15 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.RMIClientSocketFactory;
 import java.rmi.server.RemoteRef;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
 import org.apache.commons.io.IOUtils;
 
 import com.healthmarketscience.rmiio.*;
+
+import javax.rmi.ssl.SslRMIClientSocketFactory;
 
 public class Client extends UnicastRemoteObject implements IClientService {
     IChatController chatController;
@@ -45,7 +48,12 @@ public class Client extends UnicastRemoteObject implements IClientService {
         this.chatController = chatController;
         Registry reg = null;
 //        try {
-        reg = LocateRegistry.getRegistry(2000);
+        System.setProperty("javax.net.ssl.keyStore","/home/abdulrahman/IdeaProjects/ITI_Chat/sysdmsim.ks");
+        System.setProperty("javax.net.ssl.keyStorePassword","123456");
+        System.setProperty("javax.net.ssl.trustStore","/home/abdulrahman/IdeaProjects/ITI_Chat/sysdmtruststore.ks");
+        System.setProperty("javax.net.ssl.trustStorePassword","123456");
+
+        reg = LocateRegistry.getRegistry("10.145.4.235",5001,new SslRMIClientSocketFactory());
 //            this.user = new User(4, "Mohamed", "01027420575");
 //            chatService.register(this.user.getId(), this);
 //        } catch (RemoteException | NotBoundException e) {

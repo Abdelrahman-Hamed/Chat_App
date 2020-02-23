@@ -10,7 +10,7 @@ module org.asasna.server {
     requires java.desktop;
     requires rmiio;
     requires commons.io;
-
+    requires log4j;
     opens org.asasna.chat.server to javafx.fxml;
     exports org.asasna.chat.server;
 }

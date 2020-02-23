@@ -5,13 +5,20 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.asasna.chat.common.service.IAuthenticationService;
 import org.asasna.chat.server.controller.AuthenticationService;
 
+import javax.rmi.ssl.SslRMIClientSocketFactory;
+import javax.rmi.ssl.SslRMIServerSocketFactory;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.RMIClientSocketFactory;
+import java.rmi.server.RMIServerSocketFactory;
 //import org.asasna.chat.common.*;
 
 /**
@@ -68,11 +75,21 @@ public class App extends Application {
     public static void main(String[] args) {
         //launch();
         try {
-            IAuthenticationService iAuthenticationService=new AuthenticationService();
-            Registry reg= LocateRegistry.createRegistry(2000);
-            reg.rebind("AuthenticationService", iAuthenticationService );
-        }
-        catch (RemoteException ex) {
+            System.setProperty("javax.net.ssl.keyStore","/home/abdulrahman/IdeaProjects/ITI_Chat/sysdmsim.ks");
+            System.setProperty("javax.net.ssl.keyStorePassword","123456");
+            System.setProperty("javax.net.ssl.trustStore","/home/abdulrahman/IdeaProjects/ITI_Chat/sysdmtruststore.ks");
+            System.setProperty("javax.net.ssl.trustStorePassword","123456");
+            System.setProperty("java.rmi.server.hostname", "10.145.4.235");
+            RMIClientSocketFactory rmicsf = new SslRMIClientSocketFactory();
+            RMIServerSocketFactory rmissf = new SslRMIServerSocketFactory();
+            Registry reg = LocateRegistry.createRegistry(5001, rmicsf, rmissf);
+            IAuthenticationService iAuthenticationService = new AuthenticationService();
+            Logger logger= LogManager.getLogger(App.class);
+            //BasicConfigurator.configure();
+            logger.info("Server Started");
+            reg.rebind("AuthenticationService", iAuthenticationService);
+            Thread.sleep(Long.MAX_VALUE);
+        } catch (RemoteException | InterruptedException ex) {
             ex.printStackTrace();
         }
 

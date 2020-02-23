@@ -196,6 +196,8 @@ public class User implements Serializable {
         objectInputStream.defaultReadObject();
         GZIPInputStream inputStream = new GZIPInputStream(objectInputStream);
         image = SwingFXUtils.toFXImage(ImageIO.read(inputStream), null);
+
+
         //name = (String) objectInputStream.readObject();
     }
 }
