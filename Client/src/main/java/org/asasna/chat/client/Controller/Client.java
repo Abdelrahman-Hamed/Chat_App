@@ -288,6 +288,9 @@ public class Client extends UnicastRemoteObject implements IClientService {
         chatController.updateMyContactList(updatedUser);
         System.out.println("Recived2");
     }
+    public void signOut(int id) throws RemoteException {
+        authenticationService.signOut(id);
+    }
 
     /* end aya */
 

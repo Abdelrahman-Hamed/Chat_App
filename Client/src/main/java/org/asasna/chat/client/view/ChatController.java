@@ -723,6 +723,16 @@ private AudioFormat getAudioFormat(){
 
 
     }
+    @FXML
+    public void signMeOut(){
+        try {
+            client.signOut(me.getId());
+            System. exit(0);
+
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
 
     // End Aya
 

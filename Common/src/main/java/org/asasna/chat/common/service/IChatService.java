@@ -62,6 +62,8 @@ public interface IChatService extends Remote {
     public void changeUserStatus(int id,UserStatus status)throws RemoteException;
     void notifyMyfriends(int myId)throws RemoteException;
     public List<User> getMyFriendList(int id) throws RemoteException;
+     boolean removeClient(int id) throws RemoteException;
+
 
     /* end aya */
 

@@ -274,6 +274,21 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
         return userDao.getFriendList(friend);
     }
 
+
+    public boolean removeClient(int id) throws RemoteException {
+        System.out.println(" remove Client");
+        IClientService returnedValue = (IClientService)onlineUsers.remove(id);
+        if(returnedValue!=null){
+
+            System.out.println(" remove Client in th middle of the function");
+            return true;
+        }
+        else{
+            System.out.println("Somthing went wrong");
+            return false;
+        }
+    }
+
     /* end aya */
 
     /* start abeer */
