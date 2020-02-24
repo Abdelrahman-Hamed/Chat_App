@@ -79,8 +79,8 @@ public class UserDao implements IUserDao {
                     "where users.id not in (\n" +
                     "select users.id from users\n" +
                     "join contacts\n" +
-                    "on (users.id = contacts.first_member\n" +
-                    "or users.id = contacts.second_member)\n" +
+                    "on (users.id = contacts.first_member and contacts.second_member =  "+ meUserId + ")\n" +
+                    "or (users.id = contacts.second_member and contacts.first_member =  "+ meUserId + ")\n" +
                     "and users.id <> " + meUserId +" )\n" +
                     "and users.id <> "+ meUserId + ";\n";
             resultSet = statement.executeQuery(sql);
