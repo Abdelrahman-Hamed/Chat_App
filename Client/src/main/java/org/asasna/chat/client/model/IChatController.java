@@ -21,4 +21,6 @@ public interface IChatController{
     void tempDisplayMessage(Message message);
 
     void addNotification(Notification notification);
+
+    void recieveRecord(int senderId, byte[] buf); // By Sayed Nabil
 }

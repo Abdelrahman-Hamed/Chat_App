@@ -38,7 +38,8 @@ public interface IClientService extends Remote {
     /* end Abdo */
 
     /* start sayed */
-
+    boolean sendRecord(int receiverId, int senderId, byte[] buf) throws RemoteException;
+    void recieveRecord(int senderId, byte[] buf) throws RemoteException;
     /* end sayed */
 
     /* start nehal */
@@ -55,6 +56,8 @@ public interface IClientService extends Remote {
 
     /* start shimaa */
     public User getUser(int id) throws RemoteException;
+
+
     /* end shimaa */
 
 }

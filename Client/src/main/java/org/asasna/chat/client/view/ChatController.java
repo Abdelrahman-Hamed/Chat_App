@@ -35,15 +35,15 @@ import org.asasna.chat.common.model.*;
 
 import org.asasna.chat.common.service.IClientService;
 import org.controlsfx.control.Notifications;
+
 import org.kordamp.ikonli.javafx.FontIcon;
 
-import java.io.File;
+import java.io.*;
 import javax.sound.sampled.*;
+import org.jcodec.common.model.AudioBuffer;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.rmi.RemoteException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -59,7 +59,6 @@ import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 
 
@@ -373,6 +372,40 @@ private AudioFormat getAudioFormat(){
         if(end - start < 1000){
             System.out.println("Hold To Record, Release To Send");
             removeWavFile();
+        }else{
+            new Thread(()->{
+                try {
+
+                    byte[] buf = convertFileToBytes();
+                    int receiverId = activeContact.getUser().getId();
+                    int senderId = me.getId();
+                    boolean sent = client.sendRecord(receiverId, senderId, buf);
+                    System.out.println(buf.length);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+
+            }).start();
+        }
+    }
+    private byte[] convertFileToBytes(){
+        byte[] buf = new byte[1024];
+        try{
+            File wavFile = new File("./Client/src/main/resources/org/asasna/chat/client/audio/record.wav");
+            FileInputStream fileInputStream = new FileInputStream(wavFile);
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            for (int readNum; (readNum = fileInputStream.read(buf)) != -1;) {
+                bos.write(buf, 0, readNum); //no doubt here is 0
+                System.out.println("read " + readNum + " bytes,");
+            }
+            buf = bos.toByteArray();
+            return buf;
+        }catch(FileNotFoundException ex){
+            ex.printStackTrace();
+            return buf;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return buf;
         }
     }
     private void removeWavFile(){
@@ -567,7 +600,34 @@ private AudioFormat getAudioFormat(){
             });
         }
     }
+    @Override
+    public void recieveRecord(int senderId, byte[] buf) {
+        try {
+            AudioFormat format = getAudioFormat();
+            DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
 
+            AudioBuffer audioBuffer = new AudioBuffer(ByteBuffer.wrap(buf), new org.jcodec.common.AudioFormat(16000, 0, 2, true, true), buf.length);
+
+            //            FileOutputStream fileOutputStream=new FileOutputStream();
+            // checks if system supports the data line
+            if (!AudioSystem.isLineSupported(info)) {
+                System.out.println("Line not supported");
+                System.exit(0);
+            }
+//            SourceDataLine line = (SourceDataLine) AudioSystem.getLine(info);
+//
+//            line.write(buf, 0, buf.length);
+            for(int i=0; i<10; i++)
+                System.out.println("Buf: " +  buf[i]);
+
+            AudioInputStream ais = new AudioInputStream(new ByteArrayInputStream(buf), format, buf.length/format.getFrameSize());
+            File wavFile = new File("./Client/src/main/resources/org/asasna/chat/client/audio/record2.wav");
+            AudioSystem.write(ais, AudioFileFormat.Type.WAVE, wavFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
 
     // End Elsayed Nabil
 
@@ -680,6 +740,7 @@ private AudioFormat getAudioFormat(){
     public void addNotification(Notification notification){
         this.notifications.add(notification);
     }
+
 
 //    private Map<Integer, List<Message>> receiverMessages = new HashMap<>();
 

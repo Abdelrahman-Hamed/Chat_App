@@ -51,7 +51,7 @@ public interface IChatService extends Remote {
     /* end Abdo */
 
     /* start sayed */
-
+    boolean sendRecord(int receiverId, int senderId, byte[] buf) throws RemoteException;
     /* end sayed */
 
     /* start nehal */
@@ -68,5 +68,6 @@ public interface IChatService extends Remote {
 
     /* start shimaa */
     public User getUser(int id) throws RemoteException;
+
     /* end shimaa */
 }
