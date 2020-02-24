@@ -15,6 +15,7 @@ import javafx.scene.text.Text;
 import org.apache.commons.io.FileDeleteStrategy;
 import org.asasna.chat.client.App;
 import org.asasna.chat.client.Controller.Client;
+import org.asasna.chat.client.util.AES;
 import org.asasna.chat.client.util.Validation;
 import org.asasna.chat.common.service.IChatService;
 import org.w3c.dom.Document;
@@ -28,8 +29,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ResourceBundle;
@@ -51,8 +51,14 @@ public class PrimaryController implements Initializable{
         File rememberMeFile = new File("./Client/src/main/java/org/asasna/chat/client/Auth/rememberme.xml");
         if(rememberMeFile.exists()){
             try {
+                BufferedReader br = new BufferedReader(new FileReader(rememberMeFile));
+                String content = "", temp;
+                while((temp=br.readLine()) != null){
+                    content += temp;
+                }
                 DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-                Document document = documentBuilder.parse(rememberMeFile);
+                InputStream inputStream = new ByteArrayInputStream(AES.decrypt(content, "mySecretKey").getBytes());
+                Document document = documentBuilder.parse(inputStream);
                 Element authElement = document.getDocumentElement();
                 String phoneNumberStr = authElement.getFirstChild().getTextContent();
                 String passwordStr = authElement.getLastChild().getTextContent();
@@ -138,13 +144,17 @@ public class PrimaryController implements Initializable{
             authElement.appendChild(passwordElement);
             document.appendChild(processingInstructionElement);
             document.appendChild(authElement);
-
+            StringWriter stringWriter = new StringWriter();
             Source source = new DOMSource(document.getDocumentElement());
-            File rememberMeFile = new File("./Client/src/main/java/org/asasna/chat/client/Auth/rememberme.xml");
-            rememberMeFile.createNewFile();
-            Result result = new StreamResult(rememberMeFile);
+            FileWriter rememberMeFile = new FileWriter("./Client/src/main/java/org/asasna/chat/client/Auth/rememberme.xml");
+            BufferedWriter bufferedWriter = new BufferedWriter(rememberMeFile);
+//            Result result = new StreamResult(rememberMeFile);
+            Result result = new StreamResult(stringWriter);
             Transformer transformer = TransformerFactory.newInstance().newTransformer();
             transformer.transform(source, result);
+            bufferedWriter.write(AES.encrypt(stringWriter.toString(), "mySecretKey"));
+            bufferedWriter.flush();
+            bufferedWriter.close();
         } catch (ParserConfigurationException e) {
             e.printStackTrace();
         } catch (TransformerConfigurationException e) {
