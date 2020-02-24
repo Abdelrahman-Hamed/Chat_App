@@ -234,7 +234,7 @@ public class ChatController implements Initializable, IChatController {
             notificationIcon.setOnMouseClicked(e -> {
                 active = Active.Notifications;
             });
-            this.root.prefHeightProperty().bind(root.getScene().heightProperty());
+            /*this.root.prefHeightProperty().bind(root.getScene().heightProperty());
             this.root.prefWidthProperty().bind(root.getScene().widthProperty());
             this.messageTextArea.prefHeightProperty().bind(root.getScene().heightProperty());
 
@@ -251,7 +251,7 @@ public class ChatController implements Initializable, IChatController {
             this.view.prefWidthProperty().bind(this.root.getScene().widthProperty().multiply(.5));
             this.messageTextArea.prefHeightProperty().bind(root.getScene().heightProperty());
             this.messageTextArea.prefWidthProperty().bind(root.getScene().widthProperty().multiply(.66).subtract(120));
-
+*/
         }).start();
         new Thread(() -> {
             try {
@@ -315,22 +315,22 @@ public class ChatController implements Initializable, IChatController {
         });
 
 
-
-
 //        Sayed End
     }
-//      Sayed Start
-private AudioFormat getAudioFormat(){
-    float sampleRate = 16000;
-    int sampleSizeInBits = 8;
-    int channels = 2;
-    boolean signed = true;
-    boolean bigEndian = true;
-    AudioFormat format = new AudioFormat(sampleRate, sampleSizeInBits,
-            channels, signed, bigEndian);
-    return format;
-}
-    private void start(){
+
+    //      Sayed Start
+    private AudioFormat getAudioFormat() {
+        float sampleRate = 16000;
+        int sampleSizeInBits = 8;
+        int channels = 2;
+        boolean signed = true;
+        boolean bigEndian = true;
+        AudioFormat format = new AudioFormat(sampleRate, sampleSizeInBits,
+                channels, signed, bigEndian);
+        return format;
+    }
+
+    private void start() {
         try {
             AudioFormat format = getAudioFormat();
             DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
@@ -365,17 +365,19 @@ private AudioFormat getAudioFormat(){
         setListnerForPressingEnter(); // shimaa
         messageTextArea.setStyle("-fx-font-size:14");
     }
-    private void stop(){
+
+    private void stop() {
         line.stop();
         line.close();
         end = System.currentTimeMillis();
         System.out.println("Finished");
-        if(end - start < 1000){
+        if (end - start < 1000) {
             System.out.println("Hold To Record, Release To Send");
             removeWavFile();
         }
     }
-    private void removeWavFile(){
+
+    private void removeWavFile() {
         try {
             File wavFile = new File("./Client/src/main/resources/org/asasna/chat/client/audio/record.wav");
             FileDeleteStrategy.FORCE.delete(wavFile);
@@ -560,7 +562,7 @@ private AudioFormat getAudioFormat(){
                         contactsList.getChildren().add(contact);
                     });
 
-        }else if(active == Active.Notifications){
+        } else if (active == Active.Notifications) {
             contactsList.getChildren().clear();
             notifications.stream().forEach(notification -> {
                 contactsList.getChildren().add(new NotificationView(client, notification));
@@ -677,7 +679,7 @@ private AudioFormat getAudioFormat(){
     }
 
     @Override
-    public void addNotification(Notification notification){
+    public void addNotification(Notification notification) {
         this.notifications.add(notification);
     }
 
