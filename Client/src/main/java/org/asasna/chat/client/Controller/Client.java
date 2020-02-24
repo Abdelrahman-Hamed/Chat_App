@@ -1,8 +1,7 @@
 package org.asasna.chat.client.Controller;
 
 import org.asasna.chat.client.model.IChatController;
-import org.asasna.chat.client.view.Controller;
-import org.asasna.chat.client.view.PrimaryController;
+import org.asasna.chat.client.view.RegisterController;
 import org.asasna.chat.common.model.Message;
 import org.asasna.chat.common.model.Notification;
 import org.asasna.chat.common.model.User;
@@ -17,37 +16,55 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.RMIClientSocketFactory;
 import java.rmi.server.RemoteRef;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.io.IOUtils;
 
 import com.healthmarketscience.rmiio.*;
 
+import javax.rmi.ssl.SslRMIClientSocketFactory;
+
 public class Client extends UnicastRemoteObject implements IClientService {
-    private Controller Controller;
     IChatController chatController;
-     public IChatService chatService;
+    RegisterController registerController;
+   public IChatService chatService;
     IAuthenticationService authenticationService;
     private User user;
 
-    protected Client() throws RemoteException {
+    public Client() throws RemoteException {
     }
 
-//    public Client(PrimaryController primaryController) throws RemoteException {
-//        try {
-//            Registry reg = LocateRegistry.getRegistry(5000);
-//            authenticationService = (IAuthenticationService) reg.lookup("AuthenticationService");
-//        } catch (RemoteException | NotBoundException e) {
-//            e.printStackTrace();
-//        }
-//    }
+    public Client(RegisterController registerController) throws RemoteException {
+        try {
+            this.registerController = registerController;
+            System.setProperty("javax.net.ssl.keyStore", "/home/abdulrahman/IdeaProjects/ITI_Chat/sysdmsim.ks");
+            System.setProperty("javax.net.ssl.keyStorePassword", "123456");
+            System.setProperty("javax.net.ssl.trustStore", "/home/abdulrahman/IdeaProjects/ITI_Chat/sysdmtruststore.ks");
+            System.setProperty("javax.net.ssl.trustStorePassword", "123456");
 
-    public Client(Controller chatController) throws RemoteException {
-        this.Controller = chatController;
+            Registry reg = LocateRegistry.getRegistry("127.0.0.1", 5001, new SslRMIClientSocketFactory());
+            //Registry reg = LocateRegistry.getRegistry(5001);
+            authenticationService = (IAuthenticationService) reg.lookup("AuthenticationService");
+        } catch (RemoteException | NotBoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Client(IChatController chatController) throws RemoteException {
+        this.chatController = chatController;
         Registry reg = null;
 //        try {
-        reg = LocateRegistry.getRegistry(5000);
+        /*System.setProperty("javax.net.ssl.keyStore", "/home/abdulrahman/IdeaProjects/ITI_Chat/sysdmsim.ks");
+        System.setProperty("javax.net.ssl.keyStorePassword", "123456");
+        System.setProperty("javax.net.ssl.trustStore", "/home/abdulrahman/IdeaProjects/ITI_Chat/sysdmtruststore.ks");
+        System.setProperty("javax.net.ssl.trustStorePassword", "123456");*/
+
+        //reg = LocateRegistry.getRegistry("127.0.0.1", 5001, new SslRMIClientSocketFactory());
+        reg=LocateRegistry.getRegistry(5001);
 //            this.user = new User(4, "Mohamed", "01027420575");
 //            chatService.register(this.user.getId(), this);
 //        } catch (RemoteException | NotBoundException e) {
@@ -72,7 +89,6 @@ public class Client extends UnicastRemoteObject implements IClientService {
     @Override
     public void sendFileToServer(String filePath, String extension,int senderId ,Message message) throws RemoteException {
         RemoteInputStreamServer istream = null;
-
         try {
             istream = new GZIPRemoteInputStream(new BufferedInputStream(new FileInputStream(filePath)));
             chatService.sendFile(istream.export(), extension,senderId , message);
@@ -93,7 +109,7 @@ public class Client extends UnicastRemoteObject implements IClientService {
         chatController.recieveGroupMessage(group, message);
     }
 
-    public List<User> search(String phoneNumber) {
+    public Map<Boolean, List<User>> search(String phoneNumber) {
         try {
 
             return chatService.search(phoneNumber);
@@ -151,7 +167,26 @@ public class Client extends UnicastRemoteObject implements IClientService {
     }
 
     @Override
-    public void downloadFile(RemoteInputStream inFile, String suffix,String name) throws RemoteException {
+    public void acceptRequest(int fromUserId) {
+        try {
+            chatService.acceptRequest(fromUserId, user.getId());
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public List<Notification> loadNotifications() {
+        try {
+            return chatService.loadNotifications(user.getId());
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public void downloadFile(RemoteInputStream inFile, String suffix, String name) throws RemoteException {
         new Thread(() -> {
             try {
                 InputStream istream = RemoteInputStreamClient.wrap(inFile);
@@ -172,6 +207,26 @@ public class Client extends UnicastRemoteObject implements IClientService {
         chatController.tempDisplayMessage(message);
     }
 
+    public boolean rejectFriendRequest(int userId) {
+        try {
+            System.out.println("UserId: " + userId);
+            boolean done = chatService.cancelFriendRequest(userId, chatService.getUser().getId());
+            return done;
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    public boolean cancelFriendRequest(int userId) {
+        try {
+            System.out.println("UserId: " + userId);
+            boolean done = chatService.cancelFriendRequest(chatService.getUser().getId(), userId);
+            return done;
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
     /* ِ start  Abdo */
 
@@ -187,7 +242,7 @@ public class Client extends UnicastRemoteObject implements IClientService {
     }
 
     public boolean isvalidUser(User me) throws RemoteException {
-       return authenticationService.isValid(me);
+        return authenticationService.isValid(me);
     }
 
     /* end nehal */
@@ -201,6 +256,12 @@ public class Client extends UnicastRemoteObject implements IClientService {
     /* end abeer */
 
     /* start shimaa */
+
+    @Override
+    public User getUser(int id) throws RemoteException {
+        User user2 = chatService.getUser(id);
+        return user2;
+    }
 
     /* end shimaa */
 }

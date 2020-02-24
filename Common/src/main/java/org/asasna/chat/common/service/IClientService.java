@@ -29,6 +29,10 @@ public interface IClientService extends Remote {
 
     void registerUser(int userId, IClientService client) throws RemoteException;
 
+    void acceptRequest(int fromUserId) throws RemoteException;
+
+    List<Notification> loadNotifications() throws RemoteException;
+
     /* ِ start  Abdo */
 
     /* end Abdo */
@@ -50,7 +54,7 @@ public interface IClientService extends Remote {
     /* end abeer */
 
     /* start shimaa */
-
+    public User getUser(int id) throws RemoteException;
     /* end shimaa */
 
 }

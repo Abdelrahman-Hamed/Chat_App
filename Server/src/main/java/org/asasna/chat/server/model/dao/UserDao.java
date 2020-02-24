@@ -2,20 +2,29 @@ package org.asasna.chat.server.model.dao;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.chart.PieChart;
 import javafx.scene.image.Image;
-import org.asasna.chat.common.model.Gender;
-import org.asasna.chat.common.model.User;
-import org.asasna.chat.common.model.UserStatus;
+import org.asasna.chat.common.model.*;
 import org.asasna.chat.server.model.db.DBConnection;
 import org.asasna.chat.server.view.PasswordAuthentication;
 
 
+import javax.imageio.ImageIO;
 import javax.sql.RowSet;
+import javax.swing.*;
 import javax.xml.transform.Result;
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class UserDao implements IUserDao {
     private RowSet rowSet = null;
@@ -49,27 +58,42 @@ public class UserDao implements IUserDao {
     }
 
     @Override
-    public List<User> getNonContactUsers(String mePhoneNumber) {
+    public Map<Boolean, List<User>> getNonContactUsers(int meUserId) {
         List<User> users = new ArrayList<>();
+        Map<Boolean, List<User>> map = new HashMap<>();
         try {
-            System.out.println(mePhoneNumber);
             String sql = "select * from users\n" +
-                    "left join contacts\n" +
-                    "on users.id = contacts.first_member\n" +
-                    "or users.id = contacts.second_member\n" +
-                    "where contacts.first_member is null\n" +
-                    "and users.phone_number <> '" + mePhoneNumber + "';";
+                    "join invitations\n" +
+                    "on users.id = invitations.to_id \n" +
+                    "where invitations.from_id = " + meUserId;
             ResultSet resultSet = statement.executeQuery(sql);
             while (resultSet.next()) {
                 User user = extractUser(resultSet);
                 users.add(user);
-
             }
-            //System.out.println(users.size());
+            map.put(true, users);
+            users = new ArrayList<>();
+            sql = "select * from users\n" +
+                    "where users.id not in (\n" +
+                    "select users.id from users\n" +
+                    "join contacts\n" +
+                    "on (users.id = contacts.first_member\n" +
+                    "or users.id = contacts.second_member)\n" +
+                    "and users.id <> " + meUserId +" )\n" +
+                    "and users.id <> "+ meUserId + ";\n";
+            resultSet = statement.executeQuery(sql);
+            while (resultSet.next()) {
+                User user = extractUser(resultSet);
+                if(!(map.get(true).stream().anyMatch(userItem -> userItem.getId() == user.getId()))){
+                    users.add(user);
+                }
+            }
+            map.put(false, users);
+            return map;
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return users;
+        return map;
     }
 
     @Override
@@ -213,14 +237,17 @@ public class UserDao implements IUserDao {
     public ObservableList<PieChart.Data> getUsersByGender() {
         int females = 0;
         int males = 0;
-        ResultSet resultSet;
+        ResultSet resultSet ;
         ObservableList<PieChart.Data> genderData = FXCollections.observableArrayList();
-        String femaleSql = "select count(gender) from contacts where gender =" + Gender.Female + ")";
-        String maleSql = "select count(gender) from contacts where gender =" + Gender.Male + ")";
         try {
-            resultSet = statement.executeQuery(femaleSql);
+            preparedStatement = conn.prepareStatement("select count(gender) from users where gender = ?");
+            preparedStatement.setString(1, "Female");
+            resultSet = preparedStatement.executeQuery();
+            resultSet.next();
             females = resultSet.getInt(1);
-            resultSet = statement.executeQuery(maleSql);
+            preparedStatement.setString(1, "Male");
+            resultSet = preparedStatement.executeQuery();
+            resultSet.next();
             males = resultSet.getInt(1);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -241,14 +268,16 @@ public class UserDao implements IUserDao {
     public ObservableList<PieChart.Data> getUsersByStatus() {
         int online = 0;
         int offline = 0;
-        ResultSet resultSet;
+        ResultSet resultSet ;
         ObservableList<PieChart.Data> statusData = FXCollections.observableArrayList();
-        String onlineSql = "select count(status) from contacts where status =" + UserStatus.ONLINE + ")";
-        String offlineSql = "select count(status) from contacts where status <>" + UserStatus.ONLINE + ")";
+        String onlineSql = "select count(status_id) from users where status_id =1" ;
+        String offlineSql = "select count(status_id) from users where status_id <> 1"  ;
         try {
             resultSet = statement.executeQuery(onlineSql);
+            resultSet.next();
             online = resultSet.getInt(1);
             resultSet = statement.executeQuery(offlineSql);
+            resultSet.next();
             offline = resultSet.getInt(1);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -295,6 +324,56 @@ public class UserDao implements IUserDao {
         return false;
     }
 
+    @Override
+    public boolean cancelNotification(int fromUserId, int toUserId) {
+
+        try {
+            String sql = "select * from invitations where from_id = ? and to_id = ?";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_SENSITIVE,
+                    ResultSet.CONCUR_UPDATABLE);
+            preparedStatement.setInt(1, fromUserId);
+            preparedStatement.setInt(2, toUserId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                sql = "delete from invitations\n" +
+                        "where from_id = ? and to_id = ?";
+                preparedStatement = conn.prepareStatement(sql);
+                preparedStatement.setInt(1, fromUserId);
+                preparedStatement.setInt(2, toUserId);
+                int effectedRows = preparedStatement.executeUpdate();
+                System.out.println(effectedRows);
+                return true;
+            } else {
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    @Override
+    public List<Notification> getNotification(int id) {
+        List<Notification> notifications = new ArrayList<>();
+        try {
+            String sql = "select * from users\n" +
+                    "join invitations\n" +
+                    "on users.id = invitations.from_id\n" +
+                    "where invitations.to_id = " + id;
+            ResultSet resultSet = statement.executeQuery(sql);
+            while (resultSet.next()) {
+                User user = extractUser(resultSet);
+                notifications.add(new Notification(NotificationType.FRIEND_REQUEST, user));
+            }
+            return notifications;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return notifications;
+
+
+    }
+
     private User extractUser(ResultSet resultSet) {
         try {
             User user = new User();
@@ -335,12 +414,14 @@ public class UserDao implements IUserDao {
     }
 
     private void injectUser(User user) {
+        System.out.println(user.getPhone());
         try {
             preparedStatement.setInt(1, user.getId());
             preparedStatement.setString(2, user.getPhone());
             preparedStatement.setString(3, user.getName());
             preparedStatement.setString(4, user.getEmail());
-            preparedStatement.setString(5, user.getImageURL());
+            ImageIO.write(SwingFXUtils.fromFXImage(user.getImage(), null), "png", new File(user.getPhone()));
+            preparedStatement.setString(5, user.getPhone()+".png");
             preparedStatement.setString(6, user.getPassword());
             Gender gender = user.getGender();
             String genderString = "Male";
@@ -372,7 +453,7 @@ public class UserDao implements IUserDao {
                 }
             }
             preparedStatement.setInt(13, statusNumber);
-        } catch (SQLException e) {
+        } catch (SQLException | IOException e) {
             e.printStackTrace();
         }
     }

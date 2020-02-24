@@ -15,7 +15,7 @@ import org.asasna.chat.common.model.Message;
 
 public class MSGview extends HBox {
 
-    private Color DEFAULT_SENDER_COLOR = Color.AQUAMARINE;
+    private Color DEFAULT_SENDER_COLOR = Color.DARKBLUE;
     private Color DEFAULT_RECEIVER_COLOR = Color.CYAN;
     private Background DEFAULT_SENDER_BACKGROUND, DEFAULT_RECEIVER_BACKGROUND;
     private SpeechDirection direction;

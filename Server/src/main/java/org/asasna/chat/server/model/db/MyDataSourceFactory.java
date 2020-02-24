@@ -1,9 +1,13 @@
 package org.asasna.chat.server.model.db;
 
+
+
+
 import com.mysql.cj.jdbc.MysqlDataSource;
 
 import javax.sql.DataSource;
 import java.io.*;
+import java.sql.SQLException;
 import java.util.Properties;
 
 public class MyDataSourceFactory {
@@ -19,9 +23,12 @@ public class MyDataSourceFactory {
             mySqlDataSource.setURL(props.getProperty("MYSQL_DB_URL"));
             mySqlDataSource.setUser(props.getProperty("MYSQL_DB_USERNAME"));
             mySqlDataSource.setPassword(props.getProperty("MYSQL_DB_PASSWORD"));
+            mySqlDataSource.setUseSSL(false);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return mySqlDataSource;

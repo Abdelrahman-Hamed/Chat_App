@@ -1,5 +1,7 @@
 package org.asasna.chat.server.controller;
 
+import javafx.collections.ObservableList;
+import javafx.scene.chart.PieChart;
 import org.asasna.chat.common.model.User;
 import org.asasna.chat.common.service.IAuthenticationService;
 import org.asasna.chat.common.service.IChatService;
@@ -9,11 +11,17 @@ import org.asasna.chat.server.services.ChatService;
 import org.asasna.chat.server.view.PasswordAuthentication;
 
 import java.rmi.RemoteException;
+import java.rmi.server.RMIClientSocketFactory;
+import java.rmi.server.RMIServerSocketFactory;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
 
-public class AuthenticationService extends UnicastRemoteObject implements IAuthenticationService{
+public class AuthenticationService extends UnicastRemoteObject implements IAuthenticationService {
     public AuthenticationService() throws RemoteException {
+    }
+
+    public AuthenticationService(int port, RMIClientSocketFactory csf, RMIServerSocketFactory ssf) throws RemoteException {
+        super(port, csf, ssf);
     }
 
     @Override
@@ -21,7 +29,7 @@ public class AuthenticationService extends UnicastRemoteObject implements IAuthe
         try {
             UserDao userDao = new UserDao();
             User user = userDao.getUser(phoneNumber, password);
-            if(user == null) return null;
+            if (user == null) return null;
             return new ChatService(user);
         } catch (SQLException e) {
             e.printStackTrace();
@@ -44,17 +52,28 @@ public class AuthenticationService extends UnicastRemoteObject implements IAuthe
 
         try {
             userDao = new UserDao();
+            userDao.addUser(me);
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        if(userDao.getUser(user.getPhone()) == null) {
-            PasswordAuthentication passwordAuthentication = new PasswordAuthentication();
-            user.setPassword(passwordAuthentication.hash(user.getPassword()));
-            userDao.addUser(user);
-        }
+//        if(userDao.getUser(user.getPhone()) == null) {
+//            //PasswordAuthentication passwordAuthentication = new PasswordAuthentication();
+//            //user.setPassword(passwordAuthentication.hash(user.getPassword()));
+//            userDao.addUser(user);
+//        }
     }
     public boolean isValid(User me) throws RemoteException{
         return ( userDao.getUser(me.getPhone()) == null );
     }
+
+    public ObservableList<PieChart.Data> getGenderData() throws RemoteException, SQLException {
+        userDao = new UserDao();
+        return  userDao.getUsersByGender();
+    }
+    public ObservableList<PieChart.Data> getStatusData() throws RemoteException, SQLException {
+        userDao = new UserDao();
+        return  userDao.getUsersByStatus();
+    }
+
 }

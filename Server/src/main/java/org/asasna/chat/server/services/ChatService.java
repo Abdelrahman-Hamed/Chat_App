@@ -1,9 +1,11 @@
 package org.asasna.chat.server.services;
 
-import com.mysql.cj.xdevapi.Client;
+
+import org.apache.log4j.Logger;
 import org.asasna.chat.common.model.*;
 import org.asasna.chat.common.service.IChatService;
 import org.asasna.chat.common.service.IClientService;
+import org.asasna.chat.server.App;
 import org.asasna.chat.server.model.dao.IUserDao;
 import org.asasna.chat.server.model.dao.UserDao;
 
@@ -21,7 +23,6 @@ import org.apache.commons.io.IOUtils;
 
 public class ChatService extends UnicastRemoteObject implements IChatService {
 
-    private Map<Integer, List<Message>> receiverMessages = new HashMap<>();
     private static Map<Integer, IClientService> onlineUsers = new HashMap<>();
     IUserDao userDao;
     private User user;
@@ -55,7 +56,6 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
 
     @Override
     public void sendMessage(int userId, Message message) throws RemoteException {
-        //saveReceiverMessages(userId, message);
         IClientService me = onlineUsers.get(message.getUserId());
         IClientService myFriend = onlineUsers.get(userId);
         me.recieveMessage(message);
@@ -70,7 +70,9 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     @Override
     public void register(int userId, IClientService client) throws RemoteException {
         onlineUsers.put(userId, client);
-        System.out.println(onlineUsers);
+        Logger.getLogger(App.class).info("Client Connected : "+client);
+
+        //System.out.println(onlineUsers);
     }
 
     @Override
@@ -105,17 +107,21 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     }
 
     @Override
-    public List<User> search(String phoneNumber) throws RemoteException {
+    public Map<Boolean, List<User>> search(String phoneNumber) throws RemoteException {
         List<User> searchList = new ArrayList<User>();
+        Map<Boolean, List<User>> map = new HashMap<>();
         UserDao userdao = null;
         try {
             userdao = new UserDao();
-            searchList = userdao.getNonContactUsers(user.getPhone());
-            searchList = searchList.stream().filter(user -> user.getPhone().contains(phoneNumber)).collect(Collectors.toList());
+            map = userdao.getNonContactUsers(user.getId());
+            map.put(true, map.get(true).stream().filter(user -> user.getPhone().contains(phoneNumber)).collect(Collectors.toList()));
+            map.put(false, map.get(false).stream().filter(user -> user.getPhone().contains(phoneNumber)).collect(Collectors.toList()));
+//            searchList = searchList.stream().filter(user -> user.getPhone().contains(phoneNumber)).collect(Collectors.toList());
+            return map;
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return searchList;
+        return map;
     }
 
     @Override
@@ -123,11 +129,28 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
         try {
             UserDao userDao = new UserDao();
             boolean notified = userDao.setNotification(fromUserId, toUserId);
+            if (notified) {
+//                 Call Receive Notification On Client Side
+                IClientService toClient = onlineUsers.get(toUserId);
+                if( toClient != null){
+                    System.out.println("Get In Here");
+                    toClient.recieveNotivication(new Notification(NotificationType.FRIEND_REQUEST, userDao.getUser(fromUserId)));
+                }
+            }
             return notified;
-//            if (notified) {
-                // Call Receive Notification On Client Side
-//            }
 
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public boolean cancelFriendRequest(int fromUserId, int toUserId) throws RemoteException {
+        try {
+            UserDao userDao = new UserDao();
+            boolean notified = userDao.cancelNotification(fromUserId, toUserId);
+            return notified;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -192,20 +215,31 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     }
 
     @Override
+    public void acceptRequest(int fromUserId, int id) throws RemoteException {
+        sendFriendRequest(id, fromUserId);
+    }
+
+    @Override
+    public void cancelRequest(int fromUserId, int id) throws RemoteException {
+        cancelFriendRequest(id, fromUserId);
+    }
+
+    @Override
+    public List<Notification> loadNotifications(int id) throws RemoteException {
+        try {
+            UserDao userDao = new UserDao();
+            return userDao.getNotification(id);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
     public User getUser() throws RemoteException {
         return user;
     }
 
-    private void saveReceiverMessages(int receiverId, Message message) {
-        List<Message> messagesList = receiverMessages.get(receiverId);
-        if (messagesList.isEmpty()) {
-            List<Message> newMessagesList = new ArrayList<>();
-            newMessagesList.add(message);
-            receiverMessages.put(receiverId, newMessagesList);
-        } else {
-            receiverMessages.get(receiverId).add(message);
-        }
-    }
 
     /* ِ start  Abdo */
 
@@ -242,7 +276,10 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     /* end abeer */
 
     /* start shimaa */
-
+    @Override
+    public User getUser(int id) throws RemoteException {
+        return userDao.getUser(id);
+    }
     /* end shimaa */
 
 }

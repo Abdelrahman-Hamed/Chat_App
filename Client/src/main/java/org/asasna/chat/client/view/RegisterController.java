@@ -10,6 +10,7 @@ import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import org.asasna.chat.client.App;
 import org.asasna.chat.client.Controller.Client;
+import org.asasna.chat.client.model.IChatController;
 import org.asasna.chat.client.util.Validation;
 import org.asasna.chat.common.model.Gender;
 import org.asasna.chat.common.model.User;
@@ -27,7 +28,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-public class RegisterController  extends Controller implements Initializable {
+public class RegisterController implements Initializable {
     @FXML
     ComboBox<String> countryBox;
     @FXML
@@ -71,13 +72,12 @@ public class RegisterController  extends Controller implements Initializable {
     ToggleGroup tg;
     ArrayList<String> countries;
     Image defaultImage;
+    private Image image;
 
     {
-        try {
-            defaultImage = new Image(new FileInputStream("./client/src/main/resources/org/asasna/chat/client/view/abdo.jpg"));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+
+        defaultImage = new Image(getClass().getResource("abdo.jpg").toExternalForm());
+
     }
     //Image defaultImage = new Image("files:resources.org.example.Icon.jpg");
 
@@ -229,6 +229,7 @@ public class RegisterController  extends Controller implements Initializable {
         File file = open.showOpenDialog(null);
         if (file != null) {
             Image image1 = new Image(file.toURI().toString());
+            this.image = image1;
             circlePhoto.setFill(new ImagePattern(image1));
         }
 
@@ -239,7 +240,10 @@ public class RegisterController  extends Controller implements Initializable {
         if (checkingPhoneNum() & checkingRadioButtons() & checkComboBox() & checkBio() & checkingName() & checkingEmail() & checkingPassword() & checkingConfirmPassword() & checkDatePicker()) {
             try {
                 User me = new User(name.getText(), phoneNumber.getText(), email.getText(), password.getText(), getSelectedGender(), countryBox.getValue(), convertToDateViaSqlDate(dateOfBirth.getValue()), bio.getText(), UserStatus.ONLINE, "abdo.jpg", true, false);
-                me.setImage(defaultImage);
+                if (image == null)
+                    me.setImage(defaultImage);
+                else
+                    me.setImage(image);
                 if (addingUser(me)) {
                     App.setRoot("login");
                 } else {
@@ -320,13 +324,14 @@ public class RegisterController  extends Controller implements Initializable {
 
     {
         try {
-            myContoller = new Client(this);
+            myContoller = new Client(this); // edited by shimaa
         } catch (RemoteException e) {
             e.printStackTrace();
         }
     }
 
     public boolean addingUser(User me) throws RemoteException {
+        System.out.println("ide = " + me.getId());
         System.out.println("name =" + me.getName());
         System.out.println("phone =" + me.getPhone());
         System.out.println("mail =" + me.getEmail());

@@ -2,8 +2,8 @@
 
 <?import java.lang.*?>
 <?import javafx.geometry.*?>
+<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
@@ -16,18 +16,18 @@
         -->
         <AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity">
 
-            <Pane fx:id="sidePanel" prefHeight="600.0" prefWidth="86.0" style="-fx-background-color: #045ba5;">
-                <FontIcon fx:id="friendList" iconColor="WHITE" iconLiteral="oct-person" iconSize="30" layoutX="30.0" layoutY="140.0" selectionFill="#1e82dc" styleClass="sidebar_icon" text="" />
+            <Pane fx:id="sidePanel" prefHeight="600.0" prefWidth="86.0" style="-fx-background-color: #045ba5;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <FontIcon fx:id="friendList" iconColor="WHITE" iconLiteral="oct-person" iconSize="30" layoutX="30.0" layoutY="140.0" selectionFill="#1e82dc" styleClass="sidebar_icon" />
                 <FontIcon fx:id="groupIcon" iconColor="WHITE" iconLiteral="dashicons-groups" iconSize="35" layoutX="24.0" layoutY="200.0" selectionFill="#1e82dc" styleClass="sidebar_icon" />
                 <FontIcon fx:id="logoutIcon" iconColor="WHITE" iconLiteral="oi-account-logout" iconSize="30" layoutX="30.0" layoutY="555.0" selectionFill="#1e82dc" styleClass="sidebar_icon" />
                 <FontIcon fx:id="friendRequest" iconColor="WHITE" iconLiteral="enty-add-user" iconSize="30" layoutX="29.0" layoutY="260.0" selectionFill="#1e82dc" styleClass="sidebar_icon" />
                 <FontIcon fx:id="notificationIcon" iconColor="WHITE" iconLiteral="gmi-notifications" iconSize="35" layoutX="23.0" layoutY="315.0" selectionFill="#1e82dc" styleClass="sidebar_icon" />
-                <FontIcon fx:id="saveChatIcon" iconColor="WHITE" iconLiteral="oct-file" iconSize="30" layoutX="29.0" layoutY="367.0" selectionFill="#1e82dc" styleClass="sidebar_icon" />
+                <FontIcon fx:id="saveChatIcon" iconColor="WHITE" iconLiteral="oct-file" iconSize="30" layoutX="29.0" layoutY="367.0" onMouseClicked="#saveChat" selectionFill="#1e82dc" styleClass="sidebar_icon" />
             </Pane>
-            <Circle fx:id="userImage" fill="WHITE" layoutX="42.0" layoutY="45.0" radius="31.0" stroke="#7eff21" strokeType="INSIDE" strokeWidth="5.0" />
+            <Circle fx:id="userImage" fill="WHITE" layoutX="42.0" layoutY="45.0" radius="31.0" stroke="#7eff21" strokeType="INSIDE" strokeWidth="5.0" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="14.0" />
             <VBox fx:id="contactsView" layoutX="86.0" prefHeight="600.0" prefWidth="350" style="-fx-background-color: #1e82dc;">
-                <HBox fx:id="searchArea" prefHeight="74.0" prefWidth="257.0">
-                    <TextField fx:id="searchTextField" prefHeight="38.0" prefWidth="208.0" promptText="Search" style="-fx-background-color: white; -fx-background-radius: 30; -fx-border-radius: 30;">
+                <HBox fx:id="searchArea" alignment="CENTER" prefHeight="74.0" prefWidth="257.0">
+                    <TextField fx:id="searchTextField" prefHeight="38.0" prefWidth="287.0" promptText="Search" style="-fx-background-color: white; -fx-background-radius: 30; -fx-border-radius: 30;">
                         <HBox.margin>
                             <Insets left="20.0" top="0.0" />
                         </HBox.margin>
@@ -45,10 +45,13 @@
                     <RowConstraints maxHeight="193.0" minHeight="3.0" prefHeight="96.0" vgrow="SOMETIMES" />
                 </rowConstraints>
                 <HBox fx:id="chatArea_hbox" prefHeight="95.0" prefWidth="555.0" GridPane.rowIndex="2">
-                    <FontIcon iconColor="#1e82dc" iconLiteral="dashicons-microphone" iconSize="35">
+                    <FontIcon fx:id="microphoneId" iconColor="#1e82dc" iconLiteral="dashicons-microphone" iconSize="35">
                         <HBox.margin>
                             <Insets left="15.0" top="25.0" />
                         </HBox.margin>
+                  <cursor>
+                     <Cursor fx:constant="HAND" />
+                  </cursor>
                     </FontIcon>
                     <TextArea fx:id="messageTextArea" maxHeight="50.0" prefHeight="68.0" prefWidth="402.0" promptText="Enter Your Message" stylesheets="@../textArea.css" wrapText="true">
                         <HBox.margin>
@@ -62,51 +65,65 @@
                         <padding>
                             <Insets left="5.0" top="5.0" />
                         </padding>
+                  <cursor>
+                     <Cursor fx:constant="TEXT" />
+                  </cursor>
                     </TextArea>
                     <Button fx:id="sendButton" minWidth="49.0" mnemonicParsing="false" onAction="#send" prefHeight="36.0" prefWidth="53.0" style="-fx-border-radius: 30; -fx-background-radius: 30; -fx-font-size: 18; -fx-font-weight: bold; -fx-font-family: Comic Sans MS; -fx-background-color: #1e82dc; -fx-text-fill: white; ">
                         <HBox.margin>
-                            <Insets left="20.0" top="15.0" />
+                            <Insets left="20.0" right="10.0" top="15.0" />
                         </HBox.margin>
                         <font>
                             <Font name="System Bold" size="18.0" />
                         </font>
                         <graphic>
-                            <FontIcon iconColor="WHITE" iconLiteral="dashicons-controls-play" iconSize="40" wrappingWidth="35.0" />
+                            <FontIcon iconColor="WHITE" iconLiteral="dashicons-controls-play" iconSize="40" wrappingWidth="35.0">
+                        <cursor>
+                           <Cursor fx:constant="HAND" />
+                        </cursor></FontIcon>
                         </graphic>
                     </Button>
                 </HBox>
-                <ScrollPane fx:id="chatArea_scroll" prefHeight="426.0" prefWidth="555.0" GridPane.rowIndex="1">
+                <ScrollPane fx:id="chatArea_scroll" prefHeight="396.0" prefWidth="555.0" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
                     <VBox fx:id="view" prefHeight="410.0" prefWidth="552.0" style="-fx-border-color: #ffffff  #ffffff  #1e82dc #ffffff;" />
                 </ScrollPane>
                 <HBox prefHeight="101.0" prefWidth="555.0" style="-fx-border-color: #ffffff  #ffffff  #1e82dc #ffffff;">
-                    <ImageView fitHeight="75.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true">
-                        <Image url="@../group.png" />
-                        <HBox.margin>
-                            <Insets left="15.0" />
-                        </HBox.margin>
-                    </ImageView>
-                    <Label prefHeight="91.0" prefWidth="201.0" style="-fx-text-fill: #1e82dc;" text="Java Project Team">
+               <Circle fx:id="receiverImage" fill="#f0f3f5" radius="38.0">
+                  <HBox.margin>
+                     <Insets left="10.0" top="10.0" />
+                  </HBox.margin>
+               </Circle>
+                    <Label fx:id="receiverNameLabel" prefHeight="91.0" prefWidth="201.0" style="-fx-text-fill: #1e82dc;" text="">
                         <font>
                             <Font name="Comic Sans MS Bold" size="18.0" />
                         </font>
                         <HBox.margin>
-                            <Insets left="10.0" />
+                            <Insets left="15.0" />
                         </HBox.margin>
                     </Label>
                     <FontIcon iconColor="#1e82dc" iconLiteral="dashicons-video-alt2" iconSize="30">
                         <HBox.margin>
                             <Insets left="110.0" right="15.0" top="35.0" />
                         </HBox.margin>
+                  <cursor>
+                     <Cursor fx:constant="HAND" />
+                  </cursor>
                     </FontIcon>
-                    <FontIcon iconColor="#1e82dc" iconLiteral="dashicons-phone" iconSize="30">
+                    <FontIcon iconColor="#1e82dc" iconLiteral="dashicons-phone" iconSize="30" onMouseClicked="#cleanchat">
                         <HBox.margin>
                             <Insets right="15.0" top="35.0" />
                         </HBox.margin>
+                  <cursor>
+                     <Cursor fx:constant="HAND" />
+                  </cursor>
                     </FontIcon>
                     <FontIcon iconColor="#1e82dc" iconLiteral="dashicons-paperclip" iconSize="30" onMouseClicked="#chooseFile" wrappingWidth="28.25">
                         <HBox.margin>
                             <Insets top="35.0" />
                         </HBox.margin>
+                  <cursor>
+                     <Cursor fx:constant="HAND" />
+                  </cursor>
                     </FontIcon>
                 </HBox>
             </GridPane>
