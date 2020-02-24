@@ -201,11 +201,11 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     public void sendFile(RemoteInputStream inFile, String suffix,int friendId ,Message message) throws RemoteException {
         try {
             InputStream istream = RemoteInputStreamClient.wrap(inFile);
-            final File tempFile = File.createTempFile(message.getMesssagecontent(), suffix, new File("C:\\Users\\Aya\\Desktop"));
+            final File tempFile = File.createTempFile(message.getMesssagecontent(), suffix, new File(""));
             tempFile.deleteOnExit();
             try (FileOutputStream out = new FileOutputStream(tempFile)) {
                 IOUtils.copy(istream, out);
-                BufferedWriter outWrite = new BufferedWriter(new FileWriter("C:\\Users\\Aya\\Desktop\\ids.txt", true));
+                BufferedWriter outWrite = new BufferedWriter(new FileWriter("ids.txt", true));
                 String str=String.valueOf(friendId)+"-"+String.valueOf(message.getUserId());
                 outWrite.append(str);
                 outWrite.write("\n");
@@ -220,7 +220,8 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
                 System.out.println("Server " + message.getMesssagecontent());
             }
         } catch (IOException e) {
-            System.out.println("Something went wrong with the client");
+           // System.out.println("Something went wrong with the client");
+            e.printStackTrace();
         }
 
     }
@@ -231,7 +232,7 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
         RemoteInputStreamServer istream = null;
         try {
 
-            istream = new GZIPRemoteInputStream(new BufferedInputStream(new FileInputStream("C:\\Users\\Aya\\Desktop\\"+fileName)));///pathhhhhhhhh
+            istream = new GZIPRemoteInputStream(new BufferedInputStream(new FileInputStream(fileName)));///pathhhhhhhhh
             String fileExtension = fileName.substring(fileName.lastIndexOf("."), fileName.length());
             IClientService clicker = onlineUsers.get(clickerId);
             clicker.downloadFile(istream ,fileExtension,fileName);
