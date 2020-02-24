@@ -706,10 +706,11 @@ private AudioFormat getAudioFormat(){
             ObservableList<Node> contacts;
             contacts = contactsList.getChildren();
             Contact myContact;
+           // boolean newContact=false;
             for (Node c : contacts) {
                 myContact=(Contact)c;
                 if(updatedUser.getId()==myContact.getUser().getId()){
-
+                   // newContact=true;
                     contactsList.getChildren().remove(myContact);
                     if(updatedUser.getStatus()!=UserStatus.OFFLINE) {
                         myContact = new Contact(updatedUser);
@@ -719,6 +720,10 @@ private AudioFormat getAudioFormat(){
                     break;
                 }
             }
+           /* if(newContact){
+                myContact = new Contact(updatedUser);
+                contactsList.getChildren().add(myContact);
+            }*/
         });
 
 
