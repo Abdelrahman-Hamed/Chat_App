@@ -3,9 +3,12 @@ package org.asasna.chat.client.view;
 import com.jfoenix.controls.JFXButton;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyEvent;
@@ -18,6 +21,7 @@ import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import org.asasna.chat.client.Controller.Client;
 import org.asasna.chat.client.model.*;
+import org.asasna.chat.client.util.Validation;
 import org.asasna.chat.common.model.Message;
 import org.asasna.chat.common.model.Notification;
 import org.asasna.chat.common.model.User;
@@ -25,6 +29,7 @@ import org.asasna.chat.common.model.UserStatus;
 import org.asasna.chat.client.model.SearchedContact;
 import org.asasna.chat.common.model.*;
 
+import org.asasna.chat.common.service.IChatService;
 import org.asasna.chat.common.service.IClientService;
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -134,7 +139,6 @@ public class ChatController extends Controller implements Initializable, IChatCo
                 create.getStyleClass().clear();
                 create.getStyleClass().add("group-create-btn");
                 this.searchArea.getChildren().add(create);
-
             });
             friendList.setOnMouseClicked(e -> {
                 active = Active.Friends;
@@ -159,7 +163,6 @@ public class ChatController extends Controller implements Initializable, IChatCo
             this.view.prefWidthProperty().bind(root.getScene().widthProperty().multiply(.5));
             this.messageTextArea.prefHeightProperty().bind(root.getScene().heightProperty());
             this.messageTextArea.prefWidthProperty().bind(root.getScene().widthProperty().multiply(.66).subtract(120));
-
         }).start();
         new Thread(() -> {
             try {
@@ -172,7 +175,6 @@ public class ChatController extends Controller implements Initializable, IChatCo
                     Platform.runLater(() -> {
                         contactsList.getChildren().add(contact1);
                     });
-
                 });
             } catch (RemoteException e) {
                 e.printStackTrace();
@@ -184,11 +186,9 @@ public class ChatController extends Controller implements Initializable, IChatCo
     }
 
     public void sendAudio() {
-
     }
 
     public void saveChat() {
-
     }
 
     public void updateProfile() {
@@ -234,7 +234,7 @@ public class ChatController extends Controller implements Initializable, IChatCo
         for (Node c : contacts) {
             c.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
                 this.activeContact = (Contact) c;
-                System.out.println("active Contact is : "+ this.activeContact.getUser().getName());
+                System.out.println("active Contact is : " + this.activeContact.getUser().getName());
             });
         }
     }
@@ -369,8 +369,8 @@ public class ChatController extends Controller implements Initializable, IChatCo
                 try {
                     int friendId = activeContact.getUser().getId();
                     int senderId = me.getId();
-                    Message message = new Message(senderId,fileName);
-                    client.sendFileToServer(selectedFile.getPath(), fileExtension,friendId, message);
+                    Message message = new Message(senderId, fileName);
+                    client.sendFileToServer(selectedFile.getPath(), fileExtension, friendId, message);
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
@@ -436,6 +436,25 @@ public class ChatController extends Controller implements Initializable, IChatCo
 
 
     //    Start Abeer Emad
+    @FXML
+    public void ProfileButtonClicked(ActionEvent event) {
+
+
+        ProfileController profileController = new ProfileController( me, this);
+
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("profile" + ".fxml"));
+        fxmlLoader.setController(profileController);
+        Parent parent = null;
+        try {
+            parent = fxmlLoader.load();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        scene.setRoot(parent);
+
+
+    }
+
     // End Abeer Emad
 
 

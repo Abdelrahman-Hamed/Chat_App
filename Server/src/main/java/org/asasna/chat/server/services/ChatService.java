@@ -224,6 +224,20 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     /* end aya */
 
     /* start abeer */
+    @Override
+    public void UpdateUser(User user){
+        try {
+            UserDao userdao=new UserDao();
+            boolean done= userdao.updateUser(user.getId(),user);
+            if(!done)
+                System.out.println("cant update user ");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
 
     /* end abeer */
 

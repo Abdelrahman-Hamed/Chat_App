@@ -84,6 +84,7 @@ public class PrimaryController  extends Controller {
                 client = new Client(chatController);
                 password.setDisable(false);
                 errorPhoneNumber.setVisible(false);
+
                 IChatService chatService = client.login(phoneNumber.getText(), password.getText());
                 if(chatService == null){
                     System.out.println("Phone Number OR Password is Incorrect");

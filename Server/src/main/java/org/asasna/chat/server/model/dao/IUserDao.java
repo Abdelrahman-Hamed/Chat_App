@@ -18,11 +18,13 @@ public interface IUserDao {
     User getUser(String phoneNumber);
 
 
+
     boolean updateUser(int id, User user);
 
     boolean deleteUser(int id);
 
     boolean addUser(User user);
+
 
     List<User> getFriendList(User user);
 

@@ -27,7 +27,7 @@ import com.healthmarketscience.rmiio.*;
 public class Client extends UnicastRemoteObject implements IClientService {
     private Controller Controller;
     IChatController chatController;
-    IChatService chatService;
+     public IChatService chatService;
     IAuthenticationService authenticationService;
     private User user;
 
@@ -72,6 +72,7 @@ public class Client extends UnicastRemoteObject implements IClientService {
     @Override
     public void sendFileToServer(String filePath, String extension,int senderId ,Message message) throws RemoteException {
         RemoteInputStreamServer istream = null;
+
         try {
             istream = new GZIPRemoteInputStream(new BufferedInputStream(new FileInputStream(filePath)));
             chatService.sendFile(istream.export(), extension,senderId , message);

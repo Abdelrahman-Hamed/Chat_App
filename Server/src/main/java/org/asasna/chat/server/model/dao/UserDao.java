@@ -188,6 +188,8 @@ public class UserDao implements IUserDao {
         return false;
     }
 
+
+
     @Override
     public List<User> getFriendList(User user) {
         List<User> friends = new ArrayList<>();
