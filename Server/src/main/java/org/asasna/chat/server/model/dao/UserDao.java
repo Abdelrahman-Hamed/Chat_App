@@ -34,7 +34,9 @@ public class UserDao implements IUserDao {
 
     public UserDao() throws SQLException {
         conn = DBConnection.getConnection();
-        statement = conn.createStatement();
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////status
+        //statement = conn.createStatement();
+        statement = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 
     }
 
@@ -452,6 +454,32 @@ public class UserDao implements IUserDao {
             }
             preparedStatement.setInt(13, statusNumber);
         } catch (SQLException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+    @Override
+    public void updateUserStatues(int id, UserStatus status) {
+        ResultSet resultSet;
+        String Sql = "select * from users  where id =" + id;
+        try {
+            resultSet = statement.executeQuery(Sql);
+            resultSet.beforeFirst();
+            int statusNumber = 0;
+            while (resultSet.next()) {
+                switch (status) {
+                    case ONLINE:
+                        statusNumber = 1;
+                        break;
+                    case BUSY:
+                        statusNumber = 2;
+                        break;
+                }
+                resultSet.updateInt(13, statusNumber);
+                resultSet.updateRow();
+
+
+            }
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }

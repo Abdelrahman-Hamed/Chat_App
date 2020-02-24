@@ -12,6 +12,8 @@ import org.asasna.chat.common.service.IChatService;
 import org.asasna.chat.common.service.IClientService;
 
 import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.MappedByteBuffer;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -85,18 +87,6 @@ public class Client extends UnicastRemoteObject implements IClientService {
 
     }
 
-    @Override
-    public void sendFileToServer(String filePath, String extension, int senderId, Message message) throws RemoteException {
-        RemoteInputStreamServer istream = null;
-        try {
-            istream = new GZIPRemoteInputStream(new BufferedInputStream(new FileInputStream(filePath)));
-            chatService.sendFile(istream.export(), extension, senderId, message);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (istream != null) istream.close();
-        }
-    }
 
     @Override
     public void recieveNotivication(Notification notification) throws RemoteException {
@@ -184,27 +174,6 @@ public class Client extends UnicastRemoteObject implements IClientService {
         return null;
     }
 
-    @Override
-    public void downloadFile(RemoteInputStream inFile, String suffix, String name) throws RemoteException {
-        new Thread(() -> {
-            try {
-                InputStream istream = RemoteInputStreamClient.wrap(inFile);
-                final File tempFile = File.createTempFile(name, suffix, new File("C:\\Users\\Aya\\Desktop"));
-                tempFile.deleteOnExit();
-                try (FileOutputStream out = new FileOutputStream(tempFile)) {
-                    IOUtils.copy(istream, out);
-                }
-            } catch (IOException e) {
-                System.out.println("Something went wrong with the client");
-            }
-        }).start();
-
-    }
-
-    @Override
-    public void recieveFileMessage(Message message) throws RemoteException {//reciver ID !
-        chatController.tempDisplayMessage(message);
-    }
 
     public boolean rejectFriendRequest(int userId) {
         try {
@@ -232,7 +201,15 @@ public class Client extends UnicastRemoteObject implements IClientService {
     /* end Abdo */
 
     /* start sayed */
+    @Override
+    public boolean sendRecord(int receiverId, int senderId, byte[] buf) throws RemoteException {
+        return chatService.sendRecord(receiverId, senderId, buf);
+    }
 
+    @Override
+    public void recieveRecord(int senderId, byte[] buf) throws RemoteException {
+        chatController.recieveRecord(senderId, buf);
+    }
     /* end sayed */
 
     /* start nehal */
@@ -247,6 +224,79 @@ public class Client extends UnicastRemoteObject implements IClientService {
     /* end nehal */
 
     /* start aya */
+    //List<User> myFriends=getFriendList();
+    @Override
+    public void sendFileToServer(String filePath, String extension, int senderId, Message message) throws RemoteException {
+        RemoteInputStreamServer istream = null;
+        try {
+            istream = new GZIPRemoteInputStream(new BufferedInputStream(new FileInputStream(filePath)));
+            chatService.sendFile(istream.export(), extension, senderId, message);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (istream != null) istream.close();
+        }
+    }
+
+    @Override
+    public void downloadFile(RemoteInputStream inFile, String suffix, String name) throws RemoteException {
+        // new Thread(() -> {
+        try {
+            InputStream istream = RemoteInputStreamClient.wrap(inFile);
+            final File tempFile = File.createTempFile(name, suffix, new File("C:\\Users\\Aya\\Desktop"));
+            tempFile.deleteOnExit();
+            try (FileOutputStream out = new FileOutputStream(tempFile)) {
+                IOUtils.copy(istream, out);
+                System.out.println("downloadfile Client");
+            }
+        } catch (IOException e) {
+            // System.out.println("Something went wrong with the client");
+            e.printStackTrace();
+        }
+        //  }).start();
+
+    }
+
+    @Override
+    public void recieveFileMessage(Message message) throws RemoteException {//reciver ID !
+        //  chatController.tempDisplayMessage(message);
+        chatController.tempFileDisplayMessage(message);
+        System.out.println(message.getMesssagecontent());
+    }
+    @Override
+    public void getFile(String fileName,int senderId)throws RemoteException{
+        chatService.getFile(fileName,senderId);
+    }
+
+    public List<Integer> setMyFriendsIds(List<User> myFriends) {
+        List<Integer> myFriendsIds = null;
+        for (int i = 0; i < myFriends.size(); i++) {
+            myFriendsIds.add(myFriends.get(i).getId());
+        }
+        return myFriendsIds;
+    }
+
+    /*public List<User> getMyFriendList(int id) throws RemoteException {
+
+        return chatService.getMyFriendList(id);
+    }*/
+    @Override
+    public void changeStatus(User me, UserStatus status) throws RemoteException {
+        System.out.println("client");
+        // List<User> myFriends=getMyFriendList(id);
+        //List<Integer> myFriendsIds=setMyFriendsIds(myFriends);
+        chatService.changeUserStatus(me.getId(), status);
+        chatService.notifyMyfriends(me.getId());
+
+    }
+
+    @Override
+    public void reciveUpateNotification(User updatedUser) throws RemoteException {
+
+        System.out.println("Recived");
+        chatController.updateMyContactList(updatedUser);
+        System.out.println("Recived2");
+    }
 
     /* end aya */
 
