@@ -12,6 +12,8 @@ import org.asasna.chat.common.service.IChatService;
 import org.asasna.chat.common.service.IClientService;
 
 import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.MappedByteBuffer;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -84,7 +86,6 @@ public class Client extends UnicastRemoteObject implements IClientService {
     public void changeStatus(int id, UserStatus status) throws RemoteException {
 
     }
-
 
 
     @Override
@@ -200,7 +201,15 @@ public class Client extends UnicastRemoteObject implements IClientService {
     /* end Abdo */
 
     /* start sayed */
+    @Override
+    public boolean sendRecord(int receiverId, int senderId, byte[] buf) throws RemoteException {
+        return chatService.sendRecord(receiverId, senderId, buf);
+    }
 
+    @Override
+    public void recieveRecord(int senderId, byte[] buf) throws RemoteException {
+        chatController.recieveRecord(senderId, buf);
+    }
     /* end sayed */
 
     /* start nehal */

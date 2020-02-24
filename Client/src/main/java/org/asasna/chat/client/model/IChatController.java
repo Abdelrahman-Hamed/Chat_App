@@ -21,4 +21,6 @@ public interface IChatController{
     public void updateMyContactList(User updatedUser);
     public void tempFileDisplayMessage(Message message);
     public void reciveFile(String fileName);
+
+    void recieveRecord(int senderId, byte[] buf); // By Sayed Nabil
 }

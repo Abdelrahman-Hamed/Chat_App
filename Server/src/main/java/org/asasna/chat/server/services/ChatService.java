@@ -178,6 +178,8 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
         return null;
     }
 
+
+
     @Override
     public User getUser() throws RemoteException {
         return user;
@@ -189,7 +191,15 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     /* end Abdo */
 
     /* start sayed */
-
+    @Override
+    public boolean sendRecord(int receiverId, int senderId, byte[] buf) throws RemoteException {
+        IClientService me = onlineUsers.get(senderId);
+        IClientService myFriend = onlineUsers.get(receiverId);
+        System.out.println("Buffer Length: " + buf.length);
+        me.recieveRecord(senderId, buf);
+        myFriend.recieveRecord(senderId, buf);
+        return true;
+    }
     /* end sayed */
 
     /* start nehal */
