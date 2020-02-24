@@ -631,18 +631,18 @@ private AudioFormat getAudioFormat(){
                 try {
                     int friendId = activeContact.getUser().getId();
                     int senderId = me.getId();
-                    Message message = new Message(senderId, fileName);
-                    client.sendFileToServer(selectedFile.getPath(), fileExtension, friendId, message);
+                    Message message = new Message(senderId,fileName);
+                    client.sendFileToServer(selectedFile.getPath(), fileExtension,friendId, message);
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
             }).start();
         }
     }
-   // @Override
+    @Override
     public void tempFileDisplayMessage(Message message) {
         viewTextMessage = new MSGview(message,this);
-        if (me.getId() == message.getUserId()) {
+        if (me.getId() == message.getUserId()) {///////////////////////////////////me
             System.out.println("Me: " + message.getMesssagecontent());
             viewTextMessage.setTextMSGview(SpeechDirection.RIGHT);
             Platform.runLater(new Runnable() {
@@ -667,13 +667,13 @@ private AudioFormat getAudioFormat(){
     }
     public void reciveFile(String fileName){
 
-            new Thread(() -> {
-                try {
-                client.getFile(fileName, me.getId());
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-            }).start();
+        new Thread(() -> {
+            try {
+                client.getFile(fileName, me.getId());/////me
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }).start();
 
 
     }

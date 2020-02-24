@@ -158,6 +158,46 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     }
 
     @Override
+    public void acceptRequest(int fromUserId, int id) throws RemoteException {
+        sendFriendRequest(id, fromUserId);
+    }
+
+    @Override
+    public void cancelRequest(int fromUserId, int id) throws RemoteException {
+        cancelFriendRequest(id, fromUserId);
+    }
+
+    @Override
+    public List<Notification> loadNotifications(int id) throws RemoteException {
+        try {
+            UserDao userDao = new UserDao();
+            return userDao.getNotification(id);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public User getUser() throws RemoteException {
+        return user;
+    }
+
+
+    /* ِ start  Abdo */
+
+    /* end Abdo */
+
+    /* start sayed */
+
+    /* end sayed */
+
+    /* start nehal */
+
+    /* end nehal */
+
+    /* start aya */
+    @Override
     public void sendFile(RemoteInputStream inFile, String suffix,int friendId ,Message message) throws RemoteException {
         try {
             InputStream istream = RemoteInputStreamClient.wrap(inFile);
@@ -202,47 +242,6 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
             if (istream != null) istream.close();
         }
     }
-
-    @Override
-    public void acceptRequest(int fromUserId, int id) throws RemoteException {
-        sendFriendRequest(id, fromUserId);
-    }
-
-    @Override
-    public void cancelRequest(int fromUserId, int id) throws RemoteException {
-        cancelFriendRequest(id, fromUserId);
-    }
-
-    @Override
-    public List<Notification> loadNotifications(int id) throws RemoteException {
-        try {
-            UserDao userDao = new UserDao();
-            return userDao.getNotification(id);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    @Override
-    public User getUser() throws RemoteException {
-        return user;
-    }
-
-
-    /* ِ start  Abdo */
-
-    /* end Abdo */
-
-    /* start sayed */
-
-    /* end sayed */
-
-    /* start nehal */
-
-    /* end nehal */
-
-    /* start aya */
 
     public void changeUserStatus(int id,UserStatus status)throws RemoteException{
         System.out.println("chatServer");
