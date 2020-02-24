@@ -102,6 +102,9 @@ public class ChatController implements Initializable, IChatController {
     @FXML
     Label receiverNameLabel;
 
+    @FXML
+    Circle status;
+
 
     @FXML
     FontIcon microphoneId;
@@ -149,6 +152,12 @@ public class ChatController implements Initializable, IChatController {
         }*/
         try {
             me = client.getUser();
+            if(me.getStatus()==UserStatus.ONLINE){
+                status.setStyle("-fx-fill:  #33FF4B");
+            }
+            else{
+                status.setStyle("-fx-fill:  #FF8C00");
+            }
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -682,14 +691,99 @@ private AudioFormat getAudioFormat(){
                 try {
                     int friendId = activeContact.getUser().getId();
                     int senderId = me.getId();
-                    Message message = new Message(senderId, fileName);
-                    client.sendFileToServer(selectedFile.getPath(), fileExtension, friendId, message);
+                    Message message = new Message(senderId,fileName);
+                    client.sendFileToServer(selectedFile.getPath(), fileExtension,friendId, message);
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
             }).start();
         }
     }
+    @Override
+    public void tempFileDisplayMessage(Message message) {
+        viewTextMessage = new MSGview(message,this);
+        if (me.getId() == message.getUserId()) {///////////////////////////////////me
+            System.out.println("Me: " + message.getMesssagecontent());
+            viewTextMessage.setTextMSGview(SpeechDirection.RIGHT);
+            Platform.runLater(new Runnable() {
+
+                @Override
+                public void run() {
+                    view.getChildren().add(viewTextMessage);
+                }
+            });
+
+        } else {
+            System.out.println("Friend: " + message.getMesssagecontent());
+            viewTextMessage.setTextMSGview(SpeechDirection.LEFT);
+            Platform.runLater(new Runnable() {
+
+                @Override
+                public void run() {
+                    view.getChildren().add(viewTextMessage);
+                }
+            });
+        }
+    }
+    public void reciveFile(String fileName){
+
+        new Thread(() -> {
+            try {
+                client.getFile(fileName, me.getId());/////me
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }).start();
+
+
+    }
+    @FXML
+    public void changeUserStatus(){
+        UserStatus myStatus;
+        try {
+            System.out.println("chatController");
+            if(me.getStatus()==UserStatus.ONLINE){
+                status.setStyle("-fx-fill:  #FF8C00");
+                myStatus=UserStatus.BUSY;
+            }
+            else{
+                status.setStyle("-fx-fill:  #33FF4B");
+                myStatus=UserStatus.ONLINE;
+            }
+            me.setStatus(myStatus);
+            client.changeStatus(me,myStatus);
+            System.out.println("chatController2");
+            //circle.setfill()//wel list bta3tha
+
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
+    }
+    @Override
+    public void updateMyContactList(User updatedUser){
+        Platform.runLater(() -> {
+            ObservableList<Node> contacts;
+            contacts = contactsList.getChildren();
+            Contact myContact;
+            for (Node c : contacts) {
+                myContact=(Contact)c;
+                if(updatedUser.getId()==myContact.getUser().getId()){
+
+                    contactsList.getChildren().remove(myContact);
+                    if(updatedUser.getStatus()!=UserStatus.OFFLINE) {
+                        myContact = new Contact(updatedUser);
+                        contactsList.getChildren().add(myContact);
+                    }
+
+                    break;
+                }
+            }
+        });
+
+
+    }
+
     // End Aya
 
 

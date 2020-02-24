@@ -23,8 +23,9 @@
                 <FontIcon fx:id="friendRequest" iconColor="WHITE" iconLiteral="enty-add-user" iconSize="30" layoutX="29.0" layoutY="260.0" selectionFill="#1e82dc" styleClass="sidebar_icon" />
                 <FontIcon fx:id="notificationIcon" iconColor="WHITE" iconLiteral="gmi-notifications" iconSize="35" layoutX="23.0" layoutY="315.0" selectionFill="#1e82dc" styleClass="sidebar_icon" />
                 <FontIcon fx:id="saveChatIcon" iconColor="WHITE" iconLiteral="oct-file" iconSize="30" layoutX="29.0" layoutY="367.0" onMouseClicked="#saveChat" selectionFill="#1e82dc" styleClass="sidebar_icon" />
+            <Circle fx:id="status" fill="DODGERBLUE" layoutX="43.0" layoutY="48.0" onMouseClicked="#changeUserStatus" radius="41.0" stroke="BLACK" strokeType="INSIDE" />
+               <Circle fx:id="userImage" fill="WHITE" layoutX="44.0" layoutY="48.0" radius="31.0" stroke="#7eff21" strokeType="INSIDE" strokeWidth="5.0" />
             </Pane>
-            <Circle fx:id="userImage" fill="WHITE" layoutX="42.0" layoutY="45.0" radius="31.0" stroke="#7eff21" strokeType="INSIDE" strokeWidth="5.0" AnchorPane.leftAnchor="7.0" AnchorPane.topAnchor="14.0" />
             <VBox fx:id="contactsView" layoutX="86.0" prefHeight="600.0" prefWidth="350" style="-fx-background-color: #1e82dc;">
                 <HBox fx:id="searchArea" alignment="CENTER" prefHeight="74.0" prefWidth="257.0">
                     <TextField fx:id="searchTextField" prefHeight="38.0" prefWidth="287.0" promptText="Search" style="-fx-background-color: white; -fx-background-radius: 30; -fx-border-radius: 30;">
