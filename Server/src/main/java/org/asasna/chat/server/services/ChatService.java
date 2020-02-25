@@ -282,7 +282,7 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
         userDao.updateUserStatues(id, status);
     }
     public void notifyMyfriends(int myId)throws RemoteException{
-        List<User> myFriends=getMyFriendList(myId);
+        List<User> myFriends= getMyFriendList(myId);
         System.out.println(" id "+myId);
         System.out.println(" size "+myFriends.size());
         User me=userDao.getUser(myId);
@@ -294,9 +294,10 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
                 if(myFriend==null){
                     System.out.println(" null friend ");
                 }else{
+                    myFriend.reciveUpateNotification(me);
                     System.out.println(" not null friend ");
                 }
-                myFriend.reciveUpateNotification(me);
+
             }
         }
     }
