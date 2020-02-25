@@ -3,6 +3,7 @@ package org.asasna.chat.client.view;
 import com.jfoenix.controls.JFXButton;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -10,6 +11,7 @@ import javafx.collections.ObservableSet;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -35,12 +37,16 @@ import org.asasna.chat.common.model.*;
 
 import org.asasna.chat.common.service.IClientService;
 import org.controlsfx.control.Notifications;
+
 import org.kordamp.ikonli.javafx.FontIcon;
 
-import java.io.File;
+import java.io.*;
 import javax.sound.sampled.*;
+import org.jcodec.common.model.AudioBuffer;
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.ByteBuffer;
 import java.rmi.RemoteException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -53,8 +59,11 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.*;
+import org.xml.sax.SAXException;
 
 import java.io.FileWriter;
+import java.io.File;
+import java.io.IOException;
 
 
 public class ChatController implements Initializable, IChatController {
@@ -96,6 +105,9 @@ public class ChatController implements Initializable, IChatController {
     Circle receiverImage;
     @FXML
     Label receiverNameLabel;
+
+    @FXML
+    Circle status;
 
 
     @FXML
@@ -144,6 +156,12 @@ public class ChatController implements Initializable, IChatController {
         }*/
         try {
             me = client.getUser();
+            if(me.getStatus()==UserStatus.ONLINE){
+                status.setStyle("-fx-fill:  #33FF4B");
+            }
+            else{
+                status.setStyle("-fx-fill:  #FF8C00");
+            }
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -367,6 +385,40 @@ private AudioFormat getAudioFormat(){
         if(end - start < 1000){
             System.out.println("Hold To Record, Release To Send");
             removeWavFile();
+        }else{
+            new Thread(()->{
+                try {
+
+                    byte[] buf = convertFileToBytes();
+                    int receiverId = activeContact.getUser().getId();
+                    int senderId = me.getId();
+                    boolean sent = client.sendRecord(receiverId, senderId, buf);
+                    System.out.println(buf.length);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+
+            }).start();
+        }
+    }
+    private byte[] convertFileToBytes(){
+        byte[] buf = new byte[1024];
+        try{
+            File wavFile = new File("./Client/src/main/resources/org/asasna/chat/client/audio/record.wav");
+            FileInputStream fileInputStream = new FileInputStream(wavFile);
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            for (int readNum; (readNum = fileInputStream.read(buf)) != -1;) {
+                bos.write(buf, 0, readNum); //no doubt here is 0
+                System.out.println("read " + readNum + " bytes,");
+            }
+            buf = bos.toByteArray();
+            return buf;
+        }catch(FileNotFoundException ex){
+            ex.printStackTrace();
+            return buf;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return buf;
         }
     }
     private void removeWavFile(){
@@ -561,7 +613,34 @@ private AudioFormat getAudioFormat(){
             });
         }
     }
+    @Override
+    public void recieveRecord(int senderId, byte[] buf) {
+        try {
+            AudioFormat format = getAudioFormat();
+            DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
 
+            AudioBuffer audioBuffer = new AudioBuffer(ByteBuffer.wrap(buf), new org.jcodec.common.AudioFormat(16000, 0, 2, true, true), buf.length);
+
+            //            FileOutputStream fileOutputStream=new FileOutputStream();
+            // checks if system supports the data line
+            if (!AudioSystem.isLineSupported(info)) {
+                System.out.println("Line not supported");
+                System.exit(0);
+            }
+//            SourceDataLine line = (SourceDataLine) AudioSystem.getLine(info);
+//
+//            line.write(buf, 0, buf.length);
+            for(int i=0; i<10; i++)
+                System.out.println("Buf: " +  buf[i]);
+
+            AudioInputStream ais = new AudioInputStream(new ByteArrayInputStream(buf), format, buf.length/format.getFrameSize());
+            File wavFile = new File("./Client/src/main/resources/org/asasna/chat/client/audio/record2.wav");
+            AudioSystem.write(ais, AudioFileFormat.Type.WAVE, wavFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
 
     // End Elsayed Nabil
 
@@ -616,14 +695,119 @@ private AudioFormat getAudioFormat(){
                 try {
                     int friendId = activeContact.getUser().getId();
                     int senderId = me.getId();
-                    Message message = new Message(senderId, fileName);
-                    client.sendFileToServer(selectedFile.getPath(), fileExtension, friendId, message);
+                    Message message = new Message(senderId,fileName);
+                    client.sendFileToServer(selectedFile.getPath(), fileExtension,friendId, message);
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
             }).start();
         }
     }
+    @Override
+    public void tempFileDisplayMessage(Message message) {
+        viewTextMessage = new MSGview(message,this);
+        if (me.getId() == message.getUserId()) {///////////////////////////////////me
+            System.out.println("Me: " + message.getMesssagecontent());
+            viewTextMessage.setTextMSGview(SpeechDirection.RIGHT);
+            Platform.runLater(new Runnable() {
+
+                @Override
+                public void run() {
+                    view.getChildren().add(viewTextMessage);
+                }
+            });
+
+        } else {
+            System.out.println("Friend: " + message.getMesssagecontent());
+            viewTextMessage.setTextMSGview(SpeechDirection.LEFT);
+            Platform.runLater(new Runnable() {
+
+                @Override
+                public void run() {
+                    view.getChildren().add(viewTextMessage);
+                }
+            });
+        }
+    }
+    public void reciveFile(String fileName){
+
+        new Thread(() -> {
+            try {
+                client.getFile(fileName, me.getId());/////me
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }).start();
+
+
+    }
+    @FXML
+    public void changeUserStatus(){
+        UserStatus myStatus;
+        try {
+            System.out.println("chatController");
+            if(me.getStatus()==UserStatus.ONLINE){
+                status.setStyle("-fx-fill:  #FF8C00");
+                myStatus=UserStatus.BUSY;
+
+            }
+            else if(me.getStatus()==UserStatus.BUSY) {
+                status.setStyle("-fx-fill:  #8B0000");
+                myStatus=UserStatus.AWAY;
+            }
+            else{
+                status.setStyle("-fx-fill:  #33FF4B");
+                myStatus=UserStatus.ONLINE;
+            }
+            me.setStatus(myStatus);
+            client.changeStatus(me,myStatus);
+            System.out.println("chatController2");
+            //circle.setfill()//wel list bta3tha
+
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+
+    }
+    @Override
+    public void updateMyContactList(User updatedUser){
+        Platform.runLater(() -> {
+            ObservableList<Node> contacts;
+            contacts = contactsList.getChildren();
+            Contact myContact;
+           // boolean newContact=false;
+            for (Node c : contacts) {
+                myContact=(Contact)c;
+                if(updatedUser.getId()==myContact.getUser().getId()){
+                   // newContact=true;
+                    contactsList.getChildren().remove(myContact);
+                    if(updatedUser.getStatus()!=UserStatus.OFFLINE) {
+                        myContact = new Contact(updatedUser);
+                        contactsList.getChildren().add(myContact);
+                    }
+
+                    break;
+                }
+            }
+           /* if(newContact){
+                myContact = new Contact(updatedUser);
+                contactsList.getChildren().add(myContact);
+            }*/
+        });
+
+
+    }
+    @FXML
+    public void signMeOut(){
+        try {
+            client.signOut(me.getId());
+            System. exit(0);
+
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }
+
     // End Aya
 
 
@@ -674,6 +858,7 @@ private AudioFormat getAudioFormat(){
     public void addNotification(Notification notification){
         this.notifications.add(notification);
     }
+
 
 //    private Map<Integer, List<Message>> receiverMessages = new HashMap<>();
 

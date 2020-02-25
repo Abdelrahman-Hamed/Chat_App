@@ -34,7 +34,9 @@ public class UserDao implements IUserDao {
 
     public UserDao() throws SQLException {
         conn = DBConnection.getConnection();
-        statement = conn.createStatement();
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////status
+        //statement = conn.createStatement();
+        statement = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 
     }
 
@@ -77,8 +79,8 @@ public class UserDao implements IUserDao {
                     "where users.id not in (\n" +
                     "select users.id from users\n" +
                     "join contacts\n" +
-                    "on (users.id = contacts.first_member\n" +
-                    "or users.id = contacts.second_member)\n" +
+                    "on (users.id = contacts.first_member and contacts.second_member =  "+ meUserId + ")\n" +
+                    "or (users.id = contacts.second_member and contacts.first_member =  "+ meUserId + ")\n" +
                     "and users.id <> " + meUserId +" )\n" +
                     "and users.id <> "+ meUserId + ";\n";
             resultSet = statement.executeQuery(sql);
@@ -406,6 +408,9 @@ public class UserDao implements IUserDao {
                 case 2:
                     status = UserStatus.BUSY;
                     break;
+                case 3:
+                    status = UserStatus.AWAY;
+                    break;
             }
             user.setStatus(status);
             return user;
@@ -451,10 +456,42 @@ public class UserDao implements IUserDao {
                     case BUSY:
                         statusNumber = 2;
                         break;
+                    case AWAY:
+                        statusNumber = 3;
+                        break;
                 }
             }
             preparedStatement.setInt(13, statusNumber);
         } catch (SQLException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+    @Override
+    public void updateUserStatues(int id, UserStatus status) {
+        ResultSet resultSet;
+        String Sql = "select * from users  where id =" + id;
+        try {
+            resultSet = statement.executeQuery(Sql);
+            resultSet.beforeFirst();
+            int statusNumber = 0;
+            while (resultSet.next()) {
+                switch (status) {
+                    case ONLINE:
+                        statusNumber = 1;
+                        break;
+                    case BUSY:
+                        statusNumber = 2;
+                        break;
+                    case AWAY:
+                        statusNumber = 3;
+                        break;
+                }
+                resultSet.updateInt(13, statusNumber);
+                resultSet.updateRow();
+
+
+            }
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }

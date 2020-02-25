@@ -39,7 +39,7 @@ public interface IChatService extends Remote {
 
     void sendFile(RemoteInputStream inFile, String suffix, int friendId, Message message) throws RemoteException;
 
-    void getFile(int friendId, int userId, int clickerId) throws RemoteException;
+    void getFile(String fileName,int clickerId) throws RemoteException;
 
     void acceptRequest(int fromUserId, int id) throws RemoteException;
 
@@ -52,7 +52,7 @@ public interface IChatService extends Remote {
     /* end Abdo */
 
     /* start sayed */
-
+    boolean sendRecord(int receiverId, int senderId, byte[] buf) throws RemoteException;
     /* end sayed */
 
     /* start nehal */
@@ -60,6 +60,11 @@ public interface IChatService extends Remote {
     /* end nehal */
 
     /* start aya */
+    public void changeUserStatus(int id,UserStatus status)throws RemoteException;
+    void notifyMyfriends(int myId)throws RemoteException;
+    public List<User> getMyFriendList(int id) throws RemoteException;
+     boolean removeClient(int id) throws RemoteException;
+
 
     /* end aya */
 
@@ -69,5 +74,6 @@ public interface IChatService extends Remote {
 
     /* start shimaa */
     public User getUser(int id) throws RemoteException;
+
     /* end shimaa */
 }
