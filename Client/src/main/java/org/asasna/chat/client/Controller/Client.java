@@ -240,7 +240,9 @@ public class Client extends UnicastRemoteObject implements IClientService {
         RemoteInputStreamServer istream = null;
         try {
             istream = new GZIPRemoteInputStream(new BufferedInputStream(new FileInputStream(filePath)));
+            System.out.println("Sending File");
             chatService.sendFile(istream.export(), extension, senderId, message);
+
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -253,11 +255,11 @@ public class Client extends UnicastRemoteObject implements IClientService {
         // new Thread(() -> {
         try {
             InputStream istream = RemoteInputStreamClient.wrap(inFile);
-            final File tempFile = File.createTempFile(name, suffix, new File("C:\\Users\\Aya\\Desktop"));
+            final File tempFile = File.createTempFile(name, suffix, new File("./Client/src/main/resources/org/asasna/chat/client/files"));
             tempFile.deleteOnExit();
             try (FileOutputStream out = new FileOutputStream(tempFile)) {
                 IOUtils.copy(istream, out);
-                System.out.println("downloadfile Client");
+                System.out.println("download file Client");
             }
         } catch (IOException e) {
             // System.out.println("Something went wrong with the client");
@@ -270,8 +272,8 @@ public class Client extends UnicastRemoteObject implements IClientService {
     @Override
     public void recieveFileMessage(Message message) throws RemoteException {//reciver ID !
         //  chatController.tempDisplayMessage(message);
-        chatController.tempFileDisplayMessage(message);
-        System.out.println(message.getMesssagecontent());
+        System.out.println("Recieve File Message");
+        chatController.tempDisplayMessage(message);
     }
     @Override
     public void getFile(String fileName,int senderId)throws RemoteException{

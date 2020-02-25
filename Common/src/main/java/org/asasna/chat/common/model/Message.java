@@ -6,12 +6,16 @@ public class Message implements Serializable {
 
     private int userId;
     private String messsagecontent;
-
+    private MessageType messageType;
     public Message(int userId, String messsagecontent) {
         this.userId = userId;
         this.messsagecontent = messsagecontent;
     }
-
+    public Message(int userId, String messsagecontent, MessageType messageType) {
+        this.userId = userId;
+        this.messsagecontent = messsagecontent;
+        this.messageType = messageType;
+    }
     public void setUserId(int userId) {
         this.userId = userId;
     }
@@ -32,4 +36,11 @@ public class Message implements Serializable {
         return "User Id is " + userId + " , and Message content is " + messsagecontent;
     }
 
+    public MessageType getMessageType() {
+        return messageType;
+    }
+
+    public void setMessageType(MessageType messageType) {
+        this.messageType = messageType;
+    }
 }

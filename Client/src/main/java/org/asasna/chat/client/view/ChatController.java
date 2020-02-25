@@ -692,7 +692,7 @@ private AudioFormat getAudioFormat(){
                 try {
                     int friendId = activeContact.getUser().getId();
                     int senderId = me.getId();
-                    Message message = new Message(senderId,fileName);
+                    Message message = new Message(senderId,fileName, MessageType.FILE);
                     if (activeContact instanceof GroupContact)
                         client.sendGroupFileToServer(selectedFile.getPath(), fileExtension, ((GroupContact) activeContact).getChatGroup(), message);
                     else
@@ -850,6 +850,16 @@ private AudioFormat getAudioFormat(){
             } else {
                 System.out.println("Message:  " + message.getMesssagecontent() + " from  " + message.getUserId());
             }
+        }
+        if(message.getMessageType() == MessageType.FILE){
+            System.out.println("Null: " + messageView.getDisplayedText());
+            messageView.getDisplayedText().setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent mouseEvent) {
+                    // Adding Download File Here
+                    System.out.println("Download File");
+                }
+            });
         }
         saveReceiverMessages(message.getUserId(), message);
     }
@@ -1020,7 +1030,7 @@ private AudioFormat getAudioFormat(){
             int senderId = me.getId();
             String messageContent = messageTextArea.getText();
             messageTextArea.setText("");
-            Message message = new Message(senderId, messageContent);
+            Message message = new Message(senderId, messageContent, MessageType.TEXT);
             sendMessage(receiverId, message);
         }
     }

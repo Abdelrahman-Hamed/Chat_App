@@ -233,8 +233,9 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     @Override
     public void sendFile(RemoteInputStream inFile, String suffix,int friendId ,Message message) throws RemoteException {
         try {
+            System.out.println("Send File In Server");
             InputStream istream = RemoteInputStreamClient.wrap(inFile);
-            final File tempFile = File.createTempFile(message.getMesssagecontent(), suffix, new File(""));
+            final File tempFile = File.createTempFile(message.getMesssagecontent(), suffix, new File("./Client/src/main/resources/org/asasna/chat/client/files"));
             tempFile.deleteOnExit();
             try (FileOutputStream out = new FileOutputStream(tempFile)) {
                 IOUtils.copy(istream, out);
