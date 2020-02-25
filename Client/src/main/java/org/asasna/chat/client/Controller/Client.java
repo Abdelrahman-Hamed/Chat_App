@@ -220,7 +220,17 @@ public class Client extends UnicastRemoteObject implements IClientService {
     public boolean isvalidUser(User me) throws RemoteException {
         return authenticationService.isValid(me);
     }
-
+    public void sendGroupFileToServer(String filePath, String extension, ChatGroup chatGroup, Message message){
+        RemoteInputStreamServer istream = null;
+        try {
+            istream = new GZIPRemoteInputStream(new BufferedInputStream(new FileInputStream(filePath)));
+            chatService.sendGroupFile(istream.export(), extension, chatGroup, message);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (istream != null) istream.close();
+        }
+    }
     /* end nehal */
 
     /* start aya */

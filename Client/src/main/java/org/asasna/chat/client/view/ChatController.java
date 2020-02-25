@@ -692,7 +692,10 @@ private AudioFormat getAudioFormat(){
                     int friendId = activeContact.getUser().getId();
                     int senderId = me.getId();
                     Message message = new Message(senderId,fileName);
-                    client.sendFileToServer(selectedFile.getPath(), fileExtension,friendId, message);
+                    if (activeContact instanceof GroupContact)
+                        client.sendGroupFileToServer(selectedFile.getPath(), fileExtension, ((GroupContact) activeContact).getChatGroup(), message);
+                    else
+                        client.sendFileToServer(selectedFile.getPath(), fileExtension,friendId, message);
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
