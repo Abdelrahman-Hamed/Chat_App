@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 import com.healthmarketscience.rmiio.*;
 import org.apache.commons.io.IOUtils;
+import org.asasna.chat.server.view.PasswordAuthentication;
 
 public class ChatService extends UnicastRemoteObject implements IChatService {
 
@@ -324,6 +325,22 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     /* end aya */
 
     /* start abeer */
+    @Override
+    public void UpdateUser(User user){
+        try {
+            UserDao userdao=new UserDao();
+            PasswordAuthentication passwordAuthentication= new PasswordAuthentication();
+            user.setPassword(passwordAuthentication.hash(user.getPassword()));
+            boolean done= userdao.updateUser(user.getId(),user);
+            if(!done)
+                System.out.println("cant update user ");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
 
     /* end abeer */
 

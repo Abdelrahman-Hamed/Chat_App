@@ -33,7 +33,7 @@ import javax.rmi.ssl.SslRMIClientSocketFactory;
 public class Client extends UnicastRemoteObject implements IClientService {
     IChatController chatController;
     RegisterController registerController;
-    IChatService chatService;
+   public IChatService chatService;
     IAuthenticationService authenticationService;
     private User user;
 

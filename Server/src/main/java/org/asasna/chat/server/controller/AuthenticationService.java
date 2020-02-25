@@ -32,6 +32,7 @@ public class AuthenticationService extends UnicastRemoteObject implements IAuthe
             UserDao userDao = new UserDao();
             User user = userDao.getUser(phoneNumber, password);
             if (user == null) return null;
+            user.setStatus(UserStatus.ONLINE);
             thisChatService=new ChatService(user);
             thisChatService.changeUserStatus(user.getId(), UserStatus.ONLINE);
             thisChatService.notifyMyfriends(user.getId());
@@ -63,10 +64,11 @@ public class AuthenticationService extends UnicastRemoteObject implements IAuthe
         }
 
 //        if(userDao.getUser(user.getPhone()) == null) {
-//            //PasswordAuthentication passwordAuthentication = new PasswordAuthentication();
-//            //user.setPassword(passwordAuthentication.hash(user.getPassword()));
+//            PasswordAuthentication passwordAuthentication = new PasswordAuthentication();
+//            user.setPassword(passwordAuthentication.hash(user.getPassword()));
 //            userDao.addUser(user);
 //        }
+        //will remove comments later after register with hashed password
     }
     public boolean isValid(User me) throws RemoteException{
         return ( userDao.getUser(me.getPhone()) == null );

@@ -10,14 +10,14 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="536.0" prefWidth="603.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="565.0" prefWidth="603.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Pane layoutX="-3.0" layoutY="145.0" prefHeight="398.0" prefWidth="607.0" style="-fx-background-color: #b2ddfb;">
+      <Pane layoutX="-3.0" layoutY="145.0" prefHeight="419.0" prefWidth="607.0" style="-fx-background-color: #b2ddfb;">
          <children>
-            <TextField layoutX="215.0" layoutY="163.0" prefHeight="28.0" prefWidth="300.0" style="-fx-background-color: #b2ddfb; -fx-border-radius: 30; -fx-border-color: #04355c; -fx-background-radius: 30;" styleClass="text-input" stylesheets="@text.css" />
-            <PasswordField layoutX="215.0" layoutY="207.0" prefHeight="28.0" prefWidth="300.0" style="-fx-border-radius: 30; -fx-border-color: #04355c; -fx-background-radius: 30; -fx-background-color: #b2ddfb;" styleClass="text-input" stylesheets="@text.css" />
+            <TextField fx:id="Country" layoutX="215.0" layoutY="163.0" prefHeight="28.0" prefWidth="300.0" style="-fx-background-color: #b2ddfb; -fx-border-radius: 30; -fx-border-color: #04355c; -fx-background-radius: 30;" styleClass="text-input" stylesheets="@text.css" />
+            <PasswordField fx:id="NewPass" layoutX="215.0" layoutY="207.0" prefHeight="28.0" prefWidth="300.0" style="-fx-border-radius: 30; -fx-border-color: #04355c; -fx-background-radius: 30; -fx-background-color: #b2ddfb;" styleClass="text-input" stylesheets="@text.css" />
             <Separator layoutX="51.0" layoutY="295.0" prefHeight="0.0" prefWidth="485.0" style="-fx-background-color: #04355c;" />
-            <PasswordField layoutX="215.0" layoutY="257.0" prefHeight="28.0" prefWidth="300.0" style="-fx-border-radius: 30; -fx-border-color: #04355c; -fx-background-radius: 30; -fx-background-color: #b2ddfb;" styleClass="text-input" stylesheets="@text.css" />
+            <PasswordField fx:id="ConfirmPass" layoutX="215.0" layoutY="257.0" prefHeight="28.0" prefWidth="300.0" style="-fx-border-radius: 30; -fx-border-color: #04355c; -fx-background-radius: 30; -fx-background-color: #b2ddfb;" styleClass="text-input" stylesheets="@text.css" />
             <Label layoutX="38.0" layoutY="163.0" text="Country" textFill="#fff9f9">
                <font>
                   <Font size="19.0" />
@@ -33,19 +33,19 @@
                   <Font size="18.0" />
                </font>
             </Label>
-            <Button layoutX="123.0" layoutY="318.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="90.0" style="-fx-background-color: #ea1010; -fx-background-radius: 10;" text="SAVE" textFill="WHITE">
+            <Button fx:id="Save" layoutX="84.0" layoutY="324.0" mnemonicParsing="false" onAction="#SaveButton" prefHeight="25.0" prefWidth="90.0" style="-fx-background-color: #ea1010; -fx-background-radius: 10;" text="SAVE" textFill="WHITE">
                <font>
                   <Font size="16.0" />
                </font>
             </Button>
-            <Button layoutX="365.0" layoutY="318.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="90.0" style="-fx-background-color: #707510; -fx-background-radius: 10;" text="CANCEL" textFill="#feffea">
+            <Button fx:id="Cancel" layoutX="470.0" layoutY="324.0" mnemonicParsing="false" onAction="#CancelButton" prefHeight="25.0" prefWidth="90.0" style="-fx-background-color: #707510; -fx-background-radius: 10;" text="CANCEL" textFill="#feffea">
                <font>
                   <Font size="16.0" />
                </font>
             </Button>
-            <TextField layoutX="215.0" layoutY="118.0" prefHeight="28.0" prefWidth="300.0" style="-fx-background-color: #b2ddfb; -fx-border-radius: 30; -fx-border-color: #04355c; -fx-background-radius: 30;" styleClass="text-input" stylesheets="@text.css" />
-            <TextField layoutX="213.0" layoutY="70.0" prefHeight="28.0" prefWidth="300.0" style="-fx-background-color: #b2ddfb; -fx-border-radius: 30; -fx-border-color: #04355c; -fx-background-radius: 30;" styleClass="text-input" stylesheets="@text.css" />
-            <TextField layoutX="213.0" layoutY="20.0" prefHeight="27.0" prefWidth="300.0" style="-fx-background-color: #b2ddfb; -fx-border-radius: 30; -fx-border-color: #04355c; -fx-background-radius: 30;" styleClass="text-input" stylesheets="@text.css" />
+            <TextField fx:id="Email" layoutX="215.0" layoutY="118.0" prefHeight="28.0" prefWidth="300.0" style="-fx-background-color: #b2ddfb; -fx-border-radius: 30; -fx-border-color: #04355c; -fx-background-radius: 30;" styleClass="text-input" stylesheets="@text.css" />
+            <TextField fx:id="Phone" layoutX="213.0" layoutY="70.0" prefHeight="28.0" prefWidth="300.0" style="-fx-background-color: #b2ddfb; -fx-border-radius: 30; -fx-border-color: #04355c; -fx-background-radius: 30;" styleClass="text-input" stylesheets="@text.css" />
+            <TextField fx:id="Name" layoutX="213.0" layoutY="20.0" prefHeight="27.0" prefWidth="300.0" style="-fx-background-color: #b2ddfb; -fx-border-radius: 30; -fx-border-color: #04355c; -fx-background-radius: 30;" styleClass="text-input" stylesheets="@text.css" />
             <Label layoutX="39.0" layoutY="118.0" text="Email" textFill="#fff9f9">
                <font>
                   <Font size="19.0" />
@@ -61,12 +61,17 @@
                   <Font size="19.0" />
                </font>
             </Label>
+            <Button fx:id="Update" layoutX="263.0" layoutY="324.0" mnemonicParsing="false" onAction="#UPdateButton" prefHeight="37.0" prefWidth="132.0" style="-fx-background-color: #184d48; -fx-background-radius: 10;" text="Update Profile" textFill="#0beed8">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Button>
          </children>
       </Pane>
       <Pane layoutX="-3.0" layoutY="-2.0" prefHeight="147.0" prefWidth="607.0" style="-fx-background-color: #b2ddfb;">
          <children>
-            <Circle fill="WHITE" layoutX="79.0" layoutY="74.0" radius="49.0" stroke="BLACK" strokeType="INSIDE" />
-            <Button layoutX="161.0" layoutY="98.0" mnemonicParsing="false" style="-fx-background-color: #0473ad; -fx-background-radius: 20; -fx-border-color: #04355c; -fx-border-radius: 20;" text="Edit Photo" textFill="#fffefe">
+            <Circle fx:id="Photo" fill="WHITE" layoutX="79.0" layoutY="74.0" radius="49.0" stroke="BLACK" strokeType="INSIDE" />
+            <Button fx:id="EditPhoto" layoutX="161.0" layoutY="98.0" mnemonicParsing="false" onAction="#editPhoto" style="-fx-background-color: #0473ad; -fx-background-radius: 20; -fx-border-color: #04355c; -fx-border-radius: 20;" text="Edit Photo" textFill="#fffefe">
                <font>
                   <Font name="Bell MT" size="12.0" />
                </font>
@@ -77,6 +82,11 @@
                </font>
             </Label>
             <Separator layoutX="47.0" layoutY="144.0" prefHeight="0.0" prefWidth="485.0" style="-fx-background-color: #04355c;" />
+            <TextField fx:id="check" layoutX="381.0" layoutY="76.0" prefHeight="44.0" prefWidth="197.0" style="-fx-background-color: blue; -fx-alignment: CENTER;" text="Invalid Data">
+               <font>
+                  <Font size="20.0" />
+               </font>
+            </TextField>
          </children>
       </Pane>
    </children>
