@@ -651,7 +651,7 @@ private AudioFormat getAudioFormat(){
                     this.activeContact = contact;
                 });
                 contactsList.getChildren().add(0, contact);
-                view.getChildren().add(new Label(message.getMesssagecontent()));
+                tempDisplayMessage(message);
             });
         } else {
             Platform.runLater(() -> {
@@ -663,7 +663,7 @@ private AudioFormat getAudioFormat(){
                             contactsList.getChildren().remove(n);
                             contactsList.getChildren().add(0, n);
                         });
-                view.getChildren().add(new Label(message.getMesssagecontent()));
+                tempDisplayMessage(message);
                 Notifications.create().title("New Message").text("Message from " + message.getUserId()).graphic(new Circle()).show();
             });
 
