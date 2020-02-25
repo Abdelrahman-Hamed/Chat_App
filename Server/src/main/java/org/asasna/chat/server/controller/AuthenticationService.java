@@ -33,6 +33,8 @@ public class AuthenticationService extends UnicastRemoteObject implements IAuthe
             User user = userDao.getUser(phoneNumber, password);
             if (user == null) return null;
             thisChatService=new ChatService(user);
+            thisChatService.changeUserStatus(user.getId(), UserStatus.ONLINE);
+            thisChatService.notifyMyfriends(user.getId());
             return thisChatService;
         } catch (SQLException e) {
             e.printStackTrace();
