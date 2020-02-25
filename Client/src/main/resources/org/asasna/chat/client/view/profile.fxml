@@ -14,10 +14,10 @@
    <children>
       <Pane layoutX="-3.0" layoutY="145.0" prefHeight="419.0" prefWidth="607.0" style="-fx-background-color: #b2ddfb;">
          <children>
-            <TextField fx:id="Country" layoutX="215.0" layoutY="163.0" prefHeight="28.0" prefWidth="300.0" style="-fx-background-color: #b2ddfb; -fx-border-radius: 30; -fx-border-color: #04355c; -fx-background-radius: 30;" styleClass="text-input" stylesheets="@text.css" />
-            <PasswordField fx:id="NewPass" layoutX="215.0" layoutY="207.0" prefHeight="28.0" prefWidth="300.0" style="-fx-border-radius: 30; -fx-border-color: #04355c; -fx-background-radius: 30; -fx-background-color: #b2ddfb;" styleClass="text-input" stylesheets="@text.css" />
+            <TextField fx:id="Country" layoutX="215.0" layoutY="163.0" prefHeight="28.0" prefWidth="300.0" style="-fx-background-color: #b2ddfb; -fx-border-radius: 30; -fx-border-color: #04355c; -fx-background-radius: 30;" styleClass="text-input" stylesheets="@../text.css" />
+            <PasswordField fx:id="NewPass" layoutX="215.0" layoutY="207.0" prefHeight="28.0" prefWidth="300.0" style="-fx-border-radius: 30; -fx-border-color: #04355c; -fx-background-radius: 30; -fx-background-color: #b2ddfb;" styleClass="text-input" stylesheets="@../text.css" />
             <Separator layoutX="51.0" layoutY="295.0" prefHeight="0.0" prefWidth="485.0" style="-fx-background-color: #04355c;" />
-            <PasswordField fx:id="ConfirmPass" layoutX="215.0" layoutY="257.0" prefHeight="28.0" prefWidth="300.0" style="-fx-border-radius: 30; -fx-border-color: #04355c; -fx-background-radius: 30; -fx-background-color: #b2ddfb;" styleClass="text-input" stylesheets="@text.css" />
+            <PasswordField fx:id="ConfirmPass" layoutX="215.0" layoutY="257.0" prefHeight="28.0" prefWidth="300.0" style="-fx-border-radius: 30; -fx-border-color: #04355c; -fx-background-radius: 30; -fx-background-color: #b2ddfb;" styleClass="text-input" stylesheets="@../text.css" />
             <Label layoutX="38.0" layoutY="163.0" text="Country" textFill="#fff9f9">
                <font>
                   <Font size="19.0" />
@@ -43,9 +43,9 @@
                   <Font size="16.0" />
                </font>
             </Button>
-            <TextField fx:id="Email" layoutX="215.0" layoutY="118.0" prefHeight="28.0" prefWidth="300.0" style="-fx-background-color: #b2ddfb; -fx-border-radius: 30; -fx-border-color: #04355c; -fx-background-radius: 30;" styleClass="text-input" stylesheets="@text.css" />
-            <TextField fx:id="Phone" layoutX="213.0" layoutY="70.0" prefHeight="28.0" prefWidth="300.0" style="-fx-background-color: #b2ddfb; -fx-border-radius: 30; -fx-border-color: #04355c; -fx-background-radius: 30;" styleClass="text-input" stylesheets="@text.css" />
-            <TextField fx:id="Name" layoutX="213.0" layoutY="20.0" prefHeight="27.0" prefWidth="300.0" style="-fx-background-color: #b2ddfb; -fx-border-radius: 30; -fx-border-color: #04355c; -fx-background-radius: 30;" styleClass="text-input" stylesheets="@text.css" />
+            <TextField fx:id="Email" layoutX="215.0" layoutY="118.0" prefHeight="28.0" prefWidth="300.0" style="-fx-background-color: #b2ddfb; -fx-border-radius: 30; -fx-border-color: #04355c; -fx-background-radius: 30;" styleClass="text-input" stylesheets="@../text.css" />
+            <TextField fx:id="Phone" layoutX="213.0" layoutY="70.0" prefHeight="28.0" prefWidth="300.0" style="-fx-background-color: #b2ddfb; -fx-border-radius: 30; -fx-border-color: #04355c; -fx-background-radius: 30;" styleClass="text-input" stylesheets="@../text.css" />
+            <TextField fx:id="Name" layoutX="213.0" layoutY="20.0" prefHeight="27.0" prefWidth="300.0" style="-fx-background-color: #b2ddfb; -fx-border-radius: 30; -fx-border-color: #04355c; -fx-background-radius: 30;" styleClass="text-input" stylesheets="@../text.css" />
             <Label layoutX="39.0" layoutY="118.0" text="Email" textFill="#fff9f9">
                <font>
                   <Font size="19.0" />
