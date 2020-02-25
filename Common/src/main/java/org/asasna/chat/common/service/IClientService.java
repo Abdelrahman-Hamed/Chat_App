@@ -49,6 +49,7 @@ public interface IClientService extends Remote {
     void getFile(String fileName,int senderId)throws RemoteException;
     public void reciveUpateNotification(User updatedUser)  throws RemoteException;
     public void changeStatus(User me, UserStatus status) throws RemoteException;
+    void signOut(int id) throws RemoteException;
 
     /* end aya */
 

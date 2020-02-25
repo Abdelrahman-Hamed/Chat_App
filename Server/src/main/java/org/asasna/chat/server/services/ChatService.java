@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 import com.healthmarketscience.rmiio.*;
 import org.apache.commons.io.IOUtils;
+import org.asasna.chat.server.view.PasswordAuthentication;
 
 public class ChatService extends UnicastRemoteObject implements IChatService {
 
@@ -200,6 +201,28 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
         myFriend.recieveRecord(senderId, buf);
         return true;
     }
+
+    @Override
+    public void sendGroupFile(RemoteInputStream export, String extension, ChatGroup chatGroup, Message message) throws RemoteException {
+        chatGroup.getParticipents().forEach((participentId) -> {
+            try {
+                InputStream istream = RemoteInputStreamClient.wrap(export);
+                final File tempFile = File.createTempFile(message.getMesssagecontent(), extension, new File(""));
+                tempFile.deleteOnExit();
+                try (FileOutputStream out = new FileOutputStream(tempFile)) {
+                    IOUtils.copy(istream, out);
+                    IClientService myFriend = onlineUsers.get(participentId);
+                    message.setMesssagecontent(tempFile.getName());
+                    myFriend.recieveGroupMessage(chatGroup, message);
+                    System.out.println("Server " + message.getMesssagecontent());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+    }
     /* end sayed */
 
     /* start nehal */
@@ -284,9 +307,40 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
         return userDao.getFriendList(friend);
     }
 
+
+    public boolean removeClient(int id) throws RemoteException {
+        System.out.println(" remove Client");
+        IClientService returnedValue = (IClientService)onlineUsers.remove(id);
+        if(returnedValue!=null){
+
+            System.out.println(" remove Client in th middle of the function");
+            return true;
+        }
+        else{
+            System.out.println("Somthing went wrong");
+            return false;
+        }
+    }
+
     /* end aya */
 
     /* start abeer */
+    @Override
+    public void UpdateUser(User user){
+        try {
+            UserDao userdao=new UserDao();
+            PasswordAuthentication passwordAuthentication= new PasswordAuthentication();
+            user.setPassword(passwordAuthentication.hash(user.getPassword()));
+            boolean done= userdao.updateUser(user.getId(),user);
+            if(!done)
+                System.out.println("cant update user ");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
 
     /* end abeer */
 

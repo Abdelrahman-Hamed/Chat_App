@@ -75,6 +75,12 @@ public class Contact extends HBox {
                 statusLabel = new Label("Offline");
                 statusLabel.setStyle("-fx-text-fill: White");
                 break;
+            case AWAY:
+                statusCircle = new Circle(5);
+                statusCircle.setStyle("-fx-fill:  #8B0000");
+                statusLabel = new Label("Away");
+                statusLabel.setStyle("-fx-text-fill: White");
+                break;
         }
 
         hBox.getChildren().addAll(statusCircle, statusLabel);

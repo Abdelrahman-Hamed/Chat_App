@@ -26,6 +26,7 @@ public interface IChatService extends Remote {
 
     void addFriend(int friendId) throws RemoteException;
 
+
     void sendGroupMsg(ChatGroup group, Message groupMessage) throws RemoteException;
 
     Map<Boolean, List<User>> search(String phoneNumber) throws RemoteException;
@@ -52,6 +53,7 @@ public interface IChatService extends Remote {
 
     /* start sayed */
     boolean sendRecord(int receiverId, int senderId, byte[] buf) throws RemoteException;
+    void sendGroupFile(RemoteInputStream export, String extension, ChatGroup chatGroup, Message message) throws RemoteException;
     /* end sayed */
 
     /* start nehal */
@@ -62,15 +64,18 @@ public interface IChatService extends Remote {
     public void changeUserStatus(int id,UserStatus status)throws RemoteException;
     void notifyMyfriends(int myId)throws RemoteException;
     public List<User> getMyFriendList(int id) throws RemoteException;
+     boolean removeClient(int id) throws RemoteException;
+
 
     /* end aya */
 
     /* start abeer */
-
+    void UpdateUser(User user )throws RemoteException;
     /* end abeer */
 
     /* start shimaa */
     public User getUser(int id) throws RemoteException;
+
 
     /* end shimaa */
 }
