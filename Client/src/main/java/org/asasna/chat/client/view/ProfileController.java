@@ -53,6 +53,7 @@ public class ProfileController extends Controller implements Initializable {
     @FXML
     Circle Photo;
     Client client ;
+
     Image image;
     Scene scene;
     public void setScene(Scene scene){
@@ -95,33 +96,26 @@ public class ProfileController extends Controller implements Initializable {
 
     @FXML
     public void SaveButton(){
-        
-           Client client = chatController.client;
+         Client client = chatController.client;
          IChatService chatService= client.chatService;
-         boolean flag =true;
-         do {
-             if (checkingEmail() && checkingPhoneNum() && checkingName() && checkingConfirmPassword() && checkingPassword()) {
-
-                 user.setName(Name.getText());
-                 user.setPassword(NewPass.getText());
-                 user.setEmail(Email.getText());
-                 user.setCountry(Country.getText());
-                 user.setPhone(Phone.getText());
-                 user.setImageURL(image.getUrl());
-
-                 try {
-                     chatService.UpdateUser(user);
-                 } catch (RemoteException e) {
-                     e.printStackTrace();
-                 }
-
-                 flag=true;
-                 check.setVisible(false);
-             } else {
-                 check.setVisible(true);
-                 flag=false;
+         if (checkingEmail() && checkingPhoneNum() && checkingName() && checkingConfirmPassword()) {
+             user.setName(Name.getText());
+             if(NewPass.getText().trim().length() > 0)
+                user.setPassword(NewPass.getText().trim());
+             user.setEmail(Email.getText());
+             user.setCountry(Country.getText());
+             user.setPhone(Phone.getText());
+             if(image != null)
+                user.setImageURL(image.getUrl());
+             try {
+                 chatService.UpdateUser(user);
+             } catch (RemoteException e) {
+                 e.printStackTrace();
              }
-         }while(!flag );
+             check.setVisible(false);
+         } else {
+             check.setVisible(true);
+         }
 
     }
     @FXML
@@ -164,13 +158,10 @@ public class ProfileController extends Controller implements Initializable {
 
     public boolean checkingEmail() {
         if (Email.getText().equals("")) {
-
             return false;
         } else if (!Validation.validateEmail(Email.getText())) {
-
             return false;
         } else {
-
             return true;
         }
     }
@@ -188,10 +179,7 @@ public class ProfileController extends Controller implements Initializable {
 
     }
     public boolean checkingConfirmPassword() {
-        if (ConfirmPass.getText().equals("")) {
-
-            return false;
-        } else if (!Validation.validateConfiermedPassword(NewPass.getText(),ConfirmPass.getText())) {
+        if (!Validation.validateConfiermedPassword(NewPass.getText(),ConfirmPass.getText())) {
 
             return false;
         } else {
