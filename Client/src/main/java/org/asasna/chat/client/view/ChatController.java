@@ -152,12 +152,9 @@ public class ChatController implements Initializable, IChatController {
         }*/
         try {
             me = client.getUser();
-            if(me.getStatus()==UserStatus.ONLINE){
+
                 status.setStyle("-fx-fill:  #33FF4B");
-            }
-            else{
-                status.setStyle("-fx-fill:  #FF8C00");
-            }
+
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -777,10 +774,10 @@ private AudioFormat getAudioFormat(){
                 if(updatedUser.getId()==myContact.getUser().getId()){
                    // newContact=true;
                     contactsList.getChildren().remove(myContact);
-                    if(updatedUser.getStatus()!=UserStatus.OFFLINE) {
+                   // if(updatedUser.getStatus()!=UserStatus.OFFLINE) {
                         myContact = new Contact(updatedUser);
                         contactsList.getChildren().add(myContact);
-                    }
+                  //  }
 
                     break;
                 }
