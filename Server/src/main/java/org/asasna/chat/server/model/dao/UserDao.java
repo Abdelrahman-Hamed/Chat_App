@@ -123,6 +123,7 @@ public class UserDao implements IUserDao {
 //                PasswordAuthentication passwordAuthentication = new PasswordAuthentication();
 //                boolean found = passwordAuthentication.authenticate(password, user.getPassword());
 //                if(found) return user;
+                //will remove comments later
                 return user;
             }
         } catch (SQLException e) {
