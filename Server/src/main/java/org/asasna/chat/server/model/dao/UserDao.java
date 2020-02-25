@@ -405,6 +405,9 @@ public class UserDao implements IUserDao {
                 case 2:
                     status = UserStatus.BUSY;
                     break;
+                case 3:
+                    status = UserStatus.AWAY;
+                    break;
             }
             user.setStatus(status);
             return user;
@@ -450,6 +453,9 @@ public class UserDao implements IUserDao {
                     case BUSY:
                         statusNumber = 2;
                         break;
+                    case AWAY:
+                        statusNumber = 3;
+                        break;
                 }
             }
             preparedStatement.setInt(13, statusNumber);
@@ -472,6 +478,9 @@ public class UserDao implements IUserDao {
                         break;
                     case BUSY:
                         statusNumber = 2;
+                        break;
+                    case AWAY:
+                        statusNumber = 3;
                         break;
                 }
                 resultSet.updateInt(13, statusNumber);

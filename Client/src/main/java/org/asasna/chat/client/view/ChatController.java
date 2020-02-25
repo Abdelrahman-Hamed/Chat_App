@@ -745,6 +745,11 @@ private AudioFormat getAudioFormat(){
             if(me.getStatus()==UserStatus.ONLINE){
                 status.setStyle("-fx-fill:  #FF8C00");
                 myStatus=UserStatus.BUSY;
+
+            }
+            else if(me.getStatus()==UserStatus.BUSY) {
+                status.setStyle("-fx-fill:  #8B0000");
+                myStatus=UserStatus.AWAY;
             }
             else{
                 status.setStyle("-fx-fill:  #33FF4B");
