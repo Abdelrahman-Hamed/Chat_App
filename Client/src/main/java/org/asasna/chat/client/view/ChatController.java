@@ -172,6 +172,11 @@ public class ChatController implements Initializable, IChatController {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+        chatArea_scroll.setContent(view);
+        view.heightProperty().addListener((ob, ol, nw) -> {
+            chatArea_scroll.setVvalue((double) nw);
+        });
+        view.prefWidthProperty().bind(chatArea_scroll.widthProperty());
         searchArea.setStyle("-fx-padding: 20 0 0 0");
         searchArea.setSpacing(5);
         createbtn = new JFXButton("+");
@@ -801,10 +806,10 @@ public class ChatController implements Initializable, IChatController {
             new Thread(() -> {
                 try {
                     int senderId = me.getId();
-                    Message message = new Message(senderId,fileName, MessageType.FILE);
+                    Message message = new Message(senderId, fileName, MessageType.FILE);
                     if (activeContact instanceof GroupContact)
                         client.sendGroupFileToServer(selectedFile.getPath(), fileExtension, ((GroupContact) activeContact).getChatGroup(), message);
-                    else{
+                    else {
                         int friendId = activeContact.getUser().getId();
                         client.sendFileToServer(selectedFile.getPath(), fileExtension, friendId, message);
                     }
@@ -818,7 +823,7 @@ public class ChatController implements Initializable, IChatController {
 
     @Override
     public void tempFileDisplayMessage(Message message) {
-        viewTextMessage = new MSGview(message,this);
+        viewTextMessage = new MSGview(message, this);
         if (me.getId() == message.getUserId()) {///////////////////////////////////me
             System.out.println("Me: " + message.getMesssagecontent());
             viewTextMessage.setTextMSGview(SpeechDirection.RIGHT);
@@ -842,8 +847,6 @@ public class ChatController implements Initializable, IChatController {
             });
         }
     }
-
-
 
 
     @FXML
@@ -961,7 +964,7 @@ public class ChatController implements Initializable, IChatController {
                 System.out.println("Message:  " + message.getMesssagecontent() + " from  " + message.getUserId());
             }
         }
-        if(message.getMessageType() == MessageType.FILE){
+        if (message.getMessageType() == MessageType.FILE) {
             System.out.println("Null: " + messageView.getDisplayedText());
             messageView.getDisplayedText().setOnMouseClicked(new EventHandler<MouseEvent>() {
                 @Override
@@ -969,13 +972,13 @@ public class ChatController implements Initializable, IChatController {
                     // Adding Download File Here
                     DirectoryChooser directoryChooser = new DirectoryChooser();
                     File selectedDirectory = directoryChooser.showDialog(null);
-                        new Thread(() -> {
-                            try {
-                                client.getFile(selectedDirectory.getAbsolutePath(), message.getMesssagecontent(), message.getUserId());
-                            } catch (RemoteException e) {
-                                e.printStackTrace();
-                            }
-                        }).start();
+                    new Thread(() -> {
+                        try {
+                            client.getFile(selectedDirectory.getAbsolutePath(), message.getMesssagecontent(), message.getUserId());
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                    }).start();
                     System.out.println("Download File");
                 }
             });
@@ -997,7 +1000,7 @@ public class ChatController implements Initializable, IChatController {
             if (activeContact instanceof GroupContact) {
                 if (((GroupContact) activeContact).getChatGroup().getGroupId() == groupId) {
                     messageView.setDirection(SpeechDirection.LEFT);
-                    messageView.setImage(((GroupContact)activeContact).getImage());
+                    messageView.setImage(((GroupContact) activeContact).getImage());
                     Platform.runLater(new Runnable() {
                         @Override
                         public void run() {
@@ -1009,7 +1012,7 @@ public class ChatController implements Initializable, IChatController {
                 }
             }
         }
-        if(message.getMessageType() == MessageType.FILE){
+        if (message.getMessageType() == MessageType.FILE) {
             System.out.println("Null: " + messageView.getDisplayedText());
             messageView.getDisplayedText().setOnMouseClicked(new EventHandler<MouseEvent>() {
                 @Override
@@ -1030,6 +1033,7 @@ public class ChatController implements Initializable, IChatController {
         }
         saveReceiverMessages(message.getUserId(), message);
     }
+
     @Override
     public void addNotification(Notification notification) {
         this.notifications.add(notification);
@@ -1144,15 +1148,16 @@ public class ChatController implements Initializable, IChatController {
 
     //    Start Abeer Emad
     Scene scene;
-    public   void setScene(Scene scene){
-        this.scene=scene;
+
+    public void setScene(Scene scene) {
+        this.scene = scene;
     }
 
     @FXML
     public void ProfileButtonClicked() {
 
 
-        ProfileController profileController = new ProfileController( me, this);
+        ProfileController profileController = new ProfileController(me, this);
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("profile" + ".fxml"));
         fxmlLoader.setController(profileController);
