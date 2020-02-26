@@ -58,9 +58,10 @@
                         <Text fx:id="errorPassword" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="error-color" text="Text" visible="false" />
                      </children>
                   </VBox>
-                  <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+                  <HBox alignment="CENTER" prefHeight="41.0" prefWidth="212.0">
                      <children>
-                        <CheckBox fx:id="rememberMe" mnemonicParsing="false" text="Remember Me" />
+                        <CheckBox fx:id="KeepMeLoggedIn" mnemonicParsing="false" prefHeight="56.0" prefWidth="165.0" text="Stay Logged In" />
+                        <CheckBox fx:id="rememberMe" mnemonicParsing="false" prefHeight="54.0" prefWidth="160.0" text="Remember Me" />
                      </children>
                   </HBox>
                   <HBox alignment="CENTER" prefHeight="37.0" prefWidth="390.0">

@@ -237,7 +237,11 @@ public class Client extends UnicastRemoteObject implements IClientService {
             if (istream != null) istream.close();
         }
     }
-
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////keep me not in the interface
+    public int getUserId() throws RemoteException {
+        return authenticationService.getUserToSave();
+    }
+/////////////////////////////////////////////////////////////////////////////////////
     @Override
     public void downloadFile(RemoteInputStream inFile, String suffix, String name) throws RemoteException {
         // new Thread(() -> {

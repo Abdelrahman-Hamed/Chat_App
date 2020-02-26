@@ -19,6 +19,7 @@ import java.sql.SQLException;
 
 public class AuthenticationService extends UnicastRemoteObject implements IAuthenticationService {
     IChatService thisChatService;
+    User user;
     public AuthenticationService() throws RemoteException {
     }
 
@@ -30,7 +31,7 @@ public class AuthenticationService extends UnicastRemoteObject implements IAuthe
     public IChatService login(String phoneNumber, String password) throws RemoteException {
         try {
             UserDao userDao = new UserDao();
-            User user = userDao.getUser(phoneNumber, password);
+            user = userDao.getUser(phoneNumber, password);
             if (user == null) return null;
             user.setStatus(UserStatus.ONLINE);
             thisChatService=new ChatService(user);
@@ -42,7 +43,11 @@ public class AuthenticationService extends UnicastRemoteObject implements IAuthe
         }
         return null;
     }
-
+    /////////////////////////////////////////////////////////////////////////keep me
+    public int getUserToSave()throws RemoteException{
+        return user.getId();
+    }
+/////////////////////////////////////////////////////////////////////////////////
     IUserDao userDao ;
     {
         try {
@@ -52,7 +57,7 @@ public class AuthenticationService extends UnicastRemoteObject implements IAuthe
         }
     }
 
-    User user = new User();
+   // User user = new User();
     @Override
     public void addUser(User me) throws RemoteException {
 
