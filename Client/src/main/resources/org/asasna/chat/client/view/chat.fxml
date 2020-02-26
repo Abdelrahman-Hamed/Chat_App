@@ -11,23 +11,34 @@
 
 <BorderPane fx:id="mainWindow" prefHeight="500.0" prefWidth="900.0" stylesheets="@../chat.css"
             xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
-    <center>
-        <!--
-              <AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0">
-        -->
-        <AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity">
-
-            <Pane fx:id="sidePanel" prefHeight="600.0" prefWidth="86.0" style="-fx-background-color: #045ba5;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
-                <FontIcon fx:id="friendList" iconColor="WHITE" iconLiteral="oct-person" iconSize="30" layoutX="30.0" layoutY="140.0" selectionFill="#1e82dc" styleClass="sidebar_icon" />
-                <FontIcon fx:id="groupIcon" iconColor="WHITE" iconLiteral="dashicons-groups" iconSize="35" layoutX="24.0" layoutY="200.0" selectionFill="#1e82dc" styleClass="sidebar_icon" />
-                <FontIcon fx:id="logoutIcon" iconColor="WHITE" iconLiteral="oi-account-logout" iconSize="30" layoutX="30.0" layoutY="555.0" onMouseClicked="#signMeOut" selectionFill="#1e82dc" styleClass="sidebar_icon" />
-                <FontIcon fx:id="friendRequest" iconColor="WHITE" iconLiteral="enty-add-user" iconSize="30" layoutX="29.0" layoutY="260.0" selectionFill="#1e82dc" styleClass="sidebar_icon" />
-                <FontIcon fx:id="notificationIcon" iconColor="WHITE" iconLiteral="gmi-notifications" iconSize="35" layoutX="23.0" layoutY="315.0" selectionFill="#1e82dc" styleClass="sidebar_icon" />
-                <FontIcon fx:id="saveChatIcon" iconColor="WHITE" iconLiteral="oct-file" iconSize="30" layoutX="29.0" layoutY="367.0" onMouseClicked="#saveChat" selectionFill="#1e82dc" styleClass="sidebar_icon" />
-            <Circle fx:id="status" fill="DODGERBLUE" layoutX="43.0" layoutY="48.0" onMouseClicked="#changeUserStatus" radius="41.0" stroke="BLACK" strokeType="INSIDE" />
-               <Circle fx:id="userImage" fill="WHITE" layoutX="44.0" layoutY="48.0" radius="31.0" stroke="#7eff21" strokeType="INSIDE" strokeWidth="5.0" />
-                <FontIcon fx:id="ProfileIcon" iconColor="WHITE" iconLiteral="oct-file" iconSize="30" layoutX="30.0" layoutY="407.0" onMouseClicked="#ProfileButtonClicked" selectionFill="#1e82dc" styleClass="sidebar_icon" />
-
+    <left>
+        <HBox>
+            <Pane fx:id="sidePanel" prefHeight="600.0" prefWidth="86.0" style="-fx-background-color: #045ba5;"
+                  AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <FontIcon fx:id="friendList" iconColor="WHITE" iconLiteral="oct-person" iconSize="30" layoutX="30.0"
+                          layoutY="140.0" selectionFill="#1e82dc" styleClass="sidebar_icon"/>
+                <FontIcon fx:id="groupIcon" iconColor="WHITE" iconLiteral="dashicons-groups" iconSize="35"
+                          layoutX="24.0"
+                          layoutY="200.0" selectionFill="#1e82dc" styleClass="sidebar_icon"/>
+                <FontIcon fx:id="logoutIcon" iconColor="WHITE" iconLiteral="oi-account-logout" iconSize="30"
+                          layoutX="30.0"
+                          layoutY="555.0" onMouseClicked="#signMeOut" selectionFill="#1e82dc"
+                          styleClass="sidebar_icon"/>
+                <FontIcon fx:id="friendRequest" iconColor="WHITE" iconLiteral="enty-add-user" iconSize="30"
+                          layoutX="29.0"
+                          layoutY="260.0" selectionFill="#1e82dc" styleClass="sidebar_icon"/>
+                <FontIcon fx:id="notificationIcon" iconColor="WHITE" iconLiteral="gmi-notifications" iconSize="35"
+                          layoutX="23.0" layoutY="315.0" selectionFill="#1e82dc" styleClass="sidebar_icon"/>
+                <FontIcon fx:id="saveChatIcon" iconColor="WHITE" iconLiteral="oct-file" iconSize="30" layoutX="29.0"
+                          layoutY="367.0" onMouseClicked="#saveChat" selectionFill="#1e82dc" styleClass="sidebar_icon"/>
+                <Circle fx:id="status" fill="DODGERBLUE" layoutX="43.0" layoutY="48.0"
+                        onMouseClicked="#changeUserStatus"
+                        radius="41.0" stroke="BLACK" strokeType="INSIDE"/>
+                <Circle fx:id="userImage" fill="WHITE" layoutX="44.0" layoutY="48.0" radius="31.0" stroke="#7eff21"
+                        strokeType="INSIDE" strokeWidth="5.0"/>
+                <FontIcon fx:id="ProfileIcon" iconColor="WHITE" iconLiteral="oct-file" iconSize="30" layoutX="30.0"
+                          layoutY="407.0" onMouseClicked="#ProfileButtonClicked" selectionFill="#1e82dc"
+                          styleClass="sidebar_icon"/>
             </Pane>
             <VBox fx:id="contactsView" layoutX="86.0" prefHeight="600.0" prefWidth="350"
                   style="-fx-background-color: #1e82dc;">
@@ -41,109 +52,148 @@
                 </HBox>
                 <VBox fx:id="contactsList" prefHeight="496.0" prefWidth="257.0"/>
             </VBox>
-            <GridPane fx:id="chatArea" layoutX="450" layoutY="-2.0" prefHeight="600.0" prefWidth="555.0"
-                      maxHeight="Infinity" maxWidth="Infinity">
-                <columnConstraints>
-                    <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0"/>
-                </columnConstraints>
-                <rowConstraints>
-                    <RowConstraints minHeight="10.0" prefHeight="92.0" vgrow="ALWAYS"/>
-                    <RowConstraints minHeight="10.0" prefHeight="412.0" vgrow="ALWAYS"/>
-                    <RowConstraints minHeight="3.0" prefHeight="96.0" vgrow="ALWAYS"/>
-                </rowConstraints>
-                <HBox fx:id="chatArea_hbox" prefHeight="95.0" prefWidth="555.0" GridPane.rowIndex="2">
-                    <FontIcon fx:id="microphoneId" iconColor="#1e82dc" iconLiteral="dashicons-microphone" iconSize="35">
-                        <HBox.margin>
-                            <Insets left="15.0" top="25.0"/>
-                        </HBox.margin>
-                        <cursor>
-                            <Cursor fx:constant="HAND"/>
-                        </cursor>
-                    </FontIcon>
-                    <TextArea fx:id="messageTextArea"  prefHeight="68.0" prefWidth="402.0"
-                              promptText="Enter Your Message" stylesheets="@../textArea.css" wrapText="true">
-                        <HBox.margin>
-                            <Insets left="10.0" top="15.0"/>
-                        </HBox.margin>
-                        <styleClass>
-                            <String fx:value="content"/>
-                            <String fx:value="scroll-pane"/>
-                            <String fx:value="text-area"/>
-                        </styleClass>
-                        <padding>
-                            <Insets left="5.0" top="5.0"/>
-                        </padding>
-                        <cursor>
-                            <Cursor fx:constant="TEXT"/>
-                        </cursor>
-                    </TextArea>
-                    <Button fx:id="sendButton" minWidth="49.0" mnemonicParsing="false" onAction="#send"
-                            prefHeight="36.0" prefWidth="53.0"
-                            style="-fx-border-radius: 30; -fx-background-radius: 30; -fx-font-size: 18; -fx-font-weight: bold; -fx-font-family: Comic Sans MS; -fx-background-color: #1e82dc; -fx-text-fill: white; ">
-                        <HBox.margin>
-                            <Insets left="20.0" right="10.0" top="15.0"/>
-                        </HBox.margin>
-                        <font>
-                            <Font name="System Bold" size="18.0"/>
-                        </font>
-                        <graphic>
-                            <FontIcon iconColor="WHITE" iconLiteral="dashicons-controls-play" iconSize="40"
-                                      wrappingWidth="35.0">
+        </HBox>
+    </left>
+    <center>
+        <!--
+              <AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0">
+        -->
+        <!--<AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity">
+        <GridPane fx:id="chatArea" layoutX="450" layoutY="-2.0" prefHeight="600.0" prefWidth="555.0"
+                  maxHeight="Infinity" maxWidth="Infinity">
+            <columnConstraints>
+                <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="92.0" vgrow="ALWAYS"/>
+                <RowConstraints minHeight="10.0" prefHeight="412.0" vgrow="ALWAYS"/>
+                <RowConstraints minHeight="3.0" prefHeight="96.0" vgrow="ALWAYS"/>
+            </rowConstraints>
+
+
+        </GridPane>-->
+        <BorderPane>
+            <top>
+                <HBox prefHeight="101.0" style="-fx-border-color: #ffffff  #ffffff  #1e82dc #ffffff;">
+                    <padding>
+                        <Insets left="10.0" top="10.0" right="30.0" bottom="20.0"/>
+                    </padding>
+                    <HBox HBox.hgrow="ALWAYS" maxWidth="Infinity" alignment="CENTER_LEFT">
+                        <Circle fx:id="receiverImage" fill="#f0f3f5" radius="38.0">
+                            <HBox.margin>
+                                <Insets left="10.0" top="10.0"/>
+                            </HBox.margin>
+                        </Circle>
+                        <Label fx:id="receiverNameLabel" prefHeight="91.0" prefWidth="201.0"
+                               style="-fx-text-fill: #1e82dc;"
+                               text="">
+                            <font>
+                                <Font name="Comic Sans MS Bold" size="18.0"/>
+                            </font>
+                            <HBox.margin>
+                                <Insets left="15.0"/>
+                            </HBox.margin>
+                        </Label>
+                    </HBox>
+                    <HBox HBox.hgrow="ALWAYS" maxWidth="Infinity" alignment="CENTER_RIGHT">
+                        <FontIcon iconColor="#1e82dc" iconLiteral="dashicons-video-alt2" iconSize="30">
+                            <HBox.margin>
+                                <Insets left="110.0" right="15.0" top="35.0"/>
+                            </HBox.margin>
+                            <cursor>
+                                <Cursor fx:constant="HAND"/>
+                            </cursor>
+                        </FontIcon>
+                        <FontIcon iconColor="#1e82dc" iconLiteral="dashicons-phone" iconSize="30"
+                                  onMouseClicked="#cleanchat">
+                            <HBox.margin>
+                                <Insets right="15.0" top="35.0"/>
+                            </HBox.margin>
+                            <cursor>
+                                <Cursor fx:constant="HAND"/>
+                            </cursor>
+                        </FontIcon>
+                        <FontIcon iconColor="#1e82dc" iconLiteral="dashicons-paperclip" iconSize="30"
+                                  onMouseClicked="#chooseFile" wrappingWidth="28.25">
+                            <HBox.margin>
+                                <Insets top="35.0"/>
+                            </HBox.margin>
+                            <cursor>
+                                <Cursor fx:constant="HAND"/>
+                            </cursor>
+                        </FontIcon>
+                    </HBox>
+
+                </HBox>
+            </top>
+            <center>
+                <ScrollPane fx:id="chatArea_scroll"
+                >
+                    <VBox fx:id="view" prefHeight="410.0"
+                          style="-fx-border-color: #ffffff  #ffffff  #1e82dc #ffffff;"/>
+                </ScrollPane>
+            </center>
+            <bottom>
+
+                <BorderPane>
+                    <center>
+                        <HBox fx:id="chatArea_hbox" prefHeight="95.0">
+                            <padding>
+                                <Insets left="10.0" top="10.0" right="30.0" bottom="20.0"/>
+                            </padding>
+                            <FontIcon fx:id="microphoneId" iconColor="#1e82dc" iconLiteral="dashicons-microphone"
+                                      iconSize="35">
+                                <HBox.margin>
+                                    <Insets left="15.0" top="25.0"/>
+                                </HBox.margin>
                                 <cursor>
                                     <Cursor fx:constant="HAND"/>
                                 </cursor>
                             </FontIcon>
-                        </graphic>
-                    </Button>
-                </HBox>
-                <ScrollPane fx:id="chatArea_scroll" prefHeight="396.0" prefWidth="555.0" GridPane.rowIndex="1"
-                            GridPane.vgrow="ALWAYS">
-                    <VBox fx:id="view" prefHeight="410.0" prefWidth="552.0"
-                          style="-fx-border-color: #ffffff  #ffffff  #1e82dc #ffffff;"/>
-                </ScrollPane>
-                <HBox prefHeight="101.0" prefWidth="555.0" style="-fx-border-color: #ffffff  #ffffff  #1e82dc #ffffff;">
-                    <Circle fx:id="receiverImage" fill="#f0f3f5" radius="38.0">
-                        <HBox.margin>
-                            <Insets left="10.0" top="10.0"/>
-                        </HBox.margin>
-                    </Circle>
-                    <Label fx:id="receiverNameLabel" prefHeight="91.0" prefWidth="201.0" style="-fx-text-fill: #1e82dc;"
-                           text="">
-                        <font>
-                            <Font name="Comic Sans MS Bold" size="18.0"/>
-                        </font>
-                        <HBox.margin>
-                            <Insets left="15.0"/>
-                        </HBox.margin>
-                    </Label>
-                    <FontIcon iconColor="#1e82dc" iconLiteral="dashicons-video-alt2" iconSize="30">
-                        <HBox.margin>
-                            <Insets left="110.0" right="15.0" top="35.0"/>
-                        </HBox.margin>
-                        <cursor>
-                            <Cursor fx:constant="HAND"/>
-                        </cursor>
-                    </FontIcon>
-                    <FontIcon iconColor="#1e82dc" iconLiteral="dashicons-phone" iconSize="30"
-                              onMouseClicked="#cleanchat">
-                        <HBox.margin>
-                            <Insets right="15.0" top="35.0"/>
-                        </HBox.margin>
-                        <cursor>
-                            <Cursor fx:constant="HAND"/>
-                        </cursor>
-                    </FontIcon>
-                    <FontIcon iconColor="#1e82dc" iconLiteral="dashicons-paperclip" iconSize="30"
-                              onMouseClicked="#chooseFile" wrappingWidth="28.25">
-                        <HBox.margin>
-                            <Insets top="35.0"/>
-                        </HBox.margin>
-                        <cursor>
-                            <Cursor fx:constant="HAND"/>
-                        </cursor>
-                    </FontIcon>
-                </HBox>
-            </GridPane>
-        </AnchorPane>
+                            <TextArea fx:id="messageTextArea" prefHeight="68.0" HBox.hgrow="ALWAYS" maxWidth="Infinity"
+                                      promptText="Enter Your Message" stylesheets="@../textArea.css" wrapText="true">
+                                <HBox.margin>
+                                    <Insets left="10.0" top="15.0"/>
+                                </HBox.margin>
+                                <!--<styleClass>
+                                    <String fx:value="content"/>
+                                    <String fx:value="scroll-pane"/>
+                                    <String fx:value="text-area"/>
+                                </styleClass>-->
+                                <padding>
+                                    <Insets left="5.0" top="5.0"/>
+                                </padding>
+                                <cursor>
+                                    <Cursor fx:constant="TEXT"/>
+                                </cursor>
+                            </TextArea>
+                            <Button fx:id="sendButton" minWidth="49.0" mnemonicParsing="false" onAction="#send"
+                                    prefHeight="36.0" prefWidth="53.0"
+                                    style="-fx-border-radius: 30; -fx-background-radius: 30; -fx-font-size: 18; -fx-font-weight: bold; -fx-font-family: Comic Sans MS; -fx-background-color: #1e82dc; -fx-text-fill: white; ">
+                                <HBox.margin>
+                                    <Insets left="20.0" right="10.0" top="15.0"/>
+                                </HBox.margin>
+                                <font>
+                                    <Font name="System Bold" size="18.0"/>
+                                </font>
+                                <graphic>
+                                    <FontIcon iconColor="WHITE" iconLiteral="dashicons-controls-play" iconSize="40"
+                                              wrappingWidth="35.0">
+                                        <cursor>
+                                            <Cursor fx:constant="HAND"/>
+                                        </cursor>
+                                    </FontIcon>
+                                </graphic>
+                            </Button>
+                        </HBox>
+                    </center>
+                </BorderPane>
+
+            </bottom>
+        </BorderPane>
+        <!--</AnchorPane>-->
     </center>
+    <bottom>
+
+    </bottom>
 </BorderPane>
