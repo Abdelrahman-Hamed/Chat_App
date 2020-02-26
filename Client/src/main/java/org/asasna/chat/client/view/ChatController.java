@@ -24,6 +24,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import org.apache.commons.io.FileDeleteStrategy;
 import org.asasna.chat.client.Controller.Client;
@@ -729,18 +730,7 @@ private AudioFormat getAudioFormat(){
             });
         }
     }
-    public void reciveFile(String fileName){
 
-        new Thread(() -> {
-            try {
-                client.getFile(fileName, me.getId());/////me
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }).start();
-
-
-    }
     @FXML
     public void changeUserStatus(){
         UserStatus myStatus;
@@ -857,11 +847,15 @@ private AudioFormat getAudioFormat(){
                 @Override
                 public void handle(MouseEvent mouseEvent) {
                     // Adding Download File Here
-                    try {
-                        client.getFile(message.getMesssagecontent(), message.getUserId());
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
-                    }
+                    DirectoryChooser directoryChooser = new DirectoryChooser();
+                    File selectedDirectory = directoryChooser.showDialog(null);
+                        new Thread(() -> {
+                            try {
+                                client.getFile(selectedDirectory.getAbsolutePath(), message.getMesssagecontent(), message.getUserId());
+                            } catch (RemoteException e) {
+                                e.printStackTrace();
+                            }
+                        }).start();
                     System.out.println("Download File");
                 }
             });

@@ -254,7 +254,7 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     }
 
     @Override
-    public void getFile(String fileName,int clickerId) throws RemoteException {
+    public void getFile(String direcotryPath, String fileName,int clickerId) throws RemoteException {
 
         RemoteInputStreamServer istream = null;
         try {
@@ -262,7 +262,7 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
             istream = new GZIPRemoteInputStream(new BufferedInputStream(new FileInputStream("./Server/src/main/resources/org/asasna/chat/server/files/" + fileName)));///pathhhhhhhhh
             String fileExtension = fileName.substring(fileName.lastIndexOf("."), fileName.length());
             IClientService clicker = onlineUsers.get(clickerId);
-            clicker.downloadFile(istream ,fileExtension,fileName);
+            clicker.downloadFile(istream ,fileExtension,direcotryPath,fileName);
             System.out.println("ChatService getfile");
         } catch (IOException e) {
             e.printStackTrace();
