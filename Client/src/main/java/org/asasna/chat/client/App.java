@@ -7,10 +7,17 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.asasna.chat.client.Controller.Client;
 import org.asasna.chat.client.model.IChatController;
+import org.asasna.chat.client.util.AES;
 import org.asasna.chat.client.view.Controller;
 import org.asasna.chat.client.view.PrimaryController;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
-import java.io.IOException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.*;
 import java.rmi.RemoteException;
 
 /**
@@ -22,11 +29,13 @@ public class App extends Application {
     private  static PrimaryController primaryController; // edited
     @Override
     public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFXML("login"), 900, 600);
-        stage.setScene(scene);
-        primaryController.setScene(scene);
-        stage.show();
+            scene = new Scene(loadFXML("login"), 900, 600);
+            stage.setScene(scene);
+            primaryController.setScene(scene);
+            stage.show();
+
     }
+
 
     public static void setRoot(String fxml) throws IOException {
         scene.setRoot(loadFXML(fxml));
