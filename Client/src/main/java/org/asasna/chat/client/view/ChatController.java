@@ -703,7 +703,7 @@ public class ChatController implements Initializable, IChatController {
                     this.activeContact = contact;
                 });
                 contactsList.getChildren().add(0, contact);
-                tempDisplayMessage(message);
+                tempDisplayMessage(group.getGroupId(), message);
             });
         } else {
             Platform.runLater(() -> {
@@ -715,8 +715,8 @@ public class ChatController implements Initializable, IChatController {
                             contactsList.getChildren().remove(n);
                             contactsList.getChildren().add(0, n);
                         });
-                tempDisplayMessage(message);
-                Notifications.create().title("New Message").text("Message from " + message.getUserId()).graphic(new Circle()).show();
+                tempDisplayMessage(group.getGroupId(), message);
+//                Notifications.create().title("New Message").text("Message from " + message.getUserId()).graphic(new Circle()).show();
             });
 
         }
@@ -742,13 +742,15 @@ public class ChatController implements Initializable, IChatController {
             String fileExtension = fileName.substring(fileName.lastIndexOf("."), fileName.length());
             new Thread(() -> {
                 try {
-                    int friendId = activeContact.getUser().getId();
                     int senderId = me.getId();
                     Message message = new Message(senderId,fileName, MessageType.FILE);
                     if (activeContact instanceof GroupContact)
                         client.sendGroupFileToServer(selectedFile.getPath(), fileExtension, ((GroupContact) activeContact).getChatGroup(), message);
-                    else
+                    else{
+                        int friendId = activeContact.getUser().getId();
                         client.sendFileToServer(selectedFile.getPath(), fileExtension, friendId, message);
+                    }
+
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
@@ -918,6 +920,53 @@ public class ChatController implements Initializable, IChatController {
         saveReceiverMessages(message.getUserId(), message);
     }
 
+    public void tempDisplayMessage(int groupId, Message message) {
+        messageView = new MessageView(message);
+        if (me.getId() == message.getUserId()) {
+            messageView.setDirection(SpeechDirection.RIGHT);
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    view.getChildren().add(messageView);
+                }
+            });
+        } else {
+            if (activeContact instanceof GroupContact) {
+                if (((GroupContact) activeContact).getChatGroup().getGroupId() == groupId) {
+                    messageView.setDirection(SpeechDirection.LEFT);
+                    messageView.setImage(((GroupContact)activeContact).getImage());
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            view.getChildren().add(messageView);
+                        }
+                    });
+                } else {
+                    System.out.println("Message:  " + message.getMesssagecontent() + " from  " + message.getUserId());
+                }
+            }
+        }
+        if(message.getMessageType() == MessageType.FILE){
+            System.out.println("Null: " + messageView.getDisplayedText());
+            messageView.getDisplayedText().setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent mouseEvent) {
+                    // Adding Download File Here
+                    DirectoryChooser directoryChooser = new DirectoryChooser();
+                    File selectedDirectory = directoryChooser.showDialog(null);
+                    new Thread(() -> {
+                        try {
+                            client.getFile(selectedDirectory.getAbsolutePath(), message.getMesssagecontent(), message.getUserId());
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                    }).start();
+                    System.out.println("Download File");
+                }
+            });
+        }
+        saveReceiverMessages(message.getUserId(), message);
+    }
     @Override
     public void addNotification(Notification notification){
         this.notifications.add(notification);
