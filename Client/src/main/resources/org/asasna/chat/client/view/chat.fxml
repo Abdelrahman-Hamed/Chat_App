@@ -50,7 +50,7 @@
                         </HBox.margin>
                     </TextField>
                 </HBox>
-                <VBox fx:id="contactsList" prefHeight="496.0" prefWidth="257.0"/>
+                <VBox fx:id="contactsList" onMouseClicked="#getSelectedContact" prefHeight="496.0" prefWidth="257.0"/>
             </VBox>
         </HBox>
     </left>
@@ -104,8 +104,7 @@
                                 <Cursor fx:constant="HAND"/>
                             </cursor>
                         </FontIcon>
-                        <FontIcon iconColor="#1e82dc" iconLiteral="dashicons-phone" iconSize="30"
-                                  onMouseClicked="#cleanchat">
+                        <FontIcon iconColor="#1e82dc" iconLiteral="dashicons-phone" iconSize="30" >
                             <HBox.margin>
                                 <Insets right="15.0" top="35.0"/>
                             </HBox.margin>

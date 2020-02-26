@@ -1,6 +1,7 @@
 package org.asasna.chat.client.view;
 
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXSlider;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.Bindings;
@@ -12,6 +13,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -194,13 +196,13 @@ public class ChatController implements Initializable, IChatController {
         contactsList.getChildren().add(searchedContact);*/
         //userImage.setFill(new ImagePattern(me.getImage()));
         new Thread(() -> {
-            while (root.getScene() == null) {
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+//            while (root.getScene() == null) {
+//                try {
+//                    Thread.sleep(100);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            }
             groupIcon.setOnMouseClicked((e) -> {
                 active = Active.Group;
                 groupIcon.setIconColor(Color.BLACK);
@@ -528,7 +530,6 @@ public class ChatController implements Initializable, IChatController {
                 System.out.println("active Contact is : " + this.activeContact.getUser().getName());
             });
         }
-    }*/
         /*    });
         }
         System.out.println("active Contact is : " + this.activeContact.getUser().getName());
@@ -782,7 +783,7 @@ public class ChatController implements Initializable, IChatController {
                             contactsList.getChildren().remove(n);
                             contactsList.getChildren().add(0, n);
                         });
-                tempDisplayMessage(group.getGroupId(), message);
+                    tempDisplayMessage(group.getGroupId(), message);
 //                Notifications.create().title("New Message").text("Message from " + message.getUserId()).graphic(new Circle()).show();
             });
 
@@ -809,7 +810,6 @@ public class ChatController implements Initializable, IChatController {
             String fileExtension = fileName.substring(fileName.lastIndexOf("."), fileName.length());
             new Thread(() -> {
                 try {
-                    int friendId = activeContact.getUser().getId();
                     int senderId = me.getId();
                     Message message = new Message(senderId,fileName, MessageType.FILE);
                     if (activeContact instanceof GroupContact)
@@ -851,18 +851,7 @@ public class ChatController implements Initializable, IChatController {
             });
         }
     }
-    public void reciveFile(String fileName){
 
-        new Thread(() -> {
-            try {
-                client.getFile(fileName, me.getId());/////me
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }).start();
-
-
-    }
     @FXML
     public void changeUserStatus() {
         UserStatus myStatus;
@@ -921,8 +910,8 @@ public class ChatController implements Initializable, IChatController {
             }*/
         });
 
-
     }
+
     @FXML
     public void signMeOut(){
         try {
@@ -964,6 +953,54 @@ public class ChatController implements Initializable, IChatController {
                 System.out.println("Message:  " + message.getMesssagecontent() + " from  " + message.getUserId());
             }
         }
+    }
+
+    public void tempDisplayMessage(int groupId, Message message) {
+        messageView = new MessageView(message);
+        if (me.getId() == message.getUserId()) {
+            messageView.setDirection(SpeechDirection.RIGHT);
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    view.getChildren().add(messageView);
+                }
+            });
+        } else {
+            if (activeContact instanceof GroupContact) {
+                if (((GroupContact) activeContact).getChatGroup().getGroupId() == groupId) {
+                    messageView.setDirection(SpeechDirection.LEFT);
+                    messageView.setImage(((GroupContact)activeContact).getImage());
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            view.getChildren().add(messageView);
+                        }
+                    });
+                } else {
+                    System.out.println("Message:  " + message.getMesssagecontent() + " from  " + message.getUserId());
+                }
+            }
+        }
+        if(message.getMessageType() == MessageType.FILE){
+            System.out.println("Null: " + messageView.getDisplayedText());
+            messageView.getDisplayedText().setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent mouseEvent) {
+                    // Adding Download File Here
+                    DirectoryChooser directoryChooser = new DirectoryChooser();
+                    File selectedDirectory = directoryChooser.showDialog(null);
+                    new Thread(() -> {
+                        try {
+                            client.getFile(selectedDirectory.getAbsolutePath(), message.getMesssagecontent(), message.getUserId());
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                    }).start();
+                    System.out.println("Download File");
+                }
+            });
+        }
+        saveReceiverMessages(message.getUserId(), message);
     }
 
     @Override
