@@ -805,7 +805,6 @@ public class ChatController implements Initializable, IChatController {
             String fileExtension = fileName.substring(fileName.lastIndexOf("."), fileName.length());
             new Thread(() -> {
                 try {
-                    int friendId = activeContact.getUser().getId();
                     int senderId = me.getId();
                     Message message = new Message(senderId,fileName, MessageType.FILE);
                     if (activeContact instanceof GroupContact)
