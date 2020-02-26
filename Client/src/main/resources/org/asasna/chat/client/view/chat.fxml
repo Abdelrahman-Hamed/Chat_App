@@ -126,9 +126,8 @@
                 </HBox>
             </top>
             <center>
-                <ScrollPane fx:id="chatArea_scroll"
-                >
-                    <VBox fx:id="view" prefHeight="410.0"
+                <ScrollPane fx:id="chatArea_scroll" >
+                    <VBox fx:id="view"
                           style="-fx-border-color: #ffffff  #ffffff  #1e82dc #ffffff;"/>
                 </ScrollPane>
             </center>

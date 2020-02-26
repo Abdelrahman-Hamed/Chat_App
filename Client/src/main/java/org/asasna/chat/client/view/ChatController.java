@@ -176,6 +176,11 @@ public class ChatController implements Initializable, IChatController {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+        chatArea_scroll.setContent(view);
+        view.heightProperty().addListener((ob, ol, nw) -> {
+            chatArea_scroll.setVvalue((double) nw);
+        });
+        view.prefWidthProperty().bind(chatArea_scroll.widthProperty());
         searchArea.setStyle("-fx-padding: 20 0 0 0");
         searchArea.setSpacing(5);
         createbtn = new JFXButton("+");
@@ -851,6 +856,7 @@ public class ChatController implements Initializable, IChatController {
             });
         }
     }
+
 
     @FXML
     public void changeUserStatus() {
