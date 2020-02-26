@@ -204,10 +204,7 @@ public class PrimaryController implements Initializable{
                     Parent parent = fxmlLoader.load();
                     scene.setRoot(parent);
                     chatController.setScene(scene);
-
-
-
-                }
+             }
             } catch (RemoteException e) {
                 e.printStackTrace();
             } catch (IOException e) {

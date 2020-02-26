@@ -125,7 +125,13 @@
             <version>11.0.2</version>
             <scope>compile</scope>
         </dependency>
-
+        <dependency>
+            <groupId>iti.team</groupId>
+            <artifactId>notification</artifactId>
+            <version>0.3</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/org/asasna/chat/client/notification-0.3.jar</systemPath>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
