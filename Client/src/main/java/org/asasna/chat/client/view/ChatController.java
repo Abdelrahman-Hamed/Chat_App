@@ -279,18 +279,26 @@ public class ChatController implements Initializable, IChatController {
             this.chatArea_scroll.prefWidthProperty().bind(root.getScene().widthProperty().multiply(.5));
             this.chatArea_scroll.prefHeightProperty().bind(root.getScene().heightProperty());
             //this.chatArea_scroll.vvalueProperty().bind(this.view.heightProperty());
-            //this.chatArea_scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER); // shimaa
+            this.chatArea_scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER); // shimaa
             this.view.prefHeightProperty().bind(this.root.getScene().heightProperty());
             this.view.prefWidthProperty().bind(this.root.getScene().widthProperty().multiply(.5));
             this.messageTextArea.prefHeightProperty().bind(root.getScene().heightProperty());
             this.messageTextArea.prefWidthProperty().bind(root.getScene().widthProperty().multiply(.66).subtract(120));
 */
+            this.chatArea_scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER); // shimaa
+            this.chatArea_scroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER); // shimaa
+
         }).start();
         /*******************************/
         //Shimaa
         setInitialContact();
         setListnerForPressingEnter();
         messageTextArea.setStyle("-fx-font-size:15");
+        if (activeContact.getUser().getStatus() == UserStatus.OFFLINE){
+            messageTextArea.setDisable(true);
+        } else {
+            messageTextArea.setDisable(false);
+        }
         /*******************************/
         new Thread(() -> {
             try {
@@ -532,7 +540,6 @@ public class ChatController implements Initializable, IChatController {
         for (Node c : contacts) {
             c.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
                 this.activeContact = (Contact) c;
-                System.out.println("active Contact is : " + this.activeContact.getUser().getName());
             });
         }
         /*    });
@@ -544,6 +551,11 @@ public class ChatController implements Initializable, IChatController {
         receiverNameLabel.setText(activeContact.getUser().getName());
 
         focusOnContact();
+        if(activeContact.getUser().getStatus() == UserStatus.OFFLINE){
+            messageTextArea.setDisable(true);
+        } else {
+            messageTextArea.setDisable(false);
+        }
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -956,7 +968,7 @@ public class ChatController implements Initializable, IChatController {
             if (activeContact.getUser().getId() == message.getUserId()) {
                 showReceiverMessage(message);
             } else {
-                System.out.println("Message:  " + message.getMesssagecontent() + " from  " + message.getUserId());
+                showMessageNotification(message);
             }
         }
     }
@@ -1188,7 +1200,7 @@ public class ChatController implements Initializable, IChatController {
         });
     }
 
-    private void showReceiverMessage(Message message){
+    private void showReceiverMessage(Message message) {
         messageView = new MessageView(message);
         messageView.setDirection(SpeechDirection.LEFT);
         messageView.setImage(activeContact.getUser().getImage());
@@ -1199,6 +1211,7 @@ public class ChatController implements Initializable, IChatController {
             }
         });
     }
+
     // End shimaa
 
 
@@ -1238,14 +1251,15 @@ public class ChatController implements Initializable, IChatController {
             System.out.println("inner");
             client.sendGroupMessage(((GroupContact) activeContact).getChatGroup(), new Message(client.getUser().getId(), messageTextArea.getText()));
         } else {
-            if (!messageTextArea.getText().isEmpty()) {
-                System.out.println(activeContact);
-                int receiverId = activeContact.getUser().getId();
-                int senderId = me.getId();
-                String messageContent = messageTextArea.getText();
-                messageTextArea.setText("");
-                Message message = new Message(senderId, messageContent, MessageType.TEXT);
-                sendMessage(receiverId, message);
+            if (activeContact.getUser().getStatus() == UserStatus.ONLINE) {
+                if (messageTextArea.getText().length() !=0 && !messageTextArea.getText().equals(" ")) {
+                    int receiverId = activeContact.getUser().getId();
+                    int senderId = me.getId();
+                    String messageContent = messageTextArea.getText();
+                    messageTextArea.setText("");
+                    Message message = new Message(senderId, messageContent, MessageType.TEXT);
+                    sendMessage(receiverId, message);
+                }
             }
         }
     }

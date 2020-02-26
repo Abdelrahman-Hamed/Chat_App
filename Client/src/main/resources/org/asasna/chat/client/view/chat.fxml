@@ -127,8 +127,7 @@
             </top>
             <center>
                 <ScrollPane fx:id="chatArea_scroll" >
-                    <VBox fx:id="view"
-                          style="-fx-border-color: #ffffff  #ffffff  #1e82dc #ffffff;"/>
+                    <VBox fx:id="view"/>
                 </ScrollPane>
             </center>
             <bottom>
