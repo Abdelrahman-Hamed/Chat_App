@@ -189,6 +189,7 @@ public class PrimaryController implements Initializable{
                 client = new Client(chatController);
                 password.setDisable(false);
                 errorPhoneNumber.setVisible(false);
+
                 IChatService chatService = client.login(phoneNumber.getText(), password.getText());
                 if (chatService == null) {
                     System.out.println("Phone Number OR Password is Incorrect");
@@ -212,6 +213,9 @@ public class PrimaryController implements Initializable{
                     fxmlLoader.setController(chatController);
                     Parent parent = fxmlLoader.load();
                     scene.setRoot(parent);
+                    chatController.setScene(scene);
+
+
 
                 }
             } catch (RemoteException e) {

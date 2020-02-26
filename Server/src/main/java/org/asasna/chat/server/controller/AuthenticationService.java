@@ -69,10 +69,11 @@ public class AuthenticationService extends UnicastRemoteObject implements IAuthe
         }
 
 //        if(userDao.getUser(user.getPhone()) == null) {
-//            //PasswordAuthentication passwordAuthentication = new PasswordAuthentication();
-//            //user.setPassword(passwordAuthentication.hash(user.getPassword()));
+//            PasswordAuthentication passwordAuthentication = new PasswordAuthentication();
+//            user.setPassword(passwordAuthentication.hash(user.getPassword()));
 //            userDao.addUser(user);
 //        }
+        //will remove comments later after register with hashed password
     }
     public boolean isValid(User me) throws RemoteException{
         return ( userDao.getUser(me.getPhone()) == null );

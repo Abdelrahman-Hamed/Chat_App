@@ -125,6 +125,7 @@ public class UserDao implements IUserDao {
 //                PasswordAuthentication passwordAuthentication = new PasswordAuthentication();
 //                boolean found = passwordAuthentication.authenticate(password, user.getPassword());
 //                if(found) return user;
+                //will remove comments later
                 return user;
             }
         } catch (SQLException e) {
@@ -213,6 +214,8 @@ public class UserDao implements IUserDao {
         }
         return false;
     }
+
+
 
     @Override
     public List<User> getFriendList(User user) {
@@ -423,7 +426,7 @@ public class UserDao implements IUserDao {
             preparedStatement.setString(2, user.getPhone());
             preparedStatement.setString(3, user.getName());
             preparedStatement.setString(4, user.getEmail());
-            ImageIO.write(SwingFXUtils.fromFXImage(user.getImage(), null), "png", new File(user.getPhone()));
+            ImageIO.write(SwingFXUtils.fromFXImage(user.getImage(), null), "png", new File("./org/asasna/chat/server/assets/"+user.getPhone()));
             preparedStatement.setString(5, user.getPhone()+".png");
             preparedStatement.setString(6, user.getPassword());
             Gender gender = user.getGender();

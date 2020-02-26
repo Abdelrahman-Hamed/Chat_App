@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 import com.healthmarketscience.rmiio.*;
 import org.apache.commons.io.IOUtils;
+import org.asasna.chat.server.view.PasswordAuthentication;
 
 public class ChatService extends UnicastRemoteObject implements IChatService {
 
@@ -200,6 +201,28 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
         myFriend.recieveRecord(senderId, buf);
         return true;
     }
+
+    @Override
+    public void sendGroupFile(RemoteInputStream export, String extension, ChatGroup chatGroup, Message message) throws RemoteException {
+        chatGroup.getParticipents().forEach((participentId) -> {
+            try {
+                InputStream istream = RemoteInputStreamClient.wrap(export);
+                final File tempFile = File.createTempFile(message.getMesssagecontent(), extension, new File(""));
+                tempFile.deleteOnExit();
+                try (FileOutputStream out = new FileOutputStream(tempFile)) {
+                    IOUtils.copy(istream, out);
+                    IClientService myFriend = onlineUsers.get(participentId);
+                    message.setMesssagecontent(tempFile.getName());
+                    myFriend.recieveGroupMessage(chatGroup, message);
+                    System.out.println("Server " + message.getMesssagecontent());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+    }
     /* end sayed */
 
     /* start nehal */
@@ -210,8 +233,9 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     @Override
     public void sendFile(RemoteInputStream inFile, String suffix,int friendId ,Message message) throws RemoteException {
         try {
+            System.out.println("Send File In Server");
             InputStream istream = RemoteInputStreamClient.wrap(inFile);
-            final File tempFile = File.createTempFile(message.getMesssagecontent(), suffix, new File(""));
+            final File tempFile = File.createTempFile(message.getMesssagecontent(), suffix, new File("./Client/src/main/resources/org/asasna/chat/client/files"));
             tempFile.deleteOnExit();
             try (FileOutputStream out = new FileOutputStream(tempFile)) {
                 IOUtils.copy(istream, out);
@@ -259,7 +283,7 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
         userDao.updateUserStatues(id, status);
     }
     public void notifyMyfriends(int myId)throws RemoteException{
-        List<User> myFriends=getMyFriendList(myId);
+        List<User> myFriends= getMyFriendList(myId);
         System.out.println(" id "+myId);
         System.out.println(" size "+myFriends.size());
         User me=userDao.getUser(myId);
@@ -271,9 +295,10 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
                 if(myFriend==null){
                     System.out.println(" null friend ");
                 }else{
+                    myFriend.reciveUpateNotification(me);
                     System.out.println(" not null friend ");
                 }
-                myFriend.reciveUpateNotification(me);
+
             }
         }
     }
@@ -302,6 +327,22 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     /* end aya */
 
     /* start abeer */
+    @Override
+    public void UpdateUser(User user){
+        try {
+            UserDao userdao=new UserDao();
+            PasswordAuthentication passwordAuthentication= new PasswordAuthentication();
+            user.setPassword(passwordAuthentication.hash(user.getPassword()));
+            boolean done= userdao.updateUser(user.getId(),user);
+            if(!done)
+                System.out.println("cant update user ");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
 
     /* end abeer */
 
