@@ -15,12 +15,6 @@ public interface IClientService extends Remote {
 
     void recieveNotivication(Notification notification) throws RemoteException;
 
-    void sendFileToServer(String filePath, String extension, int senderId ,Message message) throws RemoteException;
-
-    void recieveFileMessage(Message message)throws RemoteException;
-
-    void downloadFile(RemoteInputStream inFile, String suffix, String name) throws RemoteException;
-
     void recieveGroupMessage(ChatGroup group, Message message) throws RemoteException;
 
     void sendMessage(int receiverId, Message message) throws RemoteException;
@@ -29,12 +23,17 @@ public interface IClientService extends Remote {
 
     void registerUser(int userId, IClientService client) throws RemoteException;
 
+    void acceptRequest(int fromUserId) throws RemoteException;
+
+    List<Notification> loadNotifications() throws RemoteException;
+
     /* ِ start  Abdo */
 
     /* end Abdo */
 
     /* start sayed */
-
+    boolean sendRecord(int receiverId, int senderId, byte[] buf) throws RemoteException;
+    void recieveRecord(int senderId, byte[] buf) throws RemoteException;
     /* end sayed */
 
     /* start nehal */
@@ -42,6 +41,15 @@ public interface IClientService extends Remote {
     /* end nehal */
 
     /* start aya */
+    void sendFileToServer(String filePath, String extension, int senderId ,Message message) throws RemoteException;
+
+    void recieveFileMessage(Message message)throws RemoteException;
+
+    public void downloadFile(RemoteInputStream inFile, String suffix, String name) throws RemoteException;
+    void getFile(String fileName,int senderId)throws RemoteException;
+    public void reciveUpateNotification(User updatedUser)  throws RemoteException;
+    public void changeStatus(User me, UserStatus status) throws RemoteException;
+    void signOut(int id) throws RemoteException;
 
     /* end aya */
 
@@ -51,6 +59,8 @@ public interface IClientService extends Remote {
 
     /* start shimaa */
     public User getUser(int id) throws RemoteException;
+
+
     /* end shimaa */
 
 }

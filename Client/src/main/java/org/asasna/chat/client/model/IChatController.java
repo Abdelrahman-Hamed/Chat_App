@@ -1,9 +1,6 @@
 package org.asasna.chat.client.model;
 
-import org.asasna.chat.common.model.ChatGroup;
-import org.asasna.chat.common.model.Message;
-import org.asasna.chat.common.model.Notification;
-import org.asasna.chat.common.model.UserStatus;
+import org.asasna.chat.common.model.*;
 
 import java.rmi.RemoteException;
 
@@ -19,4 +16,11 @@ public interface IChatController{
     void sendMessage(int receiverId, Message message);
 
     void tempDisplayMessage(Message message);
+
+    void addNotification(Notification notification);
+    public void updateMyContactList(User updatedUser);
+    public void tempFileDisplayMessage(Message message);
+    public void reciveFile(String fileName);
+
+    void recieveRecord(int senderId, byte[] buf); // By Sayed Nabil
 }

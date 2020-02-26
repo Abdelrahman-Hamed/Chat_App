@@ -19,29 +19,40 @@ public class SearchedContact extends Contact {
     private int userId;
     private String userPhone;
     private Client client;
-
+    private boolean friendRequest;
+    private Button handleAction(){
+         Button btn = new Button();
+         if(friendRequest){
+             btn.setText("Cancel");
+             btn.setOnAction(new EventHandler<ActionEvent>() {
+                 @Override
+                 public void handle(ActionEvent actionEvent) {
+                     boolean done = client.cancelFriendRequest(userId);
+                     if(done) {
+                         friendRequest = !friendRequest;
+                         handleAction();
+                     }
+                 }
+             });
+         }else{
+             btn.setText("Add");
+             btn.setOnAction(new EventHandler<ActionEvent>() {
+                 @Override
+                 public void handle(ActionEvent actionEvent) {
+                     boolean done = client.sendFriendRequest(userId);
+                     if(done) {
+                         friendRequest = !friendRequest;
+                         handleAction();
+                     }
+                 }
+             });
+         }
+         return btn;
+    }
     public SearchedContact(String name, Image image, UserStatus userStatus, boolean friendRequest) {
         super(name, image, userStatus);
-
-        Button addBtn = new Button("+");
-        if(friendRequest)
-            addBtn.setText("-");
-//        addBtn.setOnAction(new EventHandler<ActionEvent>() {
-//            @Override
-//            public void handle(ActionEvent actionEvent) {
-//                boolean done = client.sendFriendRequest(userId);
-//                if(done){
-//                    addBtn.setText("-");
-//                    addBtn.setOnAction(new EventHandler<ActionEvent>() {
-//                        @Override
-//                        public void handle(ActionEvent actionEvent) {
-//                            boolean done = client.cancelFriendRequest(userId);
-//                        }
-//                    });
-//                }
-//            }
-//        });
-        getChildren().add(addBtn);
+        this.friendRequest = friendRequest;
+        getChildren().add(handleAction());
     }
 
     public SearchedContact(Client client, User user, boolean friendRequest) {
@@ -51,3 +62,4 @@ public class SearchedContact extends Contact {
     }
 
 }
+

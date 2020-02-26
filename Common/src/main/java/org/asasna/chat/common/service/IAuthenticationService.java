@@ -11,4 +11,5 @@ public interface IAuthenticationService extends Remote {
     void addUser(User me) throws RemoteException;
 
     boolean isValid(User me) throws RemoteException;
+     void signOut(int userID)throws RemoteException;
 }

@@ -1,9 +1,11 @@
 package org.asasna.chat.server.services;
 
-import com.mysql.cj.xdevapi.Client;
+
+import org.apache.log4j.Logger;
 import org.asasna.chat.common.model.*;
 import org.asasna.chat.common.service.IChatService;
 import org.asasna.chat.common.service.IClientService;
+import org.asasna.chat.server.App;
 import org.asasna.chat.server.model.dao.IUserDao;
 import org.asasna.chat.server.model.dao.UserDao;
 
@@ -18,6 +20,7 @@ import java.util.stream.Collectors;
 
 import com.healthmarketscience.rmiio.*;
 import org.apache.commons.io.IOUtils;
+import org.asasna.chat.server.view.PasswordAuthentication;
 
 public class ChatService extends UnicastRemoteObject implements IChatService {
 
@@ -68,7 +71,9 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     @Override
     public void register(int userId, IClientService client) throws RemoteException {
         onlineUsers.put(userId, client);
-        System.out.println(onlineUsers);
+        Logger.getLogger(App.class).info("Client Connected : "+client);
+
+        //System.out.println(onlineUsers);
     }
 
     @Override
@@ -125,10 +130,15 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
         try {
             UserDao userDao = new UserDao();
             boolean notified = userDao.setNotification(fromUserId, toUserId);
+            if (notified) {
+//                 Call Receive Notification On Client Side
+                IClientService toClient = onlineUsers.get(toUserId);
+                if( toClient != null){
+                    System.out.println("Get In Here");
+                    toClient.recieveNotivication(new Notification(NotificationType.FRIEND_REQUEST, userDao.getUser(fromUserId)));
+                }
+            }
             return notified;
-//            if (notified) {
-                // Call Receive Notification On Client Side
-//            }
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -149,61 +159,27 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     }
 
     @Override
-    public void sendFile(RemoteInputStream inFile, String suffix,int friendId ,Message message) throws RemoteException {
-        try {
-            InputStream istream = RemoteInputStreamClient.wrap(inFile);
-            final File tempFile = File.createTempFile(message.getMesssagecontent(), suffix, new File("E:\\"));
-            tempFile.deleteOnExit();
-            try (FileOutputStream out = new FileOutputStream(tempFile)) {
-                IOUtils.copy(istream, out);
-                BufferedWriter outWrite = new BufferedWriter(new FileWriter("E:\\ids.txt", true));
-                String str=String.valueOf(friendId)+"-"+String.valueOf(message.getUserId());
-                outWrite.write("\n");
-                outWrite.append(str);
-                outWrite.write("\n");
-                outWrite.append(tempFile.getName());
-                outWrite.close();
-                IClientService me = onlineUsers.get(message.getUserId());
-                IClientService myFriend = onlineUsers.get(friendId);
-                me.recieveFileMessage(message);
-                myFriend.recieveFileMessage(message);
-                System.out.println("Server " + message.getMesssagecontent());
-            }
-        } catch (IOException e) {
-            System.out.println("Something went wrong with the client");
-        }
-
+    public void acceptRequest(int fromUserId, int id) throws RemoteException {
+        sendFriendRequest(id, fromUserId);
     }
 
     @Override
-    public void getFile(int friendId,int userId,int clickerId) throws RemoteException {
-        String str=String.valueOf(friendId)+"-"+String.valueOf(userId);
-        File file = new File("E:\\ids.txt");
-        BufferedReader br = null;
-        RemoteInputStreamServer istream = null;
-        boolean loop=true;
-        try {
-            br = new BufferedReader(new FileReader(file));
-            String st;
-            while ((st = br.readLine()) != null&&loop) {
-                if(st.equals(str)) {
-                    st = br.readLine();
-                    istream = new GZIPRemoteInputStream(new BufferedInputStream(new FileInputStream(st)));
-                    loop=false;
-                     /*
-                     String fileName = selectedFile.getName();
-                     String fileExtension = fileName.substring(fileName.lastIndexOf("."), fileName.length());
-                     IClientService clicker = onlineUsers.get(clickerId);
-                     clicker.dowloadTheFileMessage(istream ,fileExtension,fileName);*/
-                }
-
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }finally {
-            if (istream != null) istream.close();
-        }
+    public void cancelRequest(int fromUserId, int id) throws RemoteException {
+        cancelFriendRequest(id, fromUserId);
     }
+
+    @Override
+    public List<Notification> loadNotifications(int id) throws RemoteException {
+        try {
+            UserDao userDao = new UserDao();
+            return userDao.getNotification(id);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
 
     @Override
     public User getUser() throws RemoteException {
@@ -216,7 +192,37 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     /* end Abdo */
 
     /* start sayed */
+    @Override
+    public boolean sendRecord(int receiverId, int senderId, byte[] buf) throws RemoteException {
+        IClientService me = onlineUsers.get(senderId);
+        IClientService myFriend = onlineUsers.get(receiverId);
+        System.out.println("Buffer Length: " + buf.length);
+        me.recieveRecord(senderId, buf);
+        myFriend.recieveRecord(senderId, buf);
+        return true;
+    }
 
+    @Override
+    public void sendGroupFile(RemoteInputStream export, String extension, ChatGroup chatGroup, Message message) throws RemoteException {
+        chatGroup.getParticipents().forEach((participentId) -> {
+            try {
+                InputStream istream = RemoteInputStreamClient.wrap(export);
+                final File tempFile = File.createTempFile(message.getMesssagecontent(), extension, new File(""));
+                tempFile.deleteOnExit();
+                try (FileOutputStream out = new FileOutputStream(tempFile)) {
+                    IOUtils.copy(istream, out);
+                    IClientService myFriend = onlineUsers.get(participentId);
+                    message.setMesssagecontent(tempFile.getName());
+                    myFriend.recieveGroupMessage(chatGroup, message);
+                    System.out.println("Server " + message.getMesssagecontent());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+    }
     /* end sayed */
 
     /* start nehal */
@@ -224,10 +230,119 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     /* end nehal */
 
     /* start aya */
+    @Override
+    public void sendFile(RemoteInputStream inFile, String suffix,int friendId ,Message message) throws RemoteException {
+        try {
+            System.out.println("Send File In Server");
+            InputStream istream = RemoteInputStreamClient.wrap(inFile);
+            final File tempFile = File.createTempFile(message.getMesssagecontent(), suffix, new File("./Client/src/main/resources/org/asasna/chat/client/files"));
+            tempFile.deleteOnExit();
+            try (FileOutputStream out = new FileOutputStream(tempFile)) {
+                IOUtils.copy(istream, out);
+                BufferedWriter outWrite = new BufferedWriter(new FileWriter("ids.txt", true));
+                String str=String.valueOf(friendId)+"-"+String.valueOf(message.getUserId());
+                outWrite.append(str);
+                outWrite.write("\n");
+                outWrite.append(tempFile.getName());
+                outWrite.write("\n");
+                outWrite.close();
+                IClientService me = onlineUsers.get(message.getUserId());
+                IClientService myFriend = onlineUsers.get(friendId);
+                message.setMesssagecontent(tempFile.getName());
+                me.recieveFileMessage(message);
+                myFriend.recieveFileMessage(message);
+                System.out.println("Server " + message.getMesssagecontent());
+            }
+        } catch (IOException e) {
+           // System.out.println("Something went wrong with the client");
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public void getFile(String fileName,int clickerId) throws RemoteException {
+
+        RemoteInputStreamServer istream = null;
+        try {
+
+            istream = new GZIPRemoteInputStream(new BufferedInputStream(new FileInputStream(fileName)));///pathhhhhhhhh
+            String fileExtension = fileName.substring(fileName.lastIndexOf("."), fileName.length());
+            IClientService clicker = onlineUsers.get(clickerId);
+            clicker.downloadFile(istream ,fileExtension,fileName);
+            System.out.println("ChatService getfile");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            if (istream != null) istream.close();
+        }
+    }
+
+    public void changeUserStatus(int id,UserStatus status)throws RemoteException{
+        System.out.println("chatServer");
+        userDao.updateUserStatues(id, status);
+    }
+    public void notifyMyfriends(int myId)throws RemoteException{
+        List<User> myFriends= getMyFriendList(myId);
+        System.out.println(" id "+myId);
+        System.out.println(" size "+myFriends.size());
+        User me=userDao.getUser(myId);
+        for(int i=0;i<myFriends.size();i++){
+            if(myFriends.get(i).getStatus()!=UserStatus.OFFLINE) {
+                IClientService myFriend = onlineUsers.get(myFriends.get(i).getId());
+                System.out.println(" id "+myId);
+                System.out.println(" i"+i);
+                if(myFriend==null){
+                    System.out.println(" null friend ");
+                }else{
+                    myFriend.reciveUpateNotification(me);
+                    System.out.println(" not null friend ");
+                }
+
+            }
+        }
+    }
+    @Override
+    public List<User> getMyFriendList(int id) throws RemoteException {
+        User friend=new User();
+        friend.setId(id);
+        return userDao.getFriendList(friend);
+    }
+
+
+    public boolean removeClient(int id) throws RemoteException {
+        System.out.println(" remove Client");
+        IClientService returnedValue = (IClientService)onlineUsers.remove(id);
+        if(returnedValue!=null){
+
+            System.out.println(" remove Client in th middle of the function");
+            return true;
+        }
+        else{
+            System.out.println("Somthing went wrong");
+            return false;
+        }
+    }
 
     /* end aya */
 
     /* start abeer */
+    @Override
+    public void UpdateUser(User user){
+        try {
+            UserDao userdao=new UserDao();
+            PasswordAuthentication passwordAuthentication= new PasswordAuthentication();
+            user.setPassword(passwordAuthentication.hash(user.getPassword()));
+            boolean done= userdao.updateUser(user.getId(),user);
+            if(!done)
+                System.out.println("cant update user ");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
 
     /* end abeer */
 

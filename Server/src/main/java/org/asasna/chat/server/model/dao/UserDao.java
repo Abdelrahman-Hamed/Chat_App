@@ -2,19 +2,24 @@ package org.asasna.chat.server.model.dao;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.chart.PieChart;
 import javafx.scene.image.Image;
-import org.asasna.chat.common.model.Gender;
-import org.asasna.chat.common.model.User;
-import org.asasna.chat.common.model.UserStatus;
+import org.asasna.chat.common.model.*;
 import org.asasna.chat.server.model.db.DBConnection;
 import org.asasna.chat.server.view.PasswordAuthentication;
 
 
+import javax.imageio.ImageIO;
 import javax.sql.RowSet;
+import javax.swing.*;
 import javax.xml.transform.Result;
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,7 +34,9 @@ public class UserDao implements IUserDao {
 
     public UserDao() throws SQLException {
         conn = DBConnection.getConnection();
-        statement = conn.createStatement();
+        /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////status
+        //statement = conn.createStatement();
+        statement = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 
     }
 
@@ -72,15 +79,16 @@ public class UserDao implements IUserDao {
                     "where users.id not in (\n" +
                     "select users.id from users\n" +
                     "join contacts\n" +
-                    "on (users.id = contacts.first_member\n" +
-                    "or users.id = contacts.second_member)\n" +
+                    "on (users.id = contacts.first_member and contacts.second_member =  "+ meUserId + ")\n" +
+                    "or (users.id = contacts.second_member and contacts.first_member =  "+ meUserId + ")\n" +
                     "and users.id <> " + meUserId +" )\n" +
                     "and users.id <> "+ meUserId + ";\n";
             resultSet = statement.executeQuery(sql);
             while (resultSet.next()) {
                 User user = extractUser(resultSet);
-                if(!map.get(true).contains(user))
+                if(!(map.get(true).stream().anyMatch(userItem -> userItem.getId() == user.getId()))){
                     users.add(user);
+                }
             }
             map.put(false, users);
             return map;
@@ -117,6 +125,7 @@ public class UserDao implements IUserDao {
 //                PasswordAuthentication passwordAuthentication = new PasswordAuthentication();
 //                boolean found = passwordAuthentication.authenticate(password, user.getPassword());
 //                if(found) return user;
+                //will remove comments later
                 return user;
             }
         } catch (SQLException e) {
@@ -205,6 +214,8 @@ public class UserDao implements IUserDao {
         }
         return false;
     }
+
+
 
     @Override
     public List<User> getFriendList(User user) {
@@ -344,6 +355,28 @@ public class UserDao implements IUserDao {
         return false;
     }
 
+    @Override
+    public List<Notification> getNotification(int id) {
+        List<Notification> notifications = new ArrayList<>();
+        try {
+            String sql = "select * from users\n" +
+                    "join invitations\n" +
+                    "on users.id = invitations.from_id\n" +
+                    "where invitations.to_id = " + id;
+            ResultSet resultSet = statement.executeQuery(sql);
+            while (resultSet.next()) {
+                User user = extractUser(resultSet);
+                notifications.add(new Notification(NotificationType.FRIEND_REQUEST, user));
+            }
+            return notifications;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return notifications;
+
+
+    }
+
     private User extractUser(ResultSet resultSet) {
         try {
             User user = new User();
@@ -375,6 +408,9 @@ public class UserDao implements IUserDao {
                 case 2:
                     status = UserStatus.BUSY;
                     break;
+                case 3:
+                    status = UserStatus.AWAY;
+                    break;
             }
             user.setStatus(status);
             return user;
@@ -384,12 +420,14 @@ public class UserDao implements IUserDao {
     }
 
     private void injectUser(User user) {
+        System.out.println(user.getPhone());
         try {
             preparedStatement.setInt(1, user.getId());
             preparedStatement.setString(2, user.getPhone());
             preparedStatement.setString(3, user.getName());
             preparedStatement.setString(4, user.getEmail());
-            preparedStatement.setString(5, user.getImageURL());
+            ImageIO.write(SwingFXUtils.fromFXImage(user.getImage(), null), "png", new File("./org/asasna/chat/server/assets/"+user.getPhone()));
+            preparedStatement.setString(5, user.getPhone()+".png");
             preparedStatement.setString(6, user.getPassword());
             Gender gender = user.getGender();
             String genderString = "Male";
@@ -418,9 +456,41 @@ public class UserDao implements IUserDao {
                     case BUSY:
                         statusNumber = 2;
                         break;
+                    case AWAY:
+                        statusNumber = 3;
+                        break;
                 }
             }
             preparedStatement.setInt(13, statusNumber);
+        } catch (SQLException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+    @Override
+    public void updateUserStatues(int id, UserStatus status) {
+        ResultSet resultSet;
+        String Sql = "select * from users  where id =" + id;
+        try {
+            resultSet = statement.executeQuery(Sql);
+            resultSet.beforeFirst();
+            int statusNumber = 0;
+            while (resultSet.next()) {
+                switch (status) {
+                    case ONLINE:
+                        statusNumber = 1;
+                        break;
+                    case BUSY:
+                        statusNumber = 2;
+                        break;
+                    case AWAY:
+                        statusNumber = 3;
+                        break;
+                }
+                resultSet.updateInt(13, statusNumber);
+                resultSet.updateRow();
+
+
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }

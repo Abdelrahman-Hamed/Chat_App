@@ -22,7 +22,9 @@ public class MessageView extends HBox {
         this.message = message;
 
     }
-
+    public Label getDisplayedText(){
+        return displayedText;
+    }
     public void setDirection(SpeechDirection direction) {
         this.direction = direction;
         setupElements();
