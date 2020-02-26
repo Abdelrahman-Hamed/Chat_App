@@ -255,7 +255,7 @@ public class Client extends UnicastRemoteObject implements IClientService {
         // new Thread(() -> {
         try {
             InputStream istream = RemoteInputStreamClient.wrap(inFile);
-            final File tempFile = File.createTempFile(name, suffix, new File("./Client/src/main/resources/org/asasna/chat/client/files"));
+            final File tempFile = File.createTempFile(name, suffix, new File("./Client/src/main/resources/org/asasna/chat/client/files" ));
             tempFile.deleteOnExit();
             try (FileOutputStream out = new FileOutputStream(tempFile)) {
                 IOUtils.copy(istream, out);

@@ -857,6 +857,11 @@ private AudioFormat getAudioFormat(){
                 @Override
                 public void handle(MouseEvent mouseEvent) {
                     // Adding Download File Here
+                    try {
+                        client.getFile(message.getMesssagecontent(), message.getUserId());
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
                     System.out.println("Download File");
                 }
             });
@@ -895,7 +900,7 @@ private AudioFormat getAudioFormat(){
                 Element messageNode = document.createElement("Message");
                 Element id = document.createElement("Id");
                 Element content = document.createElement("Content");
-
+                messageNode.setAttribute("type", "text");
                 id.appendChild(document.createTextNode(String.valueOf(message.getUserId())));
                 messageNode.appendChild(id);
 

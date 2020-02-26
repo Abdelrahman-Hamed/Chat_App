@@ -235,17 +235,10 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
         try {
             System.out.println("Send File In Server");
             InputStream istream = RemoteInputStreamClient.wrap(inFile);
-            final File tempFile = File.createTempFile(message.getMesssagecontent(), suffix, new File("./Client/src/main/resources/org/asasna/chat/client/files"));
+            final File tempFile = File.createTempFile(message.getMesssagecontent(), suffix, new File("./Server/src/main/resources/org/asasna/chat/server/files"));
             tempFile.deleteOnExit();
             try (FileOutputStream out = new FileOutputStream(tempFile)) {
                 IOUtils.copy(istream, out);
-                BufferedWriter outWrite = new BufferedWriter(new FileWriter("ids.txt", true));
-                String str=String.valueOf(friendId)+"-"+String.valueOf(message.getUserId());
-                outWrite.append(str);
-                outWrite.write("\n");
-                outWrite.append(tempFile.getName());
-                outWrite.write("\n");
-                outWrite.close();
                 IClientService me = onlineUsers.get(message.getUserId());
                 IClientService myFriend = onlineUsers.get(friendId);
                 message.setMesssagecontent(tempFile.getName());
@@ -266,7 +259,7 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
         RemoteInputStreamServer istream = null;
         try {
 
-            istream = new GZIPRemoteInputStream(new BufferedInputStream(new FileInputStream(fileName)));///pathhhhhhhhh
+            istream = new GZIPRemoteInputStream(new BufferedInputStream(new FileInputStream("./Server/src/main/resources/org/asasna/chat/server/files/" + fileName)));///pathhhhhhhhh
             String fileExtension = fileName.substring(fileName.lastIndexOf("."), fileName.length());
             IClientService clicker = onlineUsers.get(clickerId);
             clicker.downloadFile(istream ,fileExtension,fileName);
