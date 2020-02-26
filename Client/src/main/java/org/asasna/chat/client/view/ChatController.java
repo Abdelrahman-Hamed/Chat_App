@@ -21,11 +21,16 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.media.AudioClip;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import javafx.util.Duration;
 import org.apache.commons.io.FileDeleteStrategy;
 import org.asasna.chat.client.Controller.Client;
 import org.asasna.chat.client.model.*;
@@ -43,11 +48,14 @@ import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.*;
 import javax.sound.sampled.*;
+
 import org.jcodec.common.model.AudioBuffer;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.ByteBuffer;
+import java.nio.file.Paths;
 import java.rmi.RemoteException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -164,7 +172,7 @@ public class ChatController implements Initializable, IChatController {
             e.printStackTrace();
         }
         searchArea.setStyle("-fx-padding: 20 0 0 0");
-        searchArea.setSpacing(20);
+        searchArea.setSpacing(5);
         createbtn = new JFXButton("+");
         //create.setStyle("");
         createbtn.getStyleClass().clear();
@@ -229,14 +237,19 @@ public class ChatController implements Initializable, IChatController {
                     oContacts.add(groupContact);
                     createbtn.setVisible(false);
                     active = Active.Friends;
-                    Bindings.bindContentBidirectional(FXCollections.observableArrayList(oContacts), contactsList.getChildren());
+                    Bindings.bindContent(contactsList.getChildren(), FXCollections.observableArrayList(oContacts));
+                    //Bindings.bindContentBidirectional(FXCollections.observableArrayList(oContacts), contactsList.getChildren());
                     //oContacts.forEach(System.out::println);
                 });
             });
 
             friendList.setOnMouseClicked(e -> {
                 active = Active.Friends;
-                Bindings.bindContentBidirectional(FXCollections.observableArrayList(oContacts), contactsList.getChildren());
+                oContacts.forEach(System.out::println);
+                contactsList.getChildren().clear();
+                createbtn.setVisible(false);
+                Bindings.bindContent(contactsList.getChildren(), FXCollections.observableArrayList(oContacts));
+                //Bindings.bindContentBidirectional(FXCollections.observableArrayList(oContacts), contactsList.getChildren());
             });
             friendRequest.setOnMouseClicked(e -> {
                 active = Active.friendRequets;
@@ -244,7 +257,7 @@ public class ChatController implements Initializable, IChatController {
             notificationIcon.setOnMouseClicked(e -> {
                 active = Active.Notifications;
             });
-            this.root.prefHeightProperty().bind(root.getScene().heightProperty());
+            /*this.root.prefHeightProperty().bind(root.getScene().heightProperty());
             this.root.prefWidthProperty().bind(root.getScene().widthProperty());
             this.messageTextArea.prefHeightProperty().bind(root.getScene().heightProperty());
 
@@ -261,7 +274,7 @@ public class ChatController implements Initializable, IChatController {
             this.view.prefWidthProperty().bind(this.root.getScene().widthProperty().multiply(.5));
             this.messageTextArea.prefHeightProperty().bind(root.getScene().heightProperty());
             this.messageTextArea.prefWidthProperty().bind(root.getScene().widthProperty().multiply(.66).subtract(120));
-
+*/
         }).start();
         new Thread(() -> {
             try {
@@ -329,20 +342,28 @@ public class ChatController implements Initializable, IChatController {
 
 //        Sayed End
     }
-//      Sayed Start
-private AudioFormat getAudioFormat(){
-    float sampleRate = 16000;
-    int sampleSizeInBits = 8;
-    int channels = 2;
-    boolean signed = true;
-    boolean bigEndian = true;
-    AudioFormat format = new AudioFormat(sampleRate, sampleSizeInBits,
-            channels, signed, bigEndian);
-    return format;
-}
-    private void start(){
+
+    //      Sayed Start
+    private AudioFormat getAudioFormat() {
+        float sampleRate = 16000;
+        int sampleSizeInBits = 8;
+        int channels = 2;
+        boolean signed = true;
+        boolean bigEndian = true;
+        AudioFormat format = new AudioFormat(sampleRate, sampleSizeInBits,
+                channels, signed, bigEndian);
+        return format;
+    }
+
+    private void start() {
         try {
-            AudioFormat format = getAudioFormat();
+
+            AudioFormat.Encoding encoding = AudioFormat.Encoding.PCM_SIGNED;
+            float rate = 44100.0f;
+            int channels = 2;
+            int sampleSize = 16;
+            boolean bigEndian = false;
+            AudioFormat format = new AudioFormat(encoding, rate, sampleSize, channels, (sampleSize / 8) * channels, rate, bigEndian);
             DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
 
             // checks if system supports the data line
@@ -352,7 +373,9 @@ private AudioFormat getAudioFormat(){
             }
             line = (TargetDataLine) AudioSystem.getLine(info);
             line.open(format);
-            line.start();   // start capturing
+            line.start();
+            /*line.open(format);
+            line.start();   // start capturing*/
             start = System.currentTimeMillis();
             System.out.println("Start capturing...");
 
@@ -380,11 +403,11 @@ private AudioFormat getAudioFormat(){
         line.close();
         end = System.currentTimeMillis();
         System.out.println("Finished");
-        if(end - start < 1000){
+        if (end - start < 1000) {
             System.out.println("Hold To Record, Release To Send");
             removeWavFile();
-        }else{
-            new Thread(()->{
+        } else {
+            new Thread(() -> {
                 try {
 
                     byte[] buf = convertFileToBytes();
@@ -409,6 +432,7 @@ private AudioFormat getAudioFormat(){
                 bos.write(buf, 0, readNum); //no doubt here is 0
                 System.out.println("read " + readNum + " bytes,");
             }
+            removeWavFile();
             buf = bos.toByteArray();
             return buf;
         }catch(FileNotFoundException ex){
@@ -481,7 +505,7 @@ private AudioFormat getAudioFormat(){
         this.client = client;
     }
 
-    @FXML
+    /*@FXML
     private void getSelectedContact() {
         ObservableList<Node> contacts;
         contacts = contactsList.getChildren();
@@ -491,7 +515,7 @@ private AudioFormat getAudioFormat(){
                 System.out.println("active Contact is : " + this.activeContact.getUser().getName());
             });
         }
-    }
+    }*/
         /*    });
         }
         System.out.println("active Contact is : "+ this.activeContact.getUser().getName());
@@ -613,30 +637,57 @@ private AudioFormat getAudioFormat(){
     }
     @Override
     public void recieveRecord(int senderId, byte[] buf) {
-        try {
-            AudioFormat format = getAudioFormat();
-            DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
+        AudioFormat.Encoding encoding = AudioFormat.Encoding.PCM_SIGNED;
+        float rate = 44100.0f;
+        int channels = 2;
+        int sampleSize = 16;
+        boolean bigEndian = false;
+        AudioFormat format = new AudioFormat(encoding, rate, sampleSize, channels, (sampleSize / 8) * channels, rate, bigEndian);
+        DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
 
-            AudioBuffer audioBuffer = new AudioBuffer(ByteBuffer.wrap(buf), new org.jcodec.common.AudioFormat(16000, 0, 2, true, true), buf.length);
+        AudioBuffer audioBuffer = new AudioBuffer(ByteBuffer.wrap(buf), new org.jcodec.common.AudioFormat(44100, 16, 2, true, false), buf.length);
 
-            //            FileOutputStream fileOutputStream=new FileOutputStream();
-            // checks if system supports the data line
-            if (!AudioSystem.isLineSupported(info)) {
-                System.out.println("Line not supported");
-                System.exit(0);
-            }
+        //            FileOutputStream fileOutputStream=new FileOutputStream();
+        // checks if system supports the data line
+        if (!AudioSystem.isLineSupported(info)) {
+            System.out.println("Line not supported");
+            System.exit(0);
+        }
 //            SourceDataLine line = (SourceDataLine) AudioSystem.getLine(info);
 //
 //            line.write(buf, 0, buf.length);
             for(int i=0; i<10; i++)
                 System.out.println("Buf: " +  buf[i]);
 
-            AudioInputStream ais = new AudioInputStream(new ByteArrayInputStream(buf), format, buf.length/format.getFrameSize());
-            File wavFile = new File("./Client/src/main/resources/org/asasna/chat/client/audio/record2.wav");
+        AudioInputStream ais = new AudioInputStream(new ByteArrayInputStream(buf), format, buf.length / format.getFrameSize());
+        File wavFile = new File("./Client/src/main/resources/org/asasna/chat/client/audio/record2.wav");
+        try {
             AudioSystem.write(ais, AudioFileFormat.Type.WAVE, wavFile);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        //AudioClip clip=new AudioClip(getClass().getResource("record2.wav").toExternalForm());
+
+        Media media = new Media(Paths.get("./Client/src/main/resources/org/asasna/chat/client/audio/record2.wav").toUri().toString());
+        AudioClip audioClip = new AudioClip(Paths.get("./Client/src/main/resources/org/asasna/chat/client/audio/record2.wav").toUri().toString());
+        MediaPlayer mediaPlayer = new MediaPlayer(media);
+        mediaPlayer.setAutoPlay(false);
+        HBox box = new HBox();
+        box.setStyle("-fx-background-color: red;-fx-pref-height: 20px");
+        JFXButton startStop=new JFXButton(">");
+        startStop.setOnAction(e->{
+            mediaPlayer.play();
+            mediaPlayer.seek(Duration.ZERO);
+            /*if(mediaPlayer.getStatus()== MediaPlayer.Status.STOPPED){
+                mediaPlayer.seek(Duration.ZERO);
+                mediaPlayer.play();
+            }*/
+        });
+        MediaView mediaView = new MediaView(mediaPlayer);
+        box.getChildren().add(mediaView);
+        Platform.runLater(() -> {
+            view.getChildren().add(startStop);
+        });
 
     }
 
@@ -697,7 +748,7 @@ private AudioFormat getAudioFormat(){
                     if (activeContact instanceof GroupContact)
                         client.sendGroupFileToServer(selectedFile.getPath(), fileExtension, ((GroupContact) activeContact).getChatGroup(), message);
                     else
-                        client.sendFileToServer(selectedFile.getPath(), fileExtension,friendId, message);
+                        client.sendFileToServer(selectedFile.getPath(), fileExtension, friendId, message);
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
@@ -732,7 +783,7 @@ private AudioFormat getAudioFormat(){
     }
 
     @FXML
-    public void changeUserStatus(){
+    public void changeUserStatus() {
         UserStatus myStatus;
         try {
             System.out.println("chatController");
@@ -760,21 +811,25 @@ private AudioFormat getAudioFormat(){
 
     }
     @Override
-    public void updateMyContactList(User updatedUser){
+    public void updateMyContactList(User updatedUser) {
         Platform.runLater(() -> {
             ObservableList<Node> contacts;
             contacts = contactsList.getChildren();
             Contact myContact;
            // boolean newContact=false;
             for (Node c : contacts) {
-                myContact=(Contact)c;
-                if(updatedUser.getId()==myContact.getUser().getId()){
-                   // newContact=true;
+                myContact = (Contact) c;
+                if (updatedUser.getId() == myContact.getUser().getId()) {
+                    // newContact=true;
                     contactsList.getChildren().remove(myContact);
-                   // if(updatedUser.getStatus()!=UserStatus.OFFLINE) {
-                        myContact = new Contact(updatedUser);
-                        contactsList.getChildren().add(myContact);
-                  //  }
+                    // if(updatedUser.getStatus()!=UserStatus.OFFLINE) {
+
+                    myContact.setOnMouseClicked((e)->{
+                        Contact myContact1 = new Contact(updatedUser);
+                        activeContact=myContact1;
+                    });
+                    contactsList.getChildren().add(myContact);
+                    //  }
 
                     break;
                 }
