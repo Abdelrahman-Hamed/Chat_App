@@ -1,5 +1,6 @@
 package org.asasna.chat.client.Controller;
 
+import javafx.stage.DirectoryChooser;
 import org.asasna.chat.client.model.IChatController;
 import org.asasna.chat.client.view.RegisterController;
 import org.asasna.chat.common.model.Message;
@@ -255,11 +256,12 @@ public class Client extends UnicastRemoteObject implements IClientService {
     }
 /////////////////////////////////////////////////////////////////////////////////////
     @Override
-    public void downloadFile(RemoteInputStream inFile, String suffix, String name) throws RemoteException {
+    public void downloadFile(RemoteInputStream inFile, String suffix, String direcotryPath, String name) throws RemoteException {
         // new Thread(() -> {
         try {
             InputStream istream = RemoteInputStreamClient.wrap(inFile);
-            final File tempFile = File.createTempFile(name, suffix, new File("./Client/src/main/resources/org/asasna/chat/client/files"));
+            System.out.println(System.getProperty("user.name"));
+            final File tempFile = File.createTempFile(name, suffix, new File(direcotryPath));
             tempFile.deleteOnExit();
             try (FileOutputStream out = new FileOutputStream(tempFile)) {
                 IOUtils.copy(istream, out);
@@ -280,8 +282,8 @@ public class Client extends UnicastRemoteObject implements IClientService {
         chatController.tempDisplayMessage(message);
     }
     @Override
-    public void getFile(String fileName,int senderId)throws RemoteException{
-        chatService.getFile(fileName,senderId);
+    public void getFile(String directoryPath, String fileName,int senderId)throws RemoteException{
+        chatService.getFile(directoryPath, fileName,senderId);
     }
 
     public List<Integer> setMyFriendsIds(List<User> myFriends) {
