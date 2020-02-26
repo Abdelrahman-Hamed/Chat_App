@@ -37,7 +37,7 @@ public class Client extends UnicastRemoteObject implements IClientService {
     public Client(RegisterController registerController) throws RemoteException {
         try {
             this.registerController = registerController;
-            Registry reg = LocateRegistry.getRegistry(2000);
+            Registry reg = LocateRegistry.getRegistry(5000);
             authenticationService = (IAuthenticationService) reg.lookup("AuthenticationService");
         } catch (RemoteException | NotBoundException e) {
             e.printStackTrace();
@@ -47,7 +47,7 @@ public class Client extends UnicastRemoteObject implements IClientService {
     public Client(IChatController chatController) throws RemoteException {
         this.chatController = chatController;
         Registry reg = null;
-        reg = LocateRegistry.getRegistry(2000);
+        reg = LocateRegistry.getRegistry(5000);
         try {
             authenticationService = (IAuthenticationService) reg.lookup("AuthenticationService");
         } catch (NotBoundException ex) {

@@ -49,6 +49,7 @@ public class PrimaryController {
         }
 
     }
+    /*
     @FXML
     private void loginButtonClicked(ActionEvent event){
         if(!Validation.validatePhoneNumber(phoneNumber.getText())){
@@ -61,16 +62,18 @@ public class PrimaryController {
             loadHomePage(event);
         }
     }
+    */
 
+/*
     private void loadHomePage(ActionEvent event){
         try {
-            setRoot("server");
+            this.setRoot("server");
         }
             catch(IOException e){
             System.out.println("no server.fxml file");
         }
     }
-
+*/
     @FXML
     private void close(ActionEvent event){
         Stage stage = (Stage) (((Node)event.getSource()).getScene().getWindow());
