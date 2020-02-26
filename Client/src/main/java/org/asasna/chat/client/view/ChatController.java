@@ -12,7 +12,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -30,6 +29,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
 import org.apache.commons.io.FileDeleteStrategy;
@@ -525,7 +525,11 @@ public class ChatController implements Initializable, IChatController {
         for (Node c : contacts) {
             c.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
                 this.activeContact = (Contact) c;
+                System.out.println("active Contact is : " + this.activeContact.getUser().getName());
             });
+        }
+    }*/
+        /*    });
         }
         System.out.println("active Contact is : " + this.activeContact.getUser().getName());
         /************************************************************************************/
@@ -681,20 +685,75 @@ public class ChatController implements Initializable, IChatController {
         MediaPlayer mediaPlayer = new MediaPlayer(media);
         mediaPlayer.setAutoPlay(false);
         HBox box = new HBox();
+        //box.setStyle("-fx-background-color: red;-fx-pref-height: 20px");
+        FontIcon playIcon = new FontIcon();
+        playIcon.setIconLiteral("dashicons-controls-play");
+        playIcon.setIconColor(Color.BLACK);
+        playIcon.setIconSize(25);
+        JFXButton startStop = new JFXButton(">");
+        /*startStop.setOnAction(e->{
         box.setStyle("-fx-background-color: red;-fx-pref-height: 20px");
-        JFXButton startStop=new JFXButton(">");
-        startStop.setOnAction(e->{
+        JFXButton startStop = new JFXButton(">");
+        startStop.setOnAction(e -> {
             mediaPlayer.play();
             mediaPlayer.seek(Duration.ZERO);
             /*if(mediaPlayer.getStatus()== MediaPlayer.Status.STOPPED){
                 mediaPlayer.seek(Duration.ZERO);
                 mediaPlayer.play();
-            }*/
+            }
+        });*/
+        playIcon.setOnMouseClicked(e -> {
+            Platform.runLater(() -> {
+                if (mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
+                    playIcon.setIconLiteral("dashicons-controls-play");
+                    mediaPlayer.pause();
+                } else {
+                    playIcon.setIconLiteral("dashicons-controls-pause");
+                    playIcon.setIconColor(Color.RED);
+                    mediaPlayer.play();
+                }
+
+                // playIcon.setIconColor(Color.BLACK);
+            });
+
+
         });
-        MediaView mediaView = new MediaView(mediaPlayer);
-        box.getChildren().add(mediaView);
+
+        mediaPlayer.setOnPlaying(() -> {
+            playIcon.setIconColor(Color.RED);
+        });
+        mediaPlayer.setOnEndOfMedia(() -> {
+            playIcon.setIconColor(Color.BLACK);
+            playIcon.setIconLiteral("dashicons-controls-play");
+            mediaPlayer.seek(Duration.ZERO);
+            mediaPlayer.stop();
+        });
+        JFXSlider slider = new JFXSlider();
+        /*slider.setMax(mediaPlayer.getTotalDuration().toMillis());
+        slider.setOnMouseClicked((MouseEvent mouseEvent) -> {
+            mediaPlayer.seek(Duration.millis(slider.getValue()));
+        });
+        mediaPlayer.currentTimeProperty().addListener((ob, ol, nw) -> {
+            slider.setValue(nw.toMillis());
+        });*/
         Platform.runLater(() -> {
-            view.getChildren().add(startStop);
+            slider.maxProperty().bind(Bindings.createDoubleBinding(
+                    () -> mediaPlayer.getTotalDuration().toSeconds(),
+                    mediaPlayer.totalDurationProperty()));
+            mediaPlayer.currentTimeProperty().addListener((ob, ol, nw) -> {
+                slider.setValue(nw.toSeconds());
+            });
+            slider.setOnMouseClicked((e) -> {
+                mediaPlayer.seek(Duration.seconds(slider.getValue()));
+            });
+        });
+
+        MediaView mediaView = new MediaView(mediaPlayer);
+        box.setSpacing(10);
+        box.getChildren().add(playIcon);
+        box.getChildren().add(slider);
+        Platform.runLater(() -> {
+            view.getChildren().add(box);
         });
 
     }
@@ -723,8 +782,8 @@ public class ChatController implements Initializable, IChatController {
                             contactsList.getChildren().remove(n);
                             contactsList.getChildren().add(0, n);
                         });
-                tempDisplayMessage(message);
-                Notifications.create().title("New Message").text("Message from " + message.getUserId()).graphic(new Circle()).show();
+                tempDisplayMessage(group.getGroupId(), message);
+//                Notifications.create().title("New Message").text("Message from " + message.getUserId()).graphic(new Circle()).show();
             });
 
         }
@@ -755,8 +814,11 @@ public class ChatController implements Initializable, IChatController {
                     Message message = new Message(senderId,fileName, MessageType.FILE);
                     if (activeContact instanceof GroupContact)
                         client.sendGroupFileToServer(selectedFile.getPath(), fileExtension, ((GroupContact) activeContact).getChatGroup(), message);
-                    else
+                    else{
+                        int friendId = activeContact.getUser().getId();
                         client.sendFileToServer(selectedFile.getPath(), fileExtension, friendId, message);
+                    }
+
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
@@ -806,18 +868,16 @@ public class ChatController implements Initializable, IChatController {
         UserStatus myStatus;
         try {
             System.out.println("chatController");
-            if(me.getStatus()==UserStatus.ONLINE){
+            if (me.getStatus() == UserStatus.ONLINE) {
                 status.setStyle("-fx-fill:  #FF8C00");
-                myStatus=UserStatus.BUSY;
+                myStatus = UserStatus.BUSY;
 
-            }
-            else if(me.getStatus()==UserStatus.BUSY) {
+            } else if (me.getStatus() == UserStatus.BUSY) {
                 status.setStyle("-fx-fill:  #8B0000");
-                myStatus=UserStatus.AWAY;
-            }
-            else{
+                myStatus = UserStatus.AWAY;
+            } else {
                 status.setStyle("-fx-fill:  #33FF4B");
-                myStatus=UserStatus.ONLINE;
+                myStatus = UserStatus.ONLINE;
             }
             me.setStatus(myStatus);
             client.changeStatus(me,myStatus);
@@ -831,21 +891,23 @@ public class ChatController implements Initializable, IChatController {
     }
     @Override
     public void updateMyContactList(User updatedUser) {
+
         Platform.runLater(() -> {
             ObservableList<Node> contacts;
             contacts = contactsList.getChildren();
             Contact myContact;
-           // boolean newContact=false;
+            // boolean newContact=false;
             for (Node c : contacts) {
                 myContact = (Contact) c;
                 if (updatedUser.getId() == myContact.getUser().getId()) {
                     // newContact=true;
                     contactsList.getChildren().remove(myContact);
                     // if(updatedUser.getStatus()!=UserStatus.OFFLINE) {
-
-                    myContact.setOnMouseClicked((e)->{
-                        Contact myContact1 = new Contact(updatedUser);
-                        activeContact=myContact1;
+                    Contact myContact1 = new Contact(updatedUser);
+                    contactsList.getChildren().add(myContact1);
+                    myContact1.setOnMouseClicked(ev -> {
+                        System.out.println("you clicked me");
+                        activeContact = myContact1;
                     });
                     contactsList.getChildren().add(myContact);
                     //  }
@@ -899,7 +961,7 @@ public class ChatController implements Initializable, IChatController {
             if (activeContact.getUser().getId() == message.getUserId()) {
                 showReceiverMessage(message);
             } else {
-                showMessageNotification(message);
+                System.out.println("Message:  " + message.getMesssagecontent() + " from  " + message.getUserId());
             }
         }
     }
@@ -908,6 +970,9 @@ public class ChatController implements Initializable, IChatController {
     public void addNotification(Notification notification){
         this.notifications.add(notification);
     }
+
+
+//    private Map<Integer, List<Message>> receiverMessages = new HashMap<>();
 
     private void saveReceiverMessages(int receiverId, Message message) {
         if (receiverMessages.get(receiverId) == null) {
@@ -956,7 +1021,7 @@ public class ChatController implements Initializable, IChatController {
                 StreamResult result = new StreamResult(fileWriter);
                 transformer.transform(source, result);
             } catch (IOException e) {
-                System.out.println("You don't save your file");
+                e.printStackTrace();
             }
         } catch (TransformerException ex) {
             System.out.println("Error outputting document");
