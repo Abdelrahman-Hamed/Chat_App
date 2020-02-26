@@ -94,7 +94,7 @@ public class AuthenticationService extends UnicastRemoteObject implements IAuthe
         if(check){
             thisChatService.changeUserStatus(userID, UserStatus.OFFLINE);
             thisChatService.notifyMyfriends(userID);
-            System.out.println(" remove Client in th middle of the function");
+         //   System.out.println(" remove Client in th middle of the function");
         }
         else{
             System.out.println("Somthing went wrong");
