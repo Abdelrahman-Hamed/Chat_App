@@ -100,6 +100,8 @@ public class PrimaryController implements Initializable{
 
     @FXML
     private Button loginButton;
+    @FXML
+    private CheckBox KeepMeLoggedIn;
 
     @FXML
     public void switchToLogin() {
@@ -198,6 +200,14 @@ public class PrimaryController implements Initializable{
                         removeRememberMeFile();
                     }
 
+                    if(KeepMeLoggedIn.isSelected()){
+                        int userID=client.getUserId();
+                        createKeepMeLoggedInFile(userID);
+
+                    }else{
+                        removeKeepMeLoggedInFile();
+                    }
+
                     chatController.setClient(client);
                     FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("chat" + ".fxml"));
                     fxmlLoader.setController(chatController);
@@ -224,6 +234,41 @@ public class PrimaryController implements Initializable{
             App.setRoot("chat");
         } catch (IOException e) {
             System.out.println("no chat.fxml file");
+        }
+    }
+    public void  removeKeepMeLoggedInFile(){
+        try {
+            File rememberMeFile = new File("./Client/src/main/java/org/asasna/chat/client/Auth/KeepMeLoggedIn.xml");
+            FileDeleteStrategy.FORCE.delete(rememberMeFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public void  createKeepMeLoggedInFile(int id) {
+
+        try {
+            DocumentBuilder documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            Document document = documentBuilder.newDocument();
+            ProcessingInstruction processingInstructionElement = document.createProcessingInstruction("xml", "version=\"1.0\" encoding=\"UTF-8\"");
+            Element authElement = document.createElement("Auth");
+            Element useId = document.createElement("Phonenumber");
+            useId.setTextContent(String.valueOf(id));
+            authElement.appendChild(useId);
+            document.appendChild(processingInstructionElement);
+            document.appendChild(authElement);
+            StringWriter stringWriter = new StringWriter();
+            Source source = new DOMSource(document.getDocumentElement());
+            FileWriter rememberMeFile = new FileWriter("./Client/src/main/java/org/asasna/chat/client/Auth/KeepMeLoggedIn.xml");
+            BufferedWriter bufferedWriter = new BufferedWriter(rememberMeFile);
+//            Result result = new StreamResult(rememberMeFile);
+            Result result = new StreamResult(stringWriter);
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            transformer.transform(source, result);
+            bufferedWriter.write(AES.encrypt(stringWriter.toString(), "mySecretKey"));
+            bufferedWriter.flush();
+            bufferedWriter.close();
+        } catch (ParserConfigurationException|TransformerException |IOException e) {
+            e.printStackTrace();
         }
     }
 }

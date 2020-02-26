@@ -279,7 +279,7 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     }
 
     public void changeUserStatus(int id,UserStatus status)throws RemoteException{
-        System.out.println("chatServer");
+       // System.out.println("chatServer");
         userDao.updateUserStatues(id, status);
     }
     public void notifyMyfriends(int myId)throws RemoteException{
@@ -290,14 +290,15 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
         for(int i=0;i<myFriends.size();i++){
             if(myFriends.get(i).getStatus()!=UserStatus.OFFLINE) {
                 IClientService myFriend = onlineUsers.get(myFriends.get(i).getId());
-                System.out.println(" id "+myId);
-                System.out.println(" i"+i);
+                System.out.println(" id  to send to "+myFriends.get(i).getId());
+                System.out.println(" looooooooooooooooooooooop  i"+i);
                 if(myFriend==null){
                     System.out.println(" null friend ");
                 }else{
                     myFriend.reciveUpateNotification(me);
                     System.out.println(" not null friend ");
                 }
+
 
             }
         }
@@ -311,15 +312,11 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
 
 
     public boolean removeClient(int id) throws RemoteException {
-        System.out.println(" remove Client");
         IClientService returnedValue = (IClientService)onlineUsers.remove(id);
         if(returnedValue!=null){
-
-            System.out.println(" remove Client in th middle of the function");
             return true;
         }
         else{
-            System.out.println("Somthing went wrong");
             return false;
         }
     }

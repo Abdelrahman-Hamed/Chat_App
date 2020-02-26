@@ -4,6 +4,7 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXSlider;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -11,6 +12,7 @@ import javafx.collections.ObservableSet;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -66,8 +68,11 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.*;
+import org.xml.sax.SAXException;
 
 import java.io.FileWriter;
+import java.io.File;
+import java.io.IOException;
 
 
 public class ChatController implements Initializable, IChatController {
@@ -161,7 +166,7 @@ public class ChatController implements Initializable, IChatController {
         try {
             me = client.getUser();
 
-            status.setStyle("-fx-fill:  #33FF4B");
+                status.setStyle("-fx-fill:  #33FF4B");
 
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -333,6 +338,8 @@ public class ChatController implements Initializable, IChatController {
         });
 
 
+
+
 //        Sayed End
     }
 
@@ -391,8 +398,7 @@ public class ChatController implements Initializable, IChatController {
         setListnerForPressingEnter(); // shimaa
         messageTextArea.setStyle("-fx-font-size:14");
     }
-
-    private void stop() {
+    private void stop(){
         line.stop();
         line.close();
         end = System.currentTimeMillis();
@@ -416,21 +422,20 @@ public class ChatController implements Initializable, IChatController {
             }).start();
         }
     }
-
-    private byte[] convertFileToBytes() {
+    private byte[] convertFileToBytes(){
         byte[] buf = new byte[1024];
-        try {
+        try{
             File wavFile = new File("./Client/src/main/resources/org/asasna/chat/client/audio/record.wav");
             FileInputStream fileInputStream = new FileInputStream(wavFile);
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            for (int readNum; (readNum = fileInputStream.read(buf)) != -1; ) {
+            for (int readNum; (readNum = fileInputStream.read(buf)) != -1;) {
                 bos.write(buf, 0, readNum); //no doubt here is 0
                 System.out.println("read " + readNum + " bytes,");
             }
             removeWavFile();
             buf = bos.toByteArray();
             return buf;
-        } catch (FileNotFoundException ex) {
+        }catch(FileNotFoundException ex){
             ex.printStackTrace();
             return buf;
         } catch (IOException e) {
@@ -438,8 +443,7 @@ public class ChatController implements Initializable, IChatController {
             return buf;
         }
     }
-
-    private void removeWavFile() {
+    private void removeWavFile(){
         try {
             File wavFile = new File("./Client/src/main/resources/org/asasna/chat/client/audio/record.wav");
             FileDeleteStrategy.FORCE.delete(wavFile);
@@ -631,7 +635,6 @@ public class ChatController implements Initializable, IChatController {
             });
         }
     }
-
     @Override
     public void recieveRecord(int senderId, byte[] buf) {
         AudioFormat.Encoding encoding = AudioFormat.Encoding.PCM_SIGNED;
@@ -653,8 +656,8 @@ public class ChatController implements Initializable, IChatController {
 //            SourceDataLine line = (SourceDataLine) AudioSystem.getLine(info);
 //
 //            line.write(buf, 0, buf.length);
-        for (int i = 0; i < 10; i++)
-            System.out.println("Buf: " + buf[i]);
+            for(int i=0; i<10; i++)
+                System.out.println("Buf: " +  buf[i]);
 
         AudioInputStream ais = new AudioInputStream(new ByteArrayInputStream(buf), format, buf.length / format.getFrameSize());
         File wavFile = new File("./Client/src/main/resources/org/asasna/chat/client/audio/record2.wav");
@@ -677,6 +680,9 @@ public class ChatController implements Initializable, IChatController {
         playIcon.setIconSize(25);
         JFXButton startStop = new JFXButton(">");
         /*startStop.setOnAction(e->{
+        box.setStyle("-fx-background-color: red;-fx-pref-height: 20px");
+        JFXButton startStop = new JFXButton(">");
+        startStop.setOnAction(e -> {
             mediaPlayer.play();
             mediaPlayer.seek(Duration.ZERO);
             /*if(mediaPlayer.getStatus()== MediaPlayer.Status.STOPPED){
@@ -804,7 +810,6 @@ public class ChatController implements Initializable, IChatController {
             }).start();
         }
     }
-
     @Override
     public void tempFileDisplayMessage(Message message) {
         viewTextMessage = new MSGview(message, this);
@@ -831,8 +836,7 @@ public class ChatController implements Initializable, IChatController {
             });
         }
     }
-
-    public void reciveFile(String fileName) {
+    public void reciveFile(String fileName){
 
         new Thread(() -> {
             try {
@@ -844,25 +848,26 @@ public class ChatController implements Initializable, IChatController {
 
 
     }
-
     @FXML
     public void changeUserStatus() {
         UserStatus myStatus;
         try {
             System.out.println("chatController");
-            if (me.getStatus() == UserStatus.ONLINE) {
+            if(me.getStatus()==UserStatus.ONLINE){
                 status.setStyle("-fx-fill:  #FF8C00");
-                myStatus = UserStatus.BUSY;
+                myStatus=UserStatus.BUSY;
 
-            } else if (me.getStatus() == UserStatus.BUSY) {
+            }
+            else if(me.getStatus()==UserStatus.BUSY) {
                 status.setStyle("-fx-fill:  #8B0000");
-                myStatus = UserStatus.AWAY;
-            } else {
+                myStatus=UserStatus.AWAY;
+            }
+            else{
                 status.setStyle("-fx-fill:  #33FF4B");
-                myStatus = UserStatus.ONLINE;
+                myStatus=UserStatus.ONLINE;
             }
             me.setStatus(myStatus);
-            client.changeStatus(me, myStatus);
+            client.changeStatus(me,myStatus);
             System.out.println("chatController2");
             //circle.setfill()//wel list bta3tha
 
@@ -871,23 +876,23 @@ public class ChatController implements Initializable, IChatController {
         }
 
     }
-
     @Override
     public void updateMyContactList(User updatedUser) {
         Platform.runLater(() -> {
             ObservableList<Node> contacts;
             contacts = contactsList.getChildren();
             Contact myContact;
-            // boolean newContact=false;
+           // boolean newContact=false;
             for (Node c : contacts) {
                 myContact = (Contact) c;
                 if (updatedUser.getId() == myContact.getUser().getId()) {
                     // newContact=true;
                     contactsList.getChildren().remove(myContact);
                     // if(updatedUser.getStatus()!=UserStatus.OFFLINE) {
-
-                    myContact.setOnMouseClicked((e) -> {
-                        Contact myContact1 = new Contact(updatedUser);
+                    Contact myContact1 = new Contact(updatedUser);
+                    contactsList.getChildren().add(myContact1);
+                    myContact1.setOnMouseClicked(ev -> {
+                        System.out.println("you clicked me");
                         activeContact = myContact1;
                     });
                     contactsList.getChildren().add(myContact);
@@ -904,12 +909,11 @@ public class ChatController implements Initializable, IChatController {
 
 
     }
-
     @FXML
-    public void signMeOut() {
+    public void signMeOut(){
         try {
             client.signOut(me.getId());
-            System.exit(0);
+            System. exit(0);
 
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -959,7 +963,7 @@ public class ChatController implements Initializable, IChatController {
                 System.out.println("Message:  " + message.getMesssagecontent() + " from  " + message.getUserId());
             }
         }
-        if (message.getMessageType() == MessageType.FILE) {
+        if(message.getMessageType() == MessageType.FILE){
             System.out.println("Null: " + messageView.getDisplayedText());
             messageView.getDisplayedText().setOnMouseClicked(new EventHandler<MouseEvent>() {
                 @Override
@@ -973,7 +977,7 @@ public class ChatController implements Initializable, IChatController {
     }
 
     @Override
-    public void addNotification(Notification notification) {
+    public void addNotification(Notification notification){
         this.notifications.add(notification);
     }
 
@@ -1086,16 +1090,14 @@ public class ChatController implements Initializable, IChatController {
 
     //    Start Abeer Emad
     Scene scene;
-
-    public void setScene(Scene scene) {
-        this.scene = scene;
+    public   void setScene(Scene scene){
+        this.scene=scene;
     }
-
     @FXML
     public void ProfileButtonClicked() {
 
 
-        ProfileController profileController = new ProfileController(me, this);
+        ProfileController profileController = new ProfileController( me, this);
 
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("profile" + ".fxml"));
         fxmlLoader.setController(profileController);
@@ -1107,6 +1109,7 @@ public class ChatController implements Initializable, IChatController {
         }
         scene.setRoot(parent);
         profileController.setScene(scene);
+
 
 
     }
