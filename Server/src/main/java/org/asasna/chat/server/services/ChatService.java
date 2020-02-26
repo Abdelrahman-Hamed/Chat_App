@@ -201,24 +201,32 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
         myFriend.recieveRecord(senderId, buf);
         return true;
     }
+    private String createFileInServer(RemoteInputStream export, String extension, Message message){
 
+        try {
+            InputStream istream = RemoteInputStreamClient.wrap(export);
+            final File tempFile = File.createTempFile(message.getMesssagecontent(), extension, new File("./Server/src/main/resources/org/asasna/chat/server/files"));
+            tempFile.deleteOnExit();
+
+            try (FileOutputStream out = new FileOutputStream(tempFile)) {
+                IOUtils.copy(istream, out);
+                return tempFile.getName();
+            }
+        }catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
     @Override
     public void sendGroupFile(RemoteInputStream export, String extension, ChatGroup chatGroup, Message message) throws RemoteException {
+        String name = createFileInServer(export, extension, message);
+        message.setMesssagecontent(name);
         chatGroup.getParticipents().forEach((participentId) -> {
             try {
-                InputStream istream = RemoteInputStreamClient.wrap(export);
-                final File tempFile = File.createTempFile(message.getMesssagecontent(), extension, new File(""));
-                tempFile.deleteOnExit();
-                try (FileOutputStream out = new FileOutputStream(tempFile)) {
-                    IOUtils.copy(istream, out);
-                    IClientService myFriend = onlineUsers.get(participentId);
-                    message.setMesssagecontent(tempFile.getName());
-                    myFriend.recieveGroupMessage(chatGroup, message);
-                    System.out.println("Server " + message.getMesssagecontent());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } catch (IOException e) {
+                IClientService myFriend = onlineUsers.get(participentId);
+                myFriend.recieveGroupMessage(chatGroup, message);
+                System.out.println("Server " + message.getMesssagecontent());
+            } catch (RemoteException e) {
                 e.printStackTrace();
             }
         });
@@ -231,26 +239,19 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
 
     /* start aya */
     @Override
-    public void sendFile(RemoteInputStream inFile, String suffix,int friendId ,Message message) throws RemoteException {
+    public void sendFile(RemoteInputStream inFile, String suffix,int friendId ,Message message){
         try {
-            System.out.println("Send File In Server");
-            InputStream istream = RemoteInputStreamClient.wrap(inFile);
-            final File tempFile = File.createTempFile(message.getMesssagecontent(), suffix, new File("./Server/src/main/resources/org/asasna/chat/server/files"));
-            tempFile.deleteOnExit();
-            try (FileOutputStream out = new FileOutputStream(tempFile)) {
-                IOUtils.copy(istream, out);
-                IClientService me = onlineUsers.get(message.getUserId());
-                IClientService myFriend = onlineUsers.get(friendId);
-                message.setMesssagecontent(tempFile.getName());
-                me.recieveFileMessage(message);
-                myFriend.recieveFileMessage(message);
-                System.out.println("Server " + message.getMesssagecontent());
-            }
-        } catch (IOException e) {
-           // System.out.println("Something went wrong with the client");
+            String name = createFileInServer(inFile, suffix, message);
+            message.setMesssagecontent(name);
+            IClientService me = onlineUsers.get(message.getUserId());
+            IClientService myFriend = onlineUsers.get(friendId);
+            message.setMesssagecontent(name);
+            me.recieveFileMessage(message);
+            myFriend.recieveFileMessage(message);
+            System.out.println("Server " + message.getMesssagecontent());
+        } catch (RemoteException e) {
             e.printStackTrace();
         }
-
     }
 
     @Override
