@@ -82,46 +82,7 @@
                   <FontIcon iconColor="#045ba5" iconLiteral="mdi-chevron-right" iconSize="80" layoutX="422.0" layoutY="220.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="1.0" />
                </children>
             </Pane>
-            <Pane fx:id="homePane" disable="true" opacity="0.0" prefHeight="406.0" prefWidth="521.0" stylesheets="@login.css">
-               <children>
-                  <VBox layoutX="93.0" layoutY="-1.0" prefHeight="406.0" prefWidth="319.0">
-                     <children>
-                        <HBox prefHeight="60.0" prefWidth="319.0">
-                           <children>
-                              <Text fill="#045ba5" strokeType="OUTSIDE" strokeWidth="0.0" text="Login Page" textAlignment="CENTER" wrappingWidth="317.13671875">
-                                 <font>
-                                    <Font size="34.0" />
-                                 </font>
-                              </Text>
-                           </children>
-                        </HBox>
-                        <HBox alignment="CENTER" layoutX="10.0" layoutY="70.0" prefHeight="60.0" prefWidth="319.0">
-                        <children>
-                           <TextField fx:id="phoneNumber" prefHeight="25.0" prefWidth="250.0" promptText="User Name" styleClass="inputStyle" />
-                        </children>
-                        </HBox>
-                        <HBox alignment="CENTER" layoutX="10.0" layoutY="70.0" prefHeight="23.0" prefWidth="319.0">
-                           <children>
-                           <Text fx:id="errorPhoneNumber" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="error-color" text="Text" visible="false" wrappingWidth="315.13671875" />
-                           </children></HBox>
-                        <HBox alignment="CENTER" layoutX="10.0" layoutY="213.0" prefHeight="55.0" prefWidth="306.0">
-                           <children>
-                              <PasswordField fx:id="password" prefHeight="27.0" prefWidth="255.0" promptText="Password" styleClass="inputStyle" />
-                           </children>
-                        </HBox>
-                        <HBox alignment="CENTER" layoutX="10.0" layoutY="190.0" prefHeight="23.0" prefWidth="319.0">
-                           <Text fx:id="errorPassword" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="error-color" text="Text" visible="false" />
-                        </HBox>
-                        <HBox alignment="CENTER" prefHeight="37.0" prefWidth="390.0">
-                           <children>
-                              <Button fx:id="loginButton" mnemonicParsing="false" onAction="#loginButtonClicked" prefHeight="32.0" prefWidth="89.0" style="-fx-border-radius: 15px; -fx-background-color: #045ba5;" styleClass="color-white" text="Login" />
-                           </children>
-                        </HBox>
-                     </children>
-                  </VBox>
-               </children>
-            </Pane>
-            <Pane fx:id="settingPane" prefHeight="400.0" prefWidth="521.0">
+            <Pane fx:id="settingPane" disable="true" opacity="0.0" prefHeight="400.0" prefWidth="521.0">
                <children>
                   <ToggleSwitch fx:id="service" layoutX="399.0" layoutY="14.0" prefHeight="30.0" prefWidth="107.0" selected="true" text="Service" textFill="WHITE" textOverrun="CENTER_ELLIPSIS" viewOrder="1.0" wrapText="true">
                      <font>
@@ -255,6 +216,45 @@
                         <Glow />
                      </effect>
                   </Text>
+               </children>
+            </Pane>
+            <Pane fx:id="homePane" prefHeight="406.0" prefWidth="521.0" stylesheets="@login.css">
+               <children>
+                  <VBox layoutX="93.0" layoutY="-1.0" prefHeight="406.0" prefWidth="319.0">
+                     <children>
+                        <HBox prefHeight="60.0" prefWidth="319.0">
+                           <children>
+                              <Text fill="#045ba5" strokeType="OUTSIDE" strokeWidth="0.0" text="Login Page" textAlignment="CENTER" wrappingWidth="317.13671875">
+                                 <font>
+                                    <Font size="34.0" />
+                                 </font>
+                              </Text>
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER" layoutX="10.0" layoutY="70.0" prefHeight="60.0" prefWidth="319.0">
+                        <children>
+                           <TextField fx:id="phoneNumber" prefHeight="25.0" prefWidth="250.0" promptText="User Name" styleClass="inputStyle" />
+                        </children>
+                        </HBox>
+                        <HBox alignment="CENTER" layoutX="10.0" layoutY="70.0" prefHeight="23.0" prefWidth="319.0">
+                           <children>
+                           <Text fx:id="errorPhoneNumber" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="error-color" text="Text" visible="false" wrappingWidth="315.13671875" />
+                           </children></HBox>
+                        <HBox alignment="CENTER" layoutX="10.0" layoutY="213.0" prefHeight="55.0" prefWidth="306.0">
+                           <children>
+                              <PasswordField fx:id="password" prefHeight="27.0" prefWidth="255.0" promptText="Password" styleClass="inputStyle" />
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER" layoutX="10.0" layoutY="190.0" prefHeight="23.0" prefWidth="319.0">
+                           <Text fx:id="errorPassword" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="error-color" text="Text" visible="false" />
+                        </HBox>
+                        <HBox alignment="CENTER" prefHeight="37.0" prefWidth="390.0">
+                           <children>
+                              <Button fx:id="loginButton" mnemonicParsing="false" onAction="#loginButtonClicked" prefHeight="32.0" prefWidth="89.0" style="-fx-border-radius: 15px; -fx-background-color: #045ba5;" styleClass="color-white" text="Login" />
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
                </children>
             </Pane>
          </children>
