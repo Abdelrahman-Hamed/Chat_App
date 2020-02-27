@@ -4,27 +4,36 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.*;
 import org.asasna.chat.client.view.SpeechDirection;
 import org.asasna.chat.common.model.Message;
 import org.asasna.chat.common.model.User;
 
+import java.sql.Timestamp;
+
 public class MessageView extends HBox {
     private SpeechDirection direction;
-    private Label displayedText;
+    private Text displayedText;
     private Message message ;
     private Image image;
+    private Timestamp timestamp;
 
     public MessageView(Message message){
         this.message = message;
 
     }
-    public Label getDisplayedText(){
+
+    public Text getDisplayedText(){
         return displayedText;
     }
+
     public void setDirection(SpeechDirection direction) {
         this.direction = direction;
         setupElements();
@@ -39,9 +48,11 @@ public class MessageView extends HBox {
     }
 
     private void setCommonConfigurations(){
-        displayedText = new Label(message.getMesssagecontent());
-        displayedText.setPadding(new Insets(10));
-        displayedText.setWrapText(true);
+        timestamp = new Timestamp(System.currentTimeMillis());
+        displayedText = new Text(message.getMesssagecontent() + timestamp.getDate()+":"
+                + timestamp.getMinutes());
+        displayedText.setTextAlignment(TextAlignment.LEFT);
+        displayedText.setFont(Font.font("Consolas",FontPosture.REGULAR, 16));
     }
 
     public void setImage(Image image){
@@ -50,33 +61,37 @@ public class MessageView extends HBox {
 
     public void configureForSender(){
         setCommonConfigurations();
-        displayedText.setStyle("-fx-background-color: DodgerBlue; " +
-                "-fx-background-radius: 20;-fx-font-size: 16px; -fx-font-family: 'Consolas';");
-        displayedText.setTextFill(Color.WHITE);
-        displayedText.setAlignment(Pos.CENTER_RIGHT);
-        HBox container = new HBox(displayedText);
-        container.maxWidthProperty().bind(widthProperty().multiply(0.65));
-        container.setMargin(displayedText, new Insets(5,10,10,10));
+        displayedText.setFill(Color.WHITE);
+        TextFlow textFlow = new TextFlow(displayedText);
+        HBox container = new HBox(textFlow);
+        container.setStyle("-fx-background-radius: 15; -fx-background-color: #1e82dc ");
+        container.setAlignment(Pos.CENTER_LEFT);
+        container.maxWidthProperty().bind(widthProperty().multiply(0.70));
+        container.setMargin(textFlow, new Insets(10,10,15,10));
         getChildren().add(container);
         setAlignment(Pos.CENTER_RIGHT);
+        this.setMargin(container, new Insets(5,10,10,10));
+
     }
 
     public void configureForReceiver(){
         setCommonConfigurations();
-        displayedText.setStyle("-fx-background-color: Gainsboro; -fx-background-radius: 20;" +
-                "-fx-background-radius: 20;-fx-font-size: 16px; -fx-font-family: 'Consolas';");
-        displayedText.setAlignment(Pos.CENTER_LEFT);
+        displayedText.setTextAlignment(TextAlignment.LEFT);
+        displayedText.setFill(Color.BLACK);
         Circle circle = new Circle();
         circle.setRadius(20);
         if (image != null) {
             circle.setFill(new ImagePattern(image));
         }
         circle.setCenterY(75);
-        HBox container = new HBox(circle, displayedText);
+        TextFlow textFlow = new TextFlow(displayedText);
+        HBox container = new HBox(circle, textFlow);
+        container.setStyle("-fx-background-radius: 15; -fx-background-color: GAINSBORO ");
         container.setAlignment(Pos.CENTER_LEFT);
-        container.maxWidthProperty().bind(widthProperty().multiply(0.65));
-        container.setMargin(displayedText, new Insets(5,10,10,10));
-        getChildren().add(container);
+        container.maxWidthProperty().bind(widthProperty().multiply(0.70));
+        container.setMargin(textFlow, new Insets(10,10,15,10));
+        getChildren().addAll(circle, container);
         setAlignment(Pos.CENTER_LEFT);
+        this.setMargin(container, new Insets(5,10,10,10));
     }
 }
