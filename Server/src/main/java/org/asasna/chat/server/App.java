@@ -6,13 +6,11 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import org.asasna.chat.common.service.IAuthenticationService;
 import org.asasna.chat.server.controller.AuthenticationService;
@@ -35,62 +33,44 @@ import java.rmi.server.RMIServerSocketFactory;
 public class App extends Application {
 
     private static Scene scene;
-    //private static Stage primaryStage;
-    private double xOffset = 0;
-    private double yOffset = 0;
     Registry reg;
-    public static ServerHomeController controller;
+    public ServerHomeController controller;
     IAuthenticationService iAuthenticationService ;
     @Override
     public void start(Stage primaryStage) throws IOException {
         try {
             iAuthenticationService=new AuthenticationService();
-            reg= LocateRegistry.createRegistry(2000);
+            reg= LocateRegistry.createRegistry(5001);
             reg.rebind("AuthenticationService", iAuthenticationService );
 
         }
         catch (RemoteException ex) {
             ex.printStackTrace();
         }
-        scene = new Scene(loadFXML("serverHome")); // shimaa
-
-        /*
-        AnchorPane root= (AnchorPane) scene.lookup("#root");
-        root.setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                xOffset = event.getSceneX();
-                yOffset = event.getSceneY();
-            }
-        });
-        root.setOnMouseDragged(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                primaryStage.setX(event.getScreenX() - xOffset);
-                primaryStage.setY(event.getScreenY() - yOffset);
-            }
-        });
+        scene = new Scene(loadFXML("server"));
         primaryStage.setScene(scene);
-        primaryStage.initStyle(StageStyle.TRANSPARENT);
-        stage.setScene(scene);
-        stage.show();*/
-        primaryStage.initStyle(StageStyle.TRANSPARENT);
+        controller.setApp(this);
+        primaryStage.show();
         primaryStage.setOnCloseRequest((WindowEvent event1) -> {
             try {
                 reg.unbind("AuthenticationService");
+                Platform.exit();
+                System.exit(0);
             } catch (RemoteException e) {
                 e.printStackTrace();
             } catch (NotBoundException e) {
-                e.printStackTrace();
+                System.out.println("already unbound");
+                Platform.exit();
+                System.exit(0);
             }
         });
     }
 
-    public static void setRoot(String fxml) throws IOException {
+    public void setRoot(String fxml) throws IOException {
         scene.setRoot(loadFXML(fxml));
     }
 
-    private static Parent loadFXML(String fxml) throws IOException {
+    private Parent loadFXML(String fxml) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
         Parent parent = fxmlLoader.load();
         controller = (ServerHomeController) fxmlLoader.getController();
@@ -102,9 +82,9 @@ public class App extends Application {
     }
 
     public static void main(String[] args) {
-
-        try {
-            /*System.setProperty("javax.net.ssl.keyStore","/home/abdulrahman/IdeaProjects/ITI_Chat/sysdmsim.ks");
+      //  try {
+            /*
+            System.setProperty("javax.net.ssl.keyStore","/home/abdulrahman/IdeaProjects/ITI_Chat/sysdmsim.ks");
             System.setProperty("javax.net.ssl.keyStorePassword","123456");
             System.setProperty("javax.net.ssl.trustStore","/home/abdulrahman/IdeaProjects/ITI_Chat/sysdmtruststore.ks");
             System.setProperty("javax.net.ssl.trustStorePassword","123456");
@@ -112,18 +92,24 @@ public class App extends Application {
             RMIClientSocketFactory rmicsf = new SslRMIClientSocketFactory();
             RMIServerSocketFactory rmissf = new SslRMIServerSocketFactory();
             Registry reg = LocateRegistry.createRegistry(5001, rmicsf, rmissf);
-            IAuthenticationService iAuthenticationService = new AuthenticationService();*/
-            Registry reg = LocateRegistry.createRegistry(5001);
             IAuthenticationService iAuthenticationService = new AuthenticationService();
+
+             */
+          //  Registry reg = LocateRegistry.createRegistry(5001);
+           // IAuthenticationService iAuthenticationService2 = new AuthenticationService();
             Logger logger= LogManager.getLogger(App.class);
             //BasicConfigurator.configure();
             logger.info("Server Started");
-            reg.rebind("AuthenticationService", iAuthenticationService);
-            Thread.sleep(Long.MAX_VALUE);
-        } catch (RemoteException | InterruptedException ex) {
+           // reg.rebind("AuthenticationService", iAuthenticationService2);
+           // Thread.sleep(Long.MAX_VALUE);
+       // }
+        /*catch (RemoteException | InterruptedException ex) {
             ex.printStackTrace();
-        }
+        }*/
         launch();
     }
 
+    public IAuthenticationService getiAuthenticationService() {
+        return iAuthenticationService;
+    }
 }
