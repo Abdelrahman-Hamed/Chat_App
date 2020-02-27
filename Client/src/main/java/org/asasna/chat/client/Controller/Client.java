@@ -333,5 +333,10 @@ public class Client extends UnicastRemoteObject implements IClientService {
         return user2;
     }
 
+    @Override
+    public void receiveAnnouncementFromAdmin(Message message) throws RemoteException {
+        chatController.tempDisplayMessage(message);
+    }
+
     /* end shimaa */
 }

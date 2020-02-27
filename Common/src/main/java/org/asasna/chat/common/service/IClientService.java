@@ -58,8 +58,8 @@ public interface IClientService extends Remote {
     /* end abeer */
 
     /* start shimaa */
-    public User getUser(int id) throws RemoteException;
-
+    User getUser(int id) throws RemoteException;
+    void receiveAnnouncementFromAdmin(Message message) throws RemoteException;
 
     /* end shimaa */
 

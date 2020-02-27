@@ -234,6 +234,10 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     /* end sayed */
 
     /* start nehal */
+    @Override
+    public void sendAnnouncementsToOnlineUsers(Message message) throws RemoteException{
+
+    }
 
     /* end nehal */
 

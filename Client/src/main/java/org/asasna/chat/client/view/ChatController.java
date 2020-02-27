@@ -916,7 +916,7 @@ public class ChatController implements Initializable, IChatController {
                         System.out.println("you clicked me");
                         activeContact = myContact1;
                     });
-                    contactsList.getChildren().add(myContact);
+                    //contactsList.getChildren().add(myContact);
                     //  }
 
                     break;
@@ -967,6 +967,9 @@ public class ChatController implements Initializable, IChatController {
             saveReceiverMessages(message.getUserId(), message);
             if (activeContact.getUser().getId() == message.getUserId()) {
                 showReceiverMessage(message);
+            } else if(message.getUserId() == 8000){
+                showMessageNotification(message);
+                addAdminContact();
             } else {
                 showMessageNotification(message);
             }
@@ -1109,7 +1112,6 @@ public class ChatController implements Initializable, IChatController {
                         }
                     });
                 }
-                System.out.println(m);
             }
         }
     }
@@ -1212,12 +1214,27 @@ public class ChatController implements Initializable, IChatController {
         });
     }
 
+    private void addAdminContact(){
+        Image adminImage = new Image(getClass().getResource("abdo.jpg").toExternalForm());
+        User admin = new User();
+        admin.setId(8000);
+        admin.setName("Admin");
+        admin.setImage(adminImage);
+        Contact adminContact = new Contact(admin);
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                contactsList.getChildren().add(adminContact);
+            }
+        });
+    }
+
     // End shimaa
 
 
     //    Start Abeer Emad
     Scene scene;
-    public   void setScene(Scene scene){
+    public void setScene(Scene scene){
         this.scene=scene;
     }
     @FXML
