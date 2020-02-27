@@ -24,7 +24,7 @@ import org.asasna.chat.server.view.PasswordAuthentication;
 
 public class ChatService extends UnicastRemoteObject implements IChatService {
 
-    private static Map<Integer, IClientService> onlineUsers = new HashMap<>();
+    private static Map<Integer, IClientService> onlineUsers = new HashMap<>(); // will need it
     IUserDao userDao;
     private User user;
 
@@ -231,10 +231,20 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
             }
         });
     }
+
+
     /* end sayed */
 
     /* start nehal */
-
+    public ChatService() throws RemoteException {
+        super();
+    }
+    @Override
+    public void sendAnnouncementsToOnlineUsers(Message message) throws RemoteException {
+        for (IClientService client : onlineUsers.values()){
+            client.receiveAnnouncementFromAdmin(message);
+        }
+    }
     /* end nehal */
 
     /* start aya */
@@ -333,8 +343,6 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
         }
 
     }
-
-
     /* end abeer */
 
     /* start shimaa */

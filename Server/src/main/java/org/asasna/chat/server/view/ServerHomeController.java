@@ -11,11 +11,11 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
-import org.asasna.chat.common.model.Gender;
-import org.asasna.chat.common.model.User;
-import org.asasna.chat.common.model.UserStatus;
+import org.asasna.chat.common.model.*;
+import org.asasna.chat.common.service.IChatService;
 import org.asasna.chat.server.App;
 import org.asasna.chat.server.controller.AuthenticationService;
+import org.asasna.chat.server.services.ChatService;
 import org.asasna.chat.server.util.Validation;
 import org.controlsfx.control.ToggleSwitch;
 import java.io.IOException;
@@ -159,7 +159,11 @@ public class ServerHomeController implements Initializable {
         announce.setOnKeyReleased((keyEvent) -> {
             if(keyEvent.getCode() == KeyCode.ENTER && keyEvent.isShiftDown())
             {
-                System.out.println(announce.getText());
+                try {
+                    sendAnnouncements();
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
                 announce.clear();
             }
 
@@ -497,5 +501,10 @@ public class ServerHomeController implements Initializable {
         return java.sql.Date.valueOf(dateToConvert);
     }
 
+    public void sendAnnouncements() throws RemoteException {
+        Message message=new Message(8000 ,announce.getText(), MessageType.TEXT);
+        IChatService  iChatService = new ChatService();
+        iChatService.sendAnnouncementsToOnlineUsers(message);
+    }
 
 }
