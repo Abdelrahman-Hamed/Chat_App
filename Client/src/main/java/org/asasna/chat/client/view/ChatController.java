@@ -931,15 +931,24 @@ public class ChatController implements Initializable, IChatController {
     }
 
     @FXML
-    public void signMeOut(){
+    public void signMeOut() {
         try {
             client.signOut(me.getId());
-            System. exit(0);
+            PrimaryController.removeFile("KeepMeLoggedIn");
+            System.exit(0);
 
         } catch (RemoteException e) {
             e.printStackTrace();
         }
     }
+   /* public void  removeKeepMeLoggedInFile(){
+        try {
+            File rememberMeFile = new File("./Client/src/main/java/org/asasna/chat/client/Auth/KeepMeLoggedIn.xml");
+            FileDeleteStrategy.FORCE.delete(rememberMeFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }*/
 
     // End Aya
 
