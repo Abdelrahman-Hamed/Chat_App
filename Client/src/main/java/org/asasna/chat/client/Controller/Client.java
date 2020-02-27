@@ -1,5 +1,6 @@
 package org.asasna.chat.client.Controller;
 
+import javafx.stage.DirectoryChooser;
 import org.asasna.chat.client.model.IChatController;
 import org.asasna.chat.client.view.RegisterController;
 import org.asasna.chat.common.model.Message;
@@ -220,7 +221,17 @@ public class Client extends UnicastRemoteObject implements IClientService {
     public boolean isvalidUser(User me) throws RemoteException {
         return authenticationService.isValid(me);
     }
-
+    public void sendGroupFileToServer(String filePath, String extension, ChatGroup chatGroup, Message message){
+        RemoteInputStreamServer istream = null;
+        try {
+            istream = new GZIPRemoteInputStream(new BufferedInputStream(new FileInputStream(filePath)));
+            chatService.sendGroupFile(istream.export(), extension, chatGroup, message);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (istream != null) istream.close();
+        }
+    }
     /* end nehal */
 
     /* start aya */
@@ -230,24 +241,31 @@ public class Client extends UnicastRemoteObject implements IClientService {
         RemoteInputStreamServer istream = null;
         try {
             istream = new GZIPRemoteInputStream(new BufferedInputStream(new FileInputStream(filePath)));
+            System.out.println("Sending File");
             chatService.sendFile(istream.export(), extension, senderId, message);
+
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
             if (istream != null) istream.close();
         }
     }
-
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////keep me not in the interface
+    public int getUserId() throws RemoteException {
+        return authenticationService.getUserToSave();
+    }
+/////////////////////////////////////////////////////////////////////////////////////
     @Override
-    public void downloadFile(RemoteInputStream inFile, String suffix, String name) throws RemoteException {
+    public void downloadFile(RemoteInputStream inFile, String suffix, String direcotryPath, String name) throws RemoteException {
         // new Thread(() -> {
         try {
             InputStream istream = RemoteInputStreamClient.wrap(inFile);
-            final File tempFile = File.createTempFile(name, suffix, new File("C:\\Users\\Aya\\Desktop"));
+            System.out.println(System.getProperty("user.name"));
+            final File tempFile = File.createTempFile(name, suffix, new File(direcotryPath));
             tempFile.deleteOnExit();
             try (FileOutputStream out = new FileOutputStream(tempFile)) {
                 IOUtils.copy(istream, out);
-                System.out.println("downloadfile Client");
+                System.out.println("download file Client");
             }
         } catch (IOException e) {
             // System.out.println("Something went wrong with the client");
@@ -260,12 +278,12 @@ public class Client extends UnicastRemoteObject implements IClientService {
     @Override
     public void recieveFileMessage(Message message) throws RemoteException {//reciver ID !
         //  chatController.tempDisplayMessage(message);
-        chatController.tempFileDisplayMessage(message);
-        System.out.println(message.getMesssagecontent());
+        System.out.println("Recieve File Message");
+        chatController.tempDisplayMessage(message);
     }
     @Override
-    public void getFile(String fileName,int senderId)throws RemoteException{
-        chatService.getFile(fileName,senderId);
+    public void getFile(String directoryPath, String fileName,int senderId)throws RemoteException{
+        chatService.getFile(directoryPath, fileName,senderId);
     }
 
     public List<Integer> setMyFriendsIds(List<User> myFriends) {
@@ -313,6 +331,11 @@ public class Client extends UnicastRemoteObject implements IClientService {
     public User getUser(int id) throws RemoteException {
         User user2 = chatService.getUser(id);
         return user2;
+    }
+
+    @Override
+    public void receiveAnnouncementFromAdmin(Message message) throws RemoteException {
+        System.out.println(message);
     }
 
     /* end shimaa */

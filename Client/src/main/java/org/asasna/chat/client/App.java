@@ -7,10 +7,23 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.asasna.chat.client.Controller.Client;
 import org.asasna.chat.client.model.IChatController;
+import org.asasna.chat.client.util.AES;
+import org.asasna.chat.client.view.ChatController;
 import org.asasna.chat.client.view.Controller;
 import org.asasna.chat.client.view.PrimaryController;
+import org.asasna.chat.common.service.IChatService;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.ProcessingInstruction;
+import org.xml.sax.SAXException;
 
-import java.io.IOException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.*;
 import java.rmi.RemoteException;
 
 /**
@@ -19,14 +32,24 @@ import java.rmi.RemoteException;
 public class App extends Application {
 
     private static Scene scene;
-    private  static PrimaryController primaryController; // edited
+    private static PrimaryController primaryController; // edited
+
     @Override
     public void start(Stage stage) throws IOException {
+
         scene = new Scene(loadFXML("login"), 900, 600);
         stage.setScene(scene);
         primaryController.setScene(scene);
+        File keepMeLoggedInFile = new File("./Client/src/main/java/org/asasna/chat/client/Auth/KeepMeLoggedIn.xml");
+        if (keepMeLoggedInFile.exists()) {
+            primaryController.loadChatByDefault(keepMeLoggedInFile);
+        }
         stage.show();
+
+
+
     }
+
 
     public static void setRoot(String fxml) throws IOException {
         scene.setRoot(loadFXML(fxml));
@@ -42,5 +65,15 @@ public class App extends Application {
     public static void main(String[] args) {
         launch();
     }
+
+    @Override
+    public void stop() {
+        if(primaryController.setTheChatScene) {
+            primaryController.createMyFile("KeepMeLoggedIn");
+            primaryController.signOut();
+            System.exit(0);
+        }
+    }
+
 
 }

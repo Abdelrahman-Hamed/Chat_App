@@ -153,6 +153,12 @@
             <version>1.4.7</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.asasna.chat</groupId>
+            <artifactId>client</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -180,7 +186,6 @@
                 <executions>
                     <execution>
                         <goals>
-
                             <goal>java</goal>
                         </goals>
                     </execution>

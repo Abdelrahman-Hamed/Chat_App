@@ -19,6 +19,7 @@ import java.sql.SQLException;
 
 public class AuthenticationService extends UnicastRemoteObject implements IAuthenticationService {
     IChatService thisChatService;
+    User user;
     public AuthenticationService() throws RemoteException {
     }
 
@@ -30,7 +31,7 @@ public class AuthenticationService extends UnicastRemoteObject implements IAuthe
     public IChatService login(String phoneNumber, String password) throws RemoteException {
         try {
             UserDao userDao = new UserDao();
-            User user = userDao.getUser(phoneNumber, password);
+            user = userDao.getUser(phoneNumber, password);
             if (user == null) return null;
             user.setStatus(UserStatus.ONLINE);
             thisChatService=new ChatService(user);
@@ -42,7 +43,11 @@ public class AuthenticationService extends UnicastRemoteObject implements IAuthe
         }
         return null;
     }
-
+    /////////////////////////////////////////////////////////////////////////keep me
+    public int getUserToSave()throws RemoteException{
+        return user.getId();
+    }
+/////////////////////////////////////////////////////////////////////////////////
     IUserDao userDao ;
     {
         try {
@@ -52,7 +57,7 @@ public class AuthenticationService extends UnicastRemoteObject implements IAuthe
         }
     }
 
-    User user = new User();
+   // User user = new User();
     @Override
     public void addUser(User me) throws RemoteException {
 
@@ -78,6 +83,10 @@ public class AuthenticationService extends UnicastRemoteObject implements IAuthe
         userDao = new UserDao();
         return  userDao.getUsersByGender();
     }
+    public ObservableList<PieChart.Data> getCountryData() throws RemoteException, SQLException {
+        userDao = new UserDao();
+        return  userDao.getUsersByCountry();
+    }
     public ObservableList<PieChart.Data> getStatusData() throws RemoteException, SQLException {
         userDao = new UserDao();
         return  userDao.getUsersByStatus();
@@ -89,7 +98,7 @@ public class AuthenticationService extends UnicastRemoteObject implements IAuthe
         if(check){
             thisChatService.changeUserStatus(userID, UserStatus.OFFLINE);
             thisChatService.notifyMyfriends(userID);
-            System.out.println(" remove Client in th middle of the function");
+         //   System.out.println(" remove Client in th middle of the function");
         }
         else{
             System.out.println("Somthing went wrong");
