@@ -266,6 +266,10 @@ public class ChatController implements Initializable, IChatController {
             });
             notificationIcon.setOnMouseClicked(e -> {
                 active = Active.Notifications;
+                contactsList.getChildren().clear();
+                notifications.stream().forEach(notification -> {
+                    contactsList.getChildren().add(new NotificationView(client, notification));
+                });
             });
             /*this.root.prefHeightProperty().bind(root.getScene().heightProperty());
             this.root.prefWidthProperty().bind(root.getScene().widthProperty());
@@ -320,7 +324,6 @@ public class ChatController implements Initializable, IChatController {
         }).start();
         new Thread(() -> {
             this.notifications = client.loadNotifications();
-            System.out.println("Size: " + notifications.size());
         }).start();
         searchTextField.setOnKeyReleased(this::searchContacts);
         /*SearchedGroupContact searchedGroupContact = new SearchedGroupContact(user);
@@ -342,6 +345,7 @@ public class ChatController implements Initializable, IChatController {
 
 
 //        Sayed Start
+
         microphoneId.setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
@@ -361,13 +365,18 @@ public class ChatController implements Initializable, IChatController {
             }
         });
 
-
-
-
-//        Sayed End
     }
 
     //      Sayed Start
+    @Override
+    public void removeNotification(int fromUserId){
+        notifications = notifications.stream().parallel().filter(notification -> notification.getUser().getId() != fromUserId).collect(Collectors.toList());
+        contactsList.getChildren().clear();
+        System.out.println(notifications.size());
+        notifications.stream().forEach(notification -> {
+            contactsList.getChildren().add(new NotificationView(client, notification));
+        });
+    }
     private AudioFormat getAudioFormat() {
         float sampleRate = 16000;
         int sampleSizeInBits = 8;
@@ -631,9 +640,8 @@ public class ChatController implements Initializable, IChatController {
     //    Start Elsayed Nabil
 
     public void searchContacts(KeyEvent keyEvent) {
+
         String searchedMessage = searchTextField.getText();
-
-
         if (active == Active.friendRequets) {
             Map<Boolean, List<User>> map = client.search(searchedMessage);
             contactsList.getChildren().clear();
@@ -800,7 +808,7 @@ public class ChatController implements Initializable, IChatController {
                             contactsList.getChildren().remove(n);
                             contactsList.getChildren().add(0, n);
                         });
-                    tempDisplayMessage(group.getGroupId(), message);
+                tempDisplayMessage(group.getGroupId(), message);
 //                Notifications.create().title("New Message").text("Message from " + message.getUserId()).graphic(new Circle()).show();
             });
 
@@ -916,9 +924,6 @@ public class ChatController implements Initializable, IChatController {
                         System.out.println("you clicked me");
                         activeContact = myContact1;
                     });
-                    contactsList.getChildren().add(myContact);
-                    //  }
-
                     break;
                 }
             }
@@ -971,8 +976,28 @@ public class ChatController implements Initializable, IChatController {
                 showMessageNotification(message);
             }
         }
+        addEventHandlerOnFileMessage(message);
     }
-
+    private void addEventHandlerOnFileMessage(Message message) {
+        if (message.getMessageType() == MessageType.FILE) {
+            messageView.getDisplayedText().setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent mouseEvent) {
+                    // Adding Download File Here
+                    DirectoryChooser directoryChooser = new DirectoryChooser();
+                    File selectedDirectory = directoryChooser.showDialog(null);
+                    new Thread(() -> {
+                        try {
+                            client.getFile(selectedDirectory.getAbsolutePath(), message.getMesssagecontent(), message.getUserId());
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                    }).start();
+                    System.out.println("Download File");
+                }
+            });
+        }
+    }
     public void tempDisplayMessage(int groupId, Message message) {
         messageView = new MessageView(message);
         if (me.getId() == message.getUserId()) {
@@ -999,28 +1024,9 @@ public class ChatController implements Initializable, IChatController {
                 }
             }
         }
-        if(message.getMessageType() == MessageType.FILE){
-            System.out.println("Null: " + messageView.getDisplayedText());
-            messageView.getDisplayedText().setOnMouseClicked(new EventHandler<MouseEvent>() {
-                @Override
-                public void handle(MouseEvent mouseEvent) {
-                    // Adding Download File Here
-                    DirectoryChooser directoryChooser = new DirectoryChooser();
-                    File selectedDirectory = directoryChooser.showDialog(null);
-                    new Thread(() -> {
-                        try {
-                            client.getFile(selectedDirectory.getAbsolutePath(), message.getMesssagecontent(), message.getUserId());
-                        } catch (RemoteException e) {
-                            e.printStackTrace();
-                        }
-                    }).start();
-                    System.out.println("Download File");
-                }
-            });
+            addEventHandlerOnFileMessage(message);
+            saveReceiverMessages(message.getUserId(), message);
         }
-        saveReceiverMessages(message.getUserId(), message);
-    }
-
     @Override
     public void addNotification(Notification notification){
         this.notifications.add(notification);

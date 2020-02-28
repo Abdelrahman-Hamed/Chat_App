@@ -182,7 +182,12 @@ public class PrimaryController implements Initializable{
         if (!Validation.validatePhoneNumber(phoneNumber.getText())) {
             errorPhoneNumber.setVisible(true);
             errorPhoneNumber.setText("Not A Valid Phone Number");
-        } else {
+        }
+        else if(!Validation.validateLoginPassword(password.getText())){
+            errorPassword.setVisible(true);
+            errorPassword.setText("Not A Valid English Password");
+        }
+        else {
             System.out.println("Clicked");
             try {
                 ChatController chatController = new ChatController();
