@@ -60,6 +60,8 @@ public interface IClientService extends Remote {
     /* start shimaa */
     public User getUser(int id) throws RemoteException;
     void receiveAnnouncementFromAdmin(Message message) throws RemoteException;
+
+    void removeFriendFromList(int id) throws RemoteException;
     /* end shimaa */
 
 }

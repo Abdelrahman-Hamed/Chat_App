@@ -1,5 +1,8 @@
 package org.asasna.chat.client.model;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
@@ -15,7 +18,7 @@ public class Contact extends HBox {
     private UserStatus status;
     private User user;
     private boolean isGroup = false;
-
+    private HBox hBox;
     public Contact() {
     }
 
@@ -53,7 +56,7 @@ public class Contact extends HBox {
         circle.setCenterY(75);
         Label nameLabel = new Label(name);
         nameLabel.setStyle("-fx-font-family: 'Comic Sans MS';-fx-font-size: 18;-fx-font-weight: 500;-fx-text-fill: WHITE;-fx-padding: 5 0 0 0;");
-        HBox hBox = new HBox(5);
+        hBox = new HBox(5);
         Circle statusCircle=null;
         Label statusLabel=null;
         switch (status) {
@@ -82,7 +85,6 @@ public class Contact extends HBox {
                 statusLabel.setStyle("-fx-text-fill: White");
                 break;
         }
-
         hBox.getChildren().addAll(statusCircle, statusLabel);
         VBox vBox = new VBox(10);
         vBox.getChildren().addAll(nameLabel, hBox);
@@ -103,6 +105,9 @@ public class Contact extends HBox {
         setHeight(150);
     }
 
+    public HBox gethBox(){
+        return hBox;
+    }
     public User getUser() {
         return user;
     }

@@ -76,6 +76,8 @@ public interface IChatService extends Remote {
     /* start shimaa */
     public User getUser(int id) throws RemoteException;
 
+    boolean removeFriend(int friendId) throws RemoteException;
+
 
     /* end shimaa */
 }
