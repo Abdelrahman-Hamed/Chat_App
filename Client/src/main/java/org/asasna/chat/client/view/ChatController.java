@@ -267,7 +267,7 @@ public class ChatController implements Initializable, IChatController {
                 oContacts.forEach(System.out::println);
                 contactsList.getChildren().clear();
                 createbtn.setVisible(false);
-                Bindings.bindContent(contactsList.getChildren(), FXCollections.observableArrayList(oContacts));
+                Bindings.bindContentBidirectional(contactsList.getChildren(), FXCollections.observableArrayList(oContacts));
                 //Bindings.bindContentBidirectional(FXCollections.observableArrayList(oContacts), contactsList.getChildren());
             });
             friendRequest.setOnMouseClicked(e -> {
@@ -980,7 +980,7 @@ public class ChatController implements Initializable, IChatController {
 
     @Override
     public void updateMyContactList(User updatedUser) {
-
+oContacts.removeIf(c->c.getUser().getId()==updatedUser.getId());
         Platform.runLater(() -> {
             ObservableList<Node> contacts;
             contacts = contactsList.getChildren();
