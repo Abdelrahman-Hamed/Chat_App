@@ -280,6 +280,7 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
        // System.out.println("chatServer");
         userDao.updateUserStatues(id, status);
     }
+
     public void notifyMyfriends(int myId)throws RemoteException{
         List<User> myFriends= getMyFriendList(myId);
         System.out.println(" id "+myId);
@@ -296,8 +297,6 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
                     myFriend.reciveUpateNotification(me);
                     System.out.println(" not null friend ");
                 }
-
-
             }
         }
     }
