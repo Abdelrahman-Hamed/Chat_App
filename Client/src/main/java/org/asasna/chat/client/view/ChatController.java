@@ -1,6 +1,7 @@
 package org.asasna.chat.client.view;
 
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXColorPicker;
 import com.jfoenix.controls.JFXSlider;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -123,7 +124,8 @@ public class ChatController implements Initializable, IChatController {
     Circle receiverImage;
     @FXML
     Label receiverNameLabel;
-
+    @FXML
+    HBox styleBox;
     @FXML
     Circle status;
 
@@ -175,7 +177,7 @@ public class ChatController implements Initializable, IChatController {
         try {
             me = client.getUser();
 
-            status.setStyle("-fx-fill:  #33FF4B");
+                status.setStyle("-fx-fill:  #33FF4B");
 
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -298,7 +300,7 @@ public class ChatController implements Initializable, IChatController {
         setInitialContact();
         setListnerForPressingEnter();
         messageTextArea.setStyle("-fx-font-size:15");
-        if (activeContact.getUser().getStatus() == UserStatus.OFFLINE) {
+        if (activeContact.getUser().getStatus() == UserStatus.OFFLINE){
             messageTextArea.setDisable(true);
         } else {
             messageTextArea.setDisable(false);
@@ -366,6 +368,8 @@ public class ChatController implements Initializable, IChatController {
         });
 
 
+
+
 //        Sayed End
     }
 
@@ -424,8 +428,7 @@ public class ChatController implements Initializable, IChatController {
         setListnerForPressingEnter(); // shimaa
         messageTextArea.setStyle("-fx-font-size:14");
     }
-
-    private void stop() {
+    private void stop(){
         line.stop();
         line.close();
         end = System.currentTimeMillis();
@@ -449,21 +452,20 @@ public class ChatController implements Initializable, IChatController {
             }).start();
         }
     }
-
-    private byte[] convertFileToBytes() {
+    private byte[] convertFileToBytes(){
         byte[] buf = new byte[1024];
-        try {
+        try{
             File wavFile = new File("./Client/src/main/resources/org/asasna/chat/client/audio/record.wav");
             FileInputStream fileInputStream = new FileInputStream(wavFile);
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            for (int readNum; (readNum = fileInputStream.read(buf)) != -1; ) {
+            for (int readNum; (readNum = fileInputStream.read(buf)) != -1;) {
                 bos.write(buf, 0, readNum); //no doubt here is 0
                 System.out.println("read " + readNum + " bytes,");
             }
             removeWavFile();
             buf = bos.toByteArray();
             return buf;
-        } catch (FileNotFoundException ex) {
+        }catch(FileNotFoundException ex){
             ex.printStackTrace();
             return buf;
         } catch (IOException e) {
@@ -471,8 +473,7 @@ public class ChatController implements Initializable, IChatController {
             return buf;
         }
     }
-
-    private void removeWavFile() {
+    private void removeWavFile(){
         try {
             File wavFile = new File("./Client/src/main/resources/org/asasna/chat/client/audio/record.wav");
             FileDeleteStrategy.FORCE.delete(wavFile);
@@ -497,7 +498,7 @@ public class ChatController implements Initializable, IChatController {
             savedFilePath = file.getAbsolutePath();
             System.out.println(savedFilePath);
             saveXmlFile(receiverMessages.get(activeContact.getUser().getId()));
-        } else {
+        } else{
             System.out.println("you didn't save chat");
         }
     }
@@ -556,7 +557,7 @@ public class ChatController implements Initializable, IChatController {
         receiverNameLabel.setText(activeContact.getUser().getName());
 
         focusOnContact();
-        if (activeContact.getUser().getStatus() == UserStatus.OFFLINE) {
+        if(activeContact.getUser().getStatus() == UserStatus.OFFLINE){
             messageTextArea.setDisable(true);
         } else {
             messageTextArea.setDisable(false);
@@ -663,14 +664,13 @@ public class ChatController implements Initializable, IChatController {
                         contactsList.getChildren().add(contact);
                     });
 
-        } else if (active == Active.Notifications) {
+        }else if(active == Active.Notifications){
             contactsList.getChildren().clear();
             notifications.stream().forEach(notification -> {
                 contactsList.getChildren().add(new NotificationView(client, notification));
             });
         }
     }
-
     @Override
     public void recieveRecord(int senderId, byte[] buf) {
         AudioFormat.Encoding encoding = AudioFormat.Encoding.PCM_SIGNED;
@@ -692,8 +692,8 @@ public class ChatController implements Initializable, IChatController {
 //            SourceDataLine line = (SourceDataLine) AudioSystem.getLine(info);
 //
 //            line.write(buf, 0, buf.length);
-        for (int i = 0; i < 10; i++)
-            System.out.println("Buf: " + buf[i]);
+            for(int i=0; i<10; i++)
+                System.out.println("Buf: " +  buf[i]);
 
         AudioInputStream ais = new AudioInputStream(new ByteArrayInputStream(buf), format, buf.length / format.getFrameSize());
         File wavFile = new File("./Client/src/main/resources/org/asasna/chat/client/audio/record2.wav");
@@ -806,7 +806,7 @@ public class ChatController implements Initializable, IChatController {
                             contactsList.getChildren().remove(n);
                             contactsList.getChildren().add(0, n);
                         });
-                tempDisplayMessage(group.getGroupId(), message);
+                    tempDisplayMessage(group.getGroupId(), message);
 //                Notifications.create().title("New Message").text("Message from " + message.getUserId()).graphic(new Circle()).show();
             });
 
@@ -834,10 +834,10 @@ public class ChatController implements Initializable, IChatController {
             new Thread(() -> {
                 try {
                     int senderId = me.getId();
-                    Message message = new Message(senderId, fileName, MessageType.FILE);
+                    Message message = new Message(senderId,fileName, MessageType.FILE);
                     if (activeContact instanceof GroupContact)
                         client.sendGroupFileToServer(selectedFile.getPath(), fileExtension, ((GroupContact) activeContact).getChatGroup(), message);
-                    else {
+                    else{
                         int friendId = activeContact.getUser().getId();
                         client.sendFileToServer(selectedFile.getPath(), fileExtension, friendId, message);
                     }
@@ -848,10 +848,9 @@ public class ChatController implements Initializable, IChatController {
             }).start();
         }
     }
-
     @Override
     public void tempFileDisplayMessage(Message message) {
-        viewTextMessage = new MSGview(message, this);
+        viewTextMessage = new MSGview(message,this);
         if (me.getId() == message.getUserId()) {///////////////////////////////////me
             System.out.println("Me: " + message.getMesssagecontent());
             viewTextMessage.setTextMSGview(SpeechDirection.RIGHT);
@@ -894,7 +893,7 @@ public class ChatController implements Initializable, IChatController {
                 myStatus = UserStatus.ONLINE;
             }
             me.setStatus(myStatus);
-            client.changeStatus(me, myStatus);
+            client.changeStatus(me,myStatus);
             System.out.println("chatController2");
             //circle.setfill()//wel list bta3tha
 
@@ -903,7 +902,6 @@ public class ChatController implements Initializable, IChatController {
         }
 
     }
-
     @Override
     public void updateMyContactList(User updatedUser) {
 
@@ -924,7 +922,7 @@ public class ChatController implements Initializable, IChatController {
                         System.out.println("you clicked me");
                         activeContact = myContact1;
                     });
-                    //contactsList.getChildren().add(myContact);
+                    contactsList.getChildren().add(myContact);
                     //  }
 
                     break;
@@ -995,14 +993,14 @@ public class ChatController implements Initializable, IChatController {
         //addition for chatbot
         if (checkEnableChatbot) {
             try {
-                if (message.getMessageType() == message.getMessageType().TEXT) {
+                if(message.getMessageType()==message.getMessageType().TEXT) {
                     sendByChatbot(message.getMesssagecontent());
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-
+        saveReceiverMessages(message.getUserId(), message);
     }
 
     public void tempDisplayMessage(int groupId, Message message) {
@@ -1031,7 +1029,7 @@ public class ChatController implements Initializable, IChatController {
                 }
             }
         }
-        if (message.getMessageType() == MessageType.FILE) {
+        if(message.getMessageType() == MessageType.FILE){
             System.out.println("Null: " + messageView.getDisplayedText());
             messageView.getDisplayedText().setOnMouseClicked(new EventHandler<MouseEvent>() {
                 @Override
@@ -1054,7 +1052,7 @@ public class ChatController implements Initializable, IChatController {
     }
 
     @Override
-    public void addNotification(Notification notification) {
+    public void addNotification(Notification notification){
         this.notifications.add(notification);
     }
 
@@ -1140,22 +1138,23 @@ public class ChatController implements Initializable, IChatController {
                         }
                     });
                 }
+                System.out.println(m);
             }
         }
     }
 
     private void focusOnContact() {
-        final Background focusBackground = new Background(new BackgroundFill(Color.valueOf("#045ba5"), CornerRadii.EMPTY, Insets.EMPTY));
-        final Background unfocusBackground = new Background(new BackgroundFill(Color.valueOf("#1e82dc"), CornerRadii.EMPTY, Insets.EMPTY));
+        final Background focusBackground = new Background( new BackgroundFill( Color.valueOf("#045ba5"), CornerRadii.EMPTY, Insets.EMPTY ) );
+        final Background unfocusBackground = new Background( new BackgroundFill( Color.valueOf("#1e82dc"), CornerRadii.EMPTY, Insets.EMPTY ) );
 
-        activeContact.setOnMouseClicked((e) ->
+        activeContact.setOnMouseClicked( ( e ) ->
         {
             activeContact.requestFocus();
             activeContact.backgroundProperty().bind(Bindings
                     .when(activeContact.focusedProperty())
                     .then(focusBackground)
                     .otherwise(unfocusBackground));
-        });
+        } );
     }
 
     private void setListnerForPressingEnter() {
@@ -1173,7 +1172,7 @@ public class ChatController implements Initializable, IChatController {
         });
     }
 
-    private void setInitialContact() {
+    private void setInitialContact(){
         try {
             friends = client.getFriendList();
         } catch (RemoteException e) {
@@ -1198,7 +1197,7 @@ public class ChatController implements Initializable, IChatController {
         });
     }
 
-    private void showMessageNotification(Message message) {
+    private void showMessageNotification(Message message){
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -1279,6 +1278,7 @@ public class ChatController implements Initializable, IChatController {
     public void setScene(Scene scene){
         this.scene=scene;
     }
+
     @FXML
     public void ProfileButtonClicked() {
 
@@ -1302,8 +1302,10 @@ public class ChatController implements Initializable, IChatController {
 
 //call this method when enable chatbot mode button in gui ???????
     //dependencies instead of classes???
+
     //@fxml
     public void chatbotButtonClicked(){
+        System.out.println("hello");
         if(checkEnableChatbot)
         {
             checkEnableChatbot=false;
@@ -1351,7 +1353,7 @@ public class ChatController implements Initializable, IChatController {
             client.sendGroupMessage(((GroupContact) activeContact).getChatGroup(), new Message(client.getUser().getId(), messageTextArea.getText()));
         } else {
             if (activeContact.getUser().getStatus() == UserStatus.ONLINE) {
-                if (messageTextArea.getText().length() !=0 && !messageTextArea.getText().matches("/^\\s$/")) {
+                if (messageTextArea.getText().length() !=0 && !messageTextArea.getText().equals(" ")) {
                     int receiverId = activeContact.getUser().getId();
                     int senderId = me.getId();
                     String messageContent = messageTextArea.getText();

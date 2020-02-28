@@ -14,6 +14,7 @@ module org.asasna.client {
     requires javafx.media;
     requires jcodec;
     requires notification;
+    requires chatter.bot.api;
     requires org.kordamp.ikonli.runestroicons;
     opens org.asasna.chat.client;
     opens org.asasna.chat.client.view to javafx.fxml;
