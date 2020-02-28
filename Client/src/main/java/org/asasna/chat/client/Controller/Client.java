@@ -1,6 +1,7 @@
 package org.asasna.chat.client.Controller;
 
 import javafx.stage.DirectoryChooser;
+import javafx.util.Pair;
 import org.asasna.chat.client.model.IChatController;
 import org.asasna.chat.client.view.RegisterController;
 import org.asasna.chat.common.model.Message;
@@ -126,10 +127,11 @@ public class Client extends UnicastRemoteObject implements IClientService {
         chatService.sendGroupMsg(group, message);
     }
 
-    public IChatService login(String phoneNumber, String password) {
+    public Pair< String ,IChatService> login(String phoneNumber, String password) {
         try {
-            chatService = authenticationService.login(phoneNumber, password);
-            return chatService;
+            Pair < String ,IChatService> temp=authenticationService.login(phoneNumber, password);
+            chatService = temp.getValue();
+            return temp;
         } catch (RemoteException e) {
             e.printStackTrace();
         }
