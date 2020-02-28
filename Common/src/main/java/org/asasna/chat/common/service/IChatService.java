@@ -57,9 +57,7 @@ public interface IChatService extends Remote {
     /* end sayed */
 
     /* start nehal */
-
     void sendAnnouncementsToOnlineUsers(Message message) throws RemoteException;
-
     /* end nehal */
 
     /* start aya */

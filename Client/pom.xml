@@ -9,11 +9,18 @@
     <groupId>org.asasna.chat</groupId>
     <artifactId>client</artifactId>
     <version>1.0-SNAPSHOT</version>
+
+
+
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
     </properties>
+
+
+
     <dependencies>
         <dependency>
             <groupId>org.openjfx</groupId>
@@ -81,11 +88,7 @@
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>com.healthmarketscience.rmiio</groupId>
-            <artifactId>rmiio</artifactId>
-            <version>2.1.2</version>
-        </dependency>
+
         <dependency>
             <groupId>com.healthmarketscience.rmiio</groupId>
             <artifactId>rmiio</artifactId>
@@ -132,6 +135,16 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/src/main/resources/org/asasna/chat/client/notification-0.3.jar</systemPath>
         </dependency>
+
+
+<!--       ///////////////////////////////////////-->
+        <dependency>
+            <groupId>ca.pjer</groupId>
+            <artifactId>chatter-bot-api</artifactId>
+            <version>1.4.7</version>
+        </dependency>
+
+
     </dependencies>
     <build>
         <plugins>

@@ -231,14 +231,20 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
             }
         });
     }
+
+
     /* end sayed */
 
     /* start nehal */
-    @Override
-    public void sendAnnouncementsToOnlineUsers(Message message) throws RemoteException{
-
+    public ChatService() throws RemoteException {
+        super();
     }
-
+    @Override
+    public void sendAnnouncementsToOnlineUsers(Message message) throws RemoteException {
+        for (IClientService client : onlineUsers.values()){
+            client.receiveAnnouncementFromAdmin(message);
+        }
+    }
     /* end nehal */
 
     /* start aya */
@@ -280,7 +286,6 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
        // System.out.println("chatServer");
         userDao.updateUserStatues(id, status);
     }
-
     public void notifyMyfriends(int myId)throws RemoteException{
         List<User> myFriends= getMyFriendList(myId);
         System.out.println(" id "+myId);
@@ -297,6 +302,8 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
                     myFriend.reciveUpateNotification(me);
                     System.out.println(" not null friend ");
                 }
+
+
             }
         }
     }

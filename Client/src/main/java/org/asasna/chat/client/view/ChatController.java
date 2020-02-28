@@ -37,6 +37,10 @@ import javafx.util.Duration;
 import org.apache.commons.io.FileDeleteStrategy;
 import org.asasna.chat.client.Controller.Client;
 import org.asasna.chat.client.model.*;
+import org.asasna.chat.client.model.chatbot.ChatterBot;
+import org.asasna.chat.client.model.chatbot.ChatterBotFactory;
+import org.asasna.chat.client.model.chatbot.ChatterBotSession;
+import org.asasna.chat.client.model.chatbot.ChatterBotType;
 import org.asasna.chat.common.model.Message;
 import org.asasna.chat.common.model.Notification;
 import org.asasna.chat.common.model.User;
@@ -968,8 +972,9 @@ public class ChatController implements Initializable, IChatController {
         }
     }
 
+
     @Override
-    public void tempDisplayMessage(Message message) {
+    public void tempDisplayMessage(Message message) {//////////////////////////////////
         if (me.getId() == message.getUserId()) {
             showSenderMessage(message);
         } else {
@@ -983,6 +988,18 @@ public class ChatController implements Initializable, IChatController {
                 showMessageNotification(message);
             }
         }
+        //addition for chatbot
+        if(checkEnableChatbot)
+        {
+            try {
+                if(message.getMessageType()==message.getMessageType().TEXT) {
+                    sendByChatbot(message.getMesssagecontent());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
     public void tempDisplayMessage(int groupId, Message message) {
@@ -1263,7 +1280,47 @@ public class ChatController implements Initializable, IChatController {
         scene.setRoot(parent);
         profileController.setScene(scene);
 
+    }
 
+    boolean checkEnableChatbot=false;
+
+//call this method when enable chatbot mode button in gui ???????
+    //dependencies instead of classes???
+    //@fxml
+    public void chatbotButtonClicked(){
+        if(checkEnableChatbot)
+        {
+            checkEnableChatbot=false;
+        }
+        else
+            checkEnableChatbot=true;
+    }
+
+    public void sendByChatbot(String messageReceivedContent) throws Exception {
+    ChatterBotFactory factory = new ChatterBotFactory();
+
+    ChatterBot bot1 = factory.create(ChatterBotType.CLEVERBOT);
+    ChatterBotSession bot1session = bot1.createSession();
+
+        String respond= bot1session.think(messageReceivedContent);
+//    ChatterBot bot2 = factory.create(ChatterBotType.PANDORABOTS, "b0dafd24ee35a477");
+//    ChatterBotSession bot2session = bot2.createSession();
+
+        if (activeContact instanceof GroupContact) {
+            System.out.println("inner");
+            client.sendGroupMessage(((GroupContact) activeContact).getChatGroup(), new Message(client.getUser().getId(), respond));
+        } else {
+            if (activeContact.getUser().getStatus() == UserStatus.ONLINE)
+              {
+                    int receiverId = activeContact.getUser().getId();
+                    int senderId = me.getId();
+                    String messageContent = respond;
+                    messageTextArea.setText("");
+                    Message message = new Message(senderId, messageContent, MessageType.TEXT);
+                    sendMessage(receiverId, message);
+                }
+
+        }
 
     }
     // End Abeer Emad
