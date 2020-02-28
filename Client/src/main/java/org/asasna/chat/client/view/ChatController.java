@@ -1269,6 +1269,7 @@ public class ChatController implements Initializable, IChatController {
 
     //@fxml
     public void chatbotButtonClicked(){
+        System.out.println("hello");
         if(checkEnableChatbot)
         {
             checkEnableChatbot=false;
