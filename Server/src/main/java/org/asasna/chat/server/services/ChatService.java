@@ -9,6 +9,7 @@ import org.asasna.chat.server.App;
 import org.asasna.chat.server.model.dao.IUserDao;
 import org.asasna.chat.server.model.dao.UserDao;
 
+
 import java.io.*;
 import java.nio.file.Files;
 import java.rmi.RemoteException;
@@ -24,7 +25,7 @@ import org.asasna.chat.server.view.PasswordAuthentication;
 
 public class ChatService extends UnicastRemoteObject implements IChatService {
 
-    private static Map<Integer, IClientService> onlineUsers = new HashMap<>();
+    public static Map<Integer, IClientService> onlineUsers = new HashMap<>(); // will need it
     IUserDao userDao;
     private User user;
 
@@ -242,7 +243,6 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     @Override
     public void sendAnnouncementsToOnlineUsers(Message message) throws RemoteException {
         for (IClientService client : onlineUsers.values()){
-            System.out.println("At ChatService --------> " + message);
             client.receiveAnnouncementFromAdmin(message);
         }
     }
@@ -344,6 +344,7 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
         }
 
     }
+
 
 
     /* end abeer */
