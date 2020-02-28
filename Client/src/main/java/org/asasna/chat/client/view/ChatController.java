@@ -1023,6 +1023,26 @@ public class ChatController implements Initializable, IChatController {
                 } else {
                     System.out.println("Message:  " + message.getMesssagecontent() + " from  " + message.getUserId());
                 }
+                /*
+                /////////////////////////////////////////////////////////////////////////////////////////////addition for chatbot
+
+                new Thread(() -> {
+                    if(checkEnableChatbot)
+                    {
+                        System.out.println("chatbot start");
+                        try {
+                            if(message.getMessageType()==message.getMessageType().TEXT) {
+                                sendByChatbot(message.getMesssagecontent());
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
+                ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+                 */
             }
         }
         if(message.getMessageType() == MessageType.FILE){
