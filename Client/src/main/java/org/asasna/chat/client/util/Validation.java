@@ -11,6 +11,9 @@ public class Validation {
     public static boolean validateEmail(String email){
         return Pattern.matches("[a-zA-Z_0-9._%+-]+@[a-zA-Z_0-9.-]+\\.[a-zA-Z]{2,}",email);
     }
+    public static boolean validateLoginPassword(String password){
+        return Pattern.matches("^[a-zA-Z0-9?><;,{}_+=!@#$%^&*|']*$", password);
+    }
     public static boolean validatePassword(String password){
         return Pattern.matches("(?=.*\\d)(?=.*[a-zA-Z]).{4,8}",password);
     }

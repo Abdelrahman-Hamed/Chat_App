@@ -49,8 +49,8 @@ public class Client extends UnicastRemoteObject implements IClientService {
             System.setProperty("javax.net.ssl.trustStore", "/home/abdulrahman/IdeaProjects/ITI_Chat/sysdmtruststore.ks");
             System.setProperty("javax.net.ssl.trustStorePassword", "123456");
 
-            Registry reg = LocateRegistry.getRegistry("127.0.0.1", 5001, new SslRMIClientSocketFactory());
-            //Registry reg = LocateRegistry.getRegistry(5001);
+//            Registry reg = LocateRegistry.getRegistry("10.145.4.235", 5001, new SslRMIClientSocketFactory());
+            Registry reg = LocateRegistry.getRegistry(5001);
             authenticationService = (IAuthenticationService) reg.lookup("AuthenticationService");
         } catch (RemoteException | NotBoundException e) {
             e.printStackTrace();
@@ -160,6 +160,7 @@ public class Client extends UnicastRemoteObject implements IClientService {
     public void acceptRequest(int fromUserId) {
         try {
             chatService.acceptRequest(fromUserId, user.getId());
+            chatController.removeNotification(fromUserId);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -178,8 +179,8 @@ public class Client extends UnicastRemoteObject implements IClientService {
 
     public boolean rejectFriendRequest(int userId) {
         try {
-            System.out.println("UserId: " + userId);
             boolean done = chatService.cancelFriendRequest(userId, chatService.getUser().getId());
+            chatController.removeNotification(userId);
             return done;
         } catch (RemoteException e) {
             e.printStackTrace();

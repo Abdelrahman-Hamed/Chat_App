@@ -49,7 +49,7 @@ public class MessageView extends HBox {
 
     private void setCommonConfigurations(){
         timestamp = new Timestamp(System.currentTimeMillis());
-        displayedText = new Text(message.getMesssagecontent() + timestamp.getDate()+":"
+        displayedText = new Text(message.getMesssagecontent() + timestamp.getHours()+":"
                 + timestamp.getMinutes());
         displayedText.setTextAlignment(TextAlignment.LEFT);
         displayedText.setFont(Font.font("Consolas",FontPosture.REGULAR, 16));
