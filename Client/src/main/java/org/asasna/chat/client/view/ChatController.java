@@ -37,6 +37,7 @@ import javafx.util.Duration;
 import org.apache.commons.io.FileDeleteStrategy;
 import org.asasna.chat.client.Controller.Client;
 import org.asasna.chat.client.model.*;
+
 import org.asasna.chat.common.model.Message;
 import org.asasna.chat.common.model.Notification;
 import org.asasna.chat.common.model.User;
@@ -69,7 +70,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
+import com.google.code.chatterbotapi.*;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 import tray.animations.AnimationType;
@@ -78,8 +79,6 @@ import tray.notification.TrayNotification;
 import java.io.FileWriter;
 import java.io.File;
 import java.io.IOException;
-import com.google.code.chatterbotapi.*;
-
 
 
 public class ChatController implements Initializable, IChatController {
@@ -1267,6 +1266,7 @@ public class ChatController implements Initializable, IChatController {
 
 //call this method when enable chatbot mode button in gui ???????
     //dependencies instead of classes???
+
     //@fxml
     public void chatbotButtonClicked(){
         if(checkEnableChatbot)
