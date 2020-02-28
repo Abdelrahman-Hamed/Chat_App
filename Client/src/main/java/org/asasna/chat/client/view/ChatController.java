@@ -1,9 +1,5 @@
 package org.asasna.chat.client.view;
 
-import com.google.code.chatterbotapi.ChatterBot;
-import com.google.code.chatterbotapi.ChatterBotFactory;
-import com.google.code.chatterbotapi.ChatterBotSession;
-import com.google.code.chatterbotapi.ChatterBotType;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXColorPicker;
 import com.jfoenix.controls.JFXSlider;
@@ -42,7 +38,6 @@ import javafx.util.Duration;
 import org.apache.commons.io.FileDeleteStrategy;
 import org.asasna.chat.client.Controller.Client;
 import org.asasna.chat.client.model.*;
-
 import org.asasna.chat.common.model.Message;
 import org.asasna.chat.common.model.Notification;
 import org.asasna.chat.common.model.User;
@@ -75,7 +70,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
+import com.google.code.chatterbotapi.*;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 import tray.animations.AnimationType;
@@ -273,6 +268,10 @@ public class ChatController implements Initializable, IChatController {
             });
             notificationIcon.setOnMouseClicked(e -> {
                 active = Active.Notifications;
+                contactsList.getChildren().clear();
+                notifications.stream().forEach(notification -> {
+                    contactsList.getChildren().add(new NotificationView(client, notification));
+                });
             });
             /*this.root.prefHeightProperty().bind(root.getScene().heightProperty());
             this.root.prefWidthProperty().bind(root.getScene().widthProperty());
@@ -327,7 +326,6 @@ public class ChatController implements Initializable, IChatController {
         }).start();
         new Thread(() -> {
             this.notifications = client.loadNotifications();
-            System.out.println("Size: " + notifications.size());
         }).start();
         searchTextField.setOnKeyReleased(this::searchContacts);
         /*SearchedGroupContact searchedGroupContact = new SearchedGroupContact(user);
@@ -368,10 +366,6 @@ public class ChatController implements Initializable, IChatController {
             }
         });
 
-
-
-
-//        Sayed End
     }
 
     //      Sayed Start
@@ -438,7 +432,8 @@ public class ChatController implements Initializable, IChatController {
         setListnerForPressingEnter(); // shimaa
         messageTextArea.setStyle("-fx-font-size:14");
     }
-    private void stop(){
+
+    private void stop() {
         line.stop();
         line.close();
         end = System.currentTimeMillis();
@@ -932,9 +927,6 @@ public class ChatController implements Initializable, IChatController {
                         System.out.println("you clicked me");
                         activeContact = myContact1;
                     });
-                    contactsList.getChildren().add(myContact);
-                    //  }
-
                     break;
                 }
             }
@@ -957,14 +949,6 @@ public class ChatController implements Initializable, IChatController {
             e.printStackTrace();
         }
     }
-   /* public void  removeKeepMeLoggedInFile(){
-        try {
-            File rememberMeFile = new File("./Client/src/main/java/org/asasna/chat/client/Auth/KeepMeLoggedIn.xml");
-            FileDeleteStrategy.FORCE.delete(rememberMeFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }*/
 
     // End Aya
 
@@ -984,31 +968,33 @@ public class ChatController implements Initializable, IChatController {
         }
     }
 
-
     @Override
     public void tempDisplayMessage(Message message) {//////////////////////////////////
         if (me.getId() == message.getUserId()) {
-            saveReceiverMessages(activeContact.getUser().getId(), message);
             showSenderMessage(message);
         } else {
             saveReceiverMessages(message.getUserId(), message);
             if (activeContact.getUser().getId() == message.getUserId()) {
                 showReceiverMessage(message);
-            } else if (message.getUserId() == 8000) {
-                showMessageNotification(message);
             } else {
                 showMessageNotification(message);
             }
-        }
-        //addition for chatbot
-        if (checkEnableChatbot) {
-            try {
-                if(message.getMessageType()==message.getMessageType().TEXT) {
-                    sendByChatbot(message.getMesssagecontent());
+            /////////////////////////////////////////////////////////////////////////////////////////////addition for chatbot
+
+            new Thread(() -> {
+            if(checkEnableChatbot)
+            {
+                System.out.println("chatbot start");
+                try {
+                    if(message.getMessageType()==message.getMessageType().TEXT) {
+                        sendByChatbot(message.getMesssagecontent());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
+            }).start();
+            ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         }
         saveReceiverMessages(message.getUserId(), message);
         addEventHandlerOnFileMessage(message);
@@ -1047,7 +1033,7 @@ public class ChatController implements Initializable, IChatController {
             if (activeContact instanceof GroupContact) {
                 if (((GroupContact) activeContact).getChatGroup().getGroupId() == groupId) {
                     messageView.setDirection(SpeechDirection.LEFT);
-                    messageView.setImage(((GroupContact) activeContact).getImage());
+                    messageView.setImage(((GroupContact)activeContact).getImage());
                     Platform.runLater(new Runnable() {
                         @Override
                         public void run() {
@@ -1057,6 +1043,26 @@ public class ChatController implements Initializable, IChatController {
                 } else {
                     System.out.println("Message:  " + message.getMesssagecontent() + " from  " + message.getUserId());
                 }
+                /*
+                /////////////////////////////////////////////////////////////////////////////////////////////addition for chatbot
+
+                new Thread(() -> {
+                    if(checkEnableChatbot)
+                    {
+                        System.out.println("chatbot start");
+                        try {
+                            if(message.getMessageType()==message.getMessageType().TEXT) {
+                                sendByChatbot(message.getMesssagecontent());
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
+                ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+                 */
             }
         }
             addEventHandlerOnFileMessage(message);
@@ -1128,7 +1134,8 @@ public class ChatController implements Initializable, IChatController {
 
     public void loadMessageChat() {
         if (receiverMessages.get(activeContact.getUser().getId()) != null) {
-            List<Message> messages = receiverMessages.get(activeContact.getUser().getId());
+            List<Message> messages = receiverMessages.get(activeContact.getUser().getId()) ;
+            //Collections.sort(messages);
             for (Message m : messages) {
                 MessageView messageView = new MessageView(m);
                 if (me.getId() == m.getUserId()) {
@@ -1286,10 +1293,9 @@ public class ChatController implements Initializable, IChatController {
 
     //    Start Abeer Emad
     Scene scene;
-    public void setScene(Scene scene){
+    public   void setScene(Scene scene){
         this.scene=scene;
     }
-
     @FXML
     public void ProfileButtonClicked() {
 
@@ -1323,19 +1329,26 @@ public class ChatController implements Initializable, IChatController {
         }
         else
             checkEnableChatbot=true;
+        System.out.println(checkEnableChatbot);
     }
 
+
     public void sendByChatbot(String messageReceivedContent) throws Exception {
+
+        System.out.println("1");
+        System.out.println(messageReceivedContent);
     ChatterBotFactory factory = new ChatterBotFactory();
 
     ChatterBot bot1 = factory.create(ChatterBotType.CLEVERBOT);
     ChatterBotSession bot1session = bot1.createSession();
 
-        String respond= bot1session.think(messageReceivedContent);
-//    ChatterBot bot2 = factory.create(ChatterBotType.PANDORABOTS, "b0dafd24ee35a477");
-//    ChatterBotSession bot2session = bot2.createSession();
+    String respond= bot1session.think(messageReceivedContent);
 
-        if (activeContact instanceof GroupContact) {
+
+        System.out.println("1");
+        System.out.println( "response is "+respond);
+
+       if (activeContact instanceof GroupContact) {
             System.out.println("inner");
             client.sendGroupMessage(((GroupContact) activeContact).getChatGroup(), new Message(client.getUser().getId(), respond));
         } else {
