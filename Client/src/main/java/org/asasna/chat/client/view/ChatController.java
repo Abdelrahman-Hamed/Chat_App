@@ -174,6 +174,7 @@ public class ChatController implements Initializable, IChatController {
         } catch (RemoteException e) {
             e.printStackTrace();
         }*/
+        groupMessages = new HashMap<>();
         try {
             me = client.getUser();
 
@@ -195,7 +196,7 @@ public class ChatController implements Initializable, IChatController {
         createbtn.getStyleClass().add("group-create-btn");
         this.searchArea.getChildren().add(createbtn);
         createbtn.setVisible(false);
-        Bindings.bindContentBidirectional(contactsList.getChildren(), FXCollections.observableArrayList(oContacts));
+        Bindings.bindContent(contactsList.getChildren(), FXCollections.observableArrayList(oContacts));
 
         try {
             IClientService registeredUser = new Client(this);
@@ -1001,32 +1002,13 @@ public class ChatController implements Initializable, IChatController {
     }
     @Override
     public void updateMyContactList(User updatedUser) {
+        oContacts.removeIf(contact -> contact.getUser().getId() == updatedUser.getId());
+        Contact contact1 = new Contact(updatedUser);
+        addRemoveFriendButton(contact1);
+        oContacts.add(contact1);
         Platform.runLater(() -> {
-            ObservableList<Node> contacts;
-            contacts = contactsList.getChildren();
-            Contact myContact;
-            // boolean newContact=false;
-            for (Node c : contacts) {
-                myContact = (Contact) c;
-                if (updatedUser.getId() == myContact.getUser().getId()) {
-                    // newContact=true;
-                    contactsList.getChildren().remove(myContact);
-                    // if(updatedUser.getStatus()!=UserStatus.OFFLINE) {
-                    Contact myContact1 = new Contact(updatedUser);
-                    addRemoveFriendButton(myContact1);
-                    contactsList.getChildren().add(myContact1);
-
-                    //  }
-
-                    break;
-                }
-            }
-           /* if(newContact){
-                myContact = new Contact(updatedUser);
-                contactsList.getChildren().add(myContact);
-            }*/
+            Bindings.bindContent(contactsList.getChildren(), FXCollections.observableArrayList(oContacts));
         });
-
     }
 
     @FXML
@@ -1446,7 +1428,7 @@ public class ChatController implements Initializable, IChatController {
         if(messageContent.length() > 0){
             if (activeContact instanceof GroupContact) {
                 System.out.println("inner");
-                client.sendGroupMessage(((GroupContact) activeContact).getChatGroup(), new Message(client.getUser().getId(), messageTextArea.getText()));
+                client.sendGroupMessage(((GroupContact) activeContact).getChatGroup(), new Message(client.getUser().getId(), messageContent));
             } else {
                 if (activeContact.getUser().getStatus() == UserStatus.ONLINE) {
                     if (messageTextArea.getText().length() !=0 && !messageTextArea.getText().equals(" ")) {
