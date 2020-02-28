@@ -20,6 +20,7 @@ public interface IChatController{
     void addNotification(Notification notification);
     public void updateMyContactList(User updatedUser);
     public void tempFileDisplayMessage(Message message);
+    public void tempDisplayMessage(Message message, int receiverId);
 
     void recieveRecord(int senderId, byte[] buf); // By Sayed Nabil
 

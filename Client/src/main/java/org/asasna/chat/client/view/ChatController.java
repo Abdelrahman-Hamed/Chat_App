@@ -980,7 +980,7 @@ public class ChatController implements Initializable, IChatController {
 
     @Override
     public void updateMyContactList(User updatedUser) {
-oContacts.removeIf(c->c.getUser().getId()==updatedUser.getId());
+        oContacts.removeIf(c -> c.getUser().getId() == updatedUser.getId());
         Platform.runLater(() -> {
             ObservableList<Node> contacts;
             contacts = contactsList.getChildren();
@@ -1037,11 +1037,12 @@ oContacts.removeIf(c->c.getUser().getId()==updatedUser.getId());
             e.printStackTrace();
         }
     }
-
     @Override
     public void tempDisplayMessage(Message message) {//////////////////////////////////
         if (me.getId() == message.getUserId()) {
-            showSenderMessage(message);
+
+                showSenderMessage(message);
+
         } else {
             saveReceiverMessages(message.getUserId(), message);
             if (activeContact.getUser().getId() == message.getUserId()) {
@@ -1049,20 +1050,38 @@ oContacts.removeIf(c->c.getUser().getId()==updatedUser.getId());
             } else {
                 showMessageNotification(message);
             }
-            /////////////////////////////////////////////////////////////////////////////////////////////addition for chatbot
+        }
+        saveReceiverMessages(message.getUserId(), message);
+        addEventHandlerOnFileMessage(message);
+    }
 
-            new Thread(() -> {
-                if (checkEnableChatbot) {
+    @Override
+    public void tempDisplayMessage(Message message, int receiverId) {//////////////////////////////////
+        if (me.getId() == message.getUserId()) {
+            if (receiverId == activeContact.getUser().getId()) {
+                showSenderMessage(message);
+            }
+            /////////////////////////////////////////////////////else save in messagelist
+        } else {
+            saveReceiverMessages(message.getUserId(), message);/////////////////////////////////////////////hattms7
+            if (activeContact.getUser().getId() == message.getUserId()) {
+                showReceiverMessage(message);
+            } else {
+                showMessageNotification(message);
+            }
+            /////////////////////////////////////////////////////////////////////////////////////////////addition for chatbot
+            if (checkEnableChatbot) {
+                new Thread(() -> {
                     System.out.println("chatbot start");
                     try {
                         if (message.getMessageType() == message.getMessageType().TEXT) {
-                            sendByChatbot(message.getMesssagecontent());
+                            sendByChatbot(message);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                }
-            }).start();
+                }).start();
+            }
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         }
         saveReceiverMessages(message.getUserId(), message);
@@ -1392,30 +1411,36 @@ oContacts.removeIf(c->c.getUser().getId()==updatedUser.getId());
         System.out.println(checkEnableChatbot);
     }
 
-    public void sendByChatbot(String messageReceivedContent) throws Exception {
+    public void sendByChatbot(Message messageReceivedContent) throws Exception {
         ChatterBotFactory factory = new ChatterBotFactory();
 
-        ChatterBot bot1 = factory.create(ChatterBotType.CLEVERBOT);
+        ChatterBot bot1 = factory.create(ChatterBotType.PANDORABOTS, "b0dafd24ee35a477");;
         ChatterBotSession bot1session = bot1.createSession();
-        String respond = bot1session.think(messageReceivedContent);
-//    ChatterBot bot2 = factory.create(ChatterBotType.PANDORABOTS, "b0dafd24ee35a477");
-//    ChatterBotSession bot2session = bot2.createSession();
+        String respond = bot1session.think(messageReceivedContent.getMesssagecontent());
+
 
         if (activeContact instanceof GroupContact) {
             System.out.println("inner");
             client.sendGroupMessage(((GroupContact) activeContact).getChatGroup(), new Message(client.getUser().getId(), respond));
         } else {
-            if (activeContact.getUser().getStatus() == UserStatus.ONLINE) {
-                int receiverId = activeContact.getUser().getId();
-                int senderId = me.getId();
-                String messageContent = respond;
-                messageTextArea.setText("");
-                Message message = new Message(senderId, messageContent, MessageType.TEXT);
-                sendMessage(receiverId, message);
+            int receiverId;
+            ObservableList<Node> contacts;
+            contacts = contactsList.getChildren();
+            Contact myContact;
+            // boolean newContact=false;
+            for (Node c : contacts) {
+                myContact = (Contact) c;
+                if (myContact.getUser().getStatus() == UserStatus.ONLINE) {
+                    receiverId = messageReceivedContent.getUserId();
+                    int senderId = me.getId();
+                    String messageContent = respond;
+                    messageTextArea.setText("");
+                    Message message = new Message(senderId, messageContent, MessageType.TEXT);
+                    sendMessage(receiverId, message);
+                    break;
+                }
             }
-
         }
-
     }
     // End Abeer Emad
 
