@@ -8,10 +8,8 @@ import javafx.stage.Stage;
 import org.asasna.chat.client.Controller.Client;
 import org.asasna.chat.client.model.IChatController;
 import org.asasna.chat.client.util.AES;
-import org.asasna.chat.client.view.ChatController;
 import org.asasna.chat.client.view.Controller;
 import org.asasna.chat.client.view.PrimaryController;
-import org.asasna.chat.common.service.IChatService;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.ProcessingInstruction;
@@ -36,17 +34,18 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
+            scene = new Scene(loadFXML("login"));
+            stage.setScene(scene);
+            stage.setMinWidth(1000);
+            stage.setMinHeight(600);
+            primaryController.setScene(scene);
+            stage.show();
 
-        scene = new Scene(loadFXML("login"), 900, 600);
-        stage.setScene(scene);
-        primaryController.setScene(scene);
         File keepMeLoggedInFile = new File("./Client/src/main/java/org/asasna/chat/client/Auth/KeepMeLoggedIn.xml");
         if (keepMeLoggedInFile.exists()) {
             primaryController.loadChatByDefault(keepMeLoggedInFile);
         }
         stage.show();
-
-
 
     }
 

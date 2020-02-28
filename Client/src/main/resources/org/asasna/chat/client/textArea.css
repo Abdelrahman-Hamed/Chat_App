@@ -10,4 +10,9 @@
 .text-area{
     -fx-background-radius: 60;
     -fx-border-radius: 60;
+    -fx-text-alignment: center;
+    -fx-padding: 10 0 0 0;
+}
+.text-area .text{
+    -fx-text-alignment: center-left;
 }
