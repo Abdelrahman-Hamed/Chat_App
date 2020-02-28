@@ -6,12 +6,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.text.Text;
+import javafx.util.Pair;
 import org.apache.commons.io.FileDeleteStrategy;
 import org.asasna.chat.client.App;
 import org.asasna.chat.client.Controller.Client;
@@ -141,7 +139,12 @@ public class PrimaryController implements Initializable {
         if (!Validation.validatePhoneNumber(phoneNumber.getText())) {
             errorPhoneNumber.setVisible(true);
             errorPhoneNumber.setText("Not A Valid Phone Number");
-        } else {
+        }
+        else if(!Validation.validateLoginPassword(password.getText())){
+            errorPassword.setVisible(true);
+            errorPassword.setText("Not A Valid English Password");
+        }
+        else {
             System.out.println("Clicked");
             /////////////////////////////////////////////////////////////////////////////////////keep me
             phoneNo = phoneNumber.getText();
@@ -151,9 +154,7 @@ public class PrimaryController implements Initializable {
             errorPhoneNumber.setVisible(false);
 
             IChatService chatService = createChatService(phoneNumber.getText(), password.getText());
-            if (chatService == null) {
-                System.out.println("Phone Number OR Password is Incorrect");
-            } else {
+            if (chatService != null)  {
                 if (rememberMe.isSelected()) {
                     //createRememberMeFile(phoneNumber.getText(), password.getText());
                     createMyFile("rememberme");
@@ -200,7 +201,15 @@ public class PrimaryController implements Initializable {
         try {
             chatController = new ChatController();
             client = new Client(chatController);
-            chatService = client.login(myPhoneNumber, myPassword);
+            Pair< String ,IChatService> temp=client.login(myPhoneNumber, myPassword);
+            chatService = temp.getValue();
+            if(chatService==null){
+                System.out.println(temp.getKey());
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setHeaderText(null);
+                alert.setContentText(temp.getKey());
+                alert.show();
+            }
 
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -294,9 +303,7 @@ public class PrimaryController implements Initializable {
         pass = arr[1];
 
         IChatService chatService = createChatService(phoneNo, pass);
-        if (chatService == null) {
-            System.out.println("Phone Number OR Password is Incorrect");
-        } else {
+        if (chatService != null)  {
 
             /////////////////////////////////////////////////////////////////////////////////////////////keep me logged in
             try {
@@ -305,8 +312,10 @@ public class PrimaryController implements Initializable {
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
+            removeFile("KeepMeLoggedIn");
 
             setChatScene();
+
 
         }
 

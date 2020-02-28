@@ -2,6 +2,7 @@ package org.asasna.chat.server.controller;
 
 import javafx.collections.ObservableList;
 import javafx.scene.chart.PieChart;
+import javafx.util.Pair;
 import org.asasna.chat.common.model.User;
 import org.asasna.chat.common.model.UserStatus;
 import org.asasna.chat.common.service.IAuthenticationService;
@@ -28,20 +29,21 @@ public class AuthenticationService extends UnicastRemoteObject implements IAuthe
     }
 
     @Override
-    public IChatService login(String phoneNumber, String password) throws RemoteException {
+    public Pair< String ,IChatService> login(String phoneNumber, String password) throws RemoteException {
         try {
             UserDao userDao = new UserDao();
             user = userDao.getUser(phoneNumber, password);
-            if (user == null) return null;
+            if (user == null) return new Pair <String ,IChatService> ("PHONE NUMBER OR PASSWORD IS INCORRECT", null);
+            if(ChatService.onlineUsers.containsKey(user.getId())) return new Pair <String ,IChatService> ("YOU'RE ALREADY LOGGED IN", null);
             user.setStatus(UserStatus.ONLINE);
             thisChatService=new ChatService(user);
             thisChatService.changeUserStatus(user.getId(), UserStatus.ONLINE);
             thisChatService.notifyMyfriends(user.getId());
-            return thisChatService;
+            return new Pair <String ,IChatService> ("Done",thisChatService);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null;
+        return new Pair <String ,IChatService> ("null",null);
     }
     /////////////////////////////////////////////////////////////////////////keep me
     public int getUserToSave()throws RemoteException{

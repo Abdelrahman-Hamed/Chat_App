@@ -130,7 +130,6 @@
                <VBox prefHeight="86.0" prefWidth="124.0">
                   <children>
                      <HBox prefHeight="212.0" prefWidth="79.0" />
-                     <JFXToggleButton mnemonicParsing="false" onAction="#chatbotButtonClicked" prefHeight="58.0" prefWidth="45.0" toggleColor="#045ba5" toggleLineColor="#1e82dc" />
                   </children>
                </VBox>
 

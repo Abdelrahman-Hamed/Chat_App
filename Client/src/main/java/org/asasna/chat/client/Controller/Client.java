@@ -1,6 +1,7 @@
 package org.asasna.chat.client.Controller;
 
 import javafx.stage.DirectoryChooser;
+import javafx.util.Pair;
 import org.asasna.chat.client.model.IChatController;
 import org.asasna.chat.client.view.RegisterController;
 import org.asasna.chat.common.model.Message;
@@ -49,8 +50,8 @@ public class Client extends UnicastRemoteObject implements IClientService {
             System.setProperty("javax.net.ssl.trustStore", "/home/abdulrahman/IdeaProjects/ITI_Chat/sysdmtruststore.ks");
             System.setProperty("javax.net.ssl.trustStorePassword", "123456");
 
-            Registry reg = LocateRegistry.getRegistry("127.0.0.1", 5001, new SslRMIClientSocketFactory());
-            //Registry reg = LocateRegistry.getRegistry(5001);
+//            Registry reg = LocateRegistry.getRegistry("10.145.4.235", 5001, new SslRMIClientSocketFactory());
+            Registry reg = LocateRegistry.getRegistry(5001);
             authenticationService = (IAuthenticationService) reg.lookup("AuthenticationService");
         } catch (RemoteException | NotBoundException e) {
             e.printStackTrace();
@@ -126,10 +127,11 @@ public class Client extends UnicastRemoteObject implements IClientService {
         chatService.sendGroupMsg(group, message);
     }
 
-    public IChatService login(String phoneNumber, String password) {
+    public Pair< String ,IChatService> login(String phoneNumber, String password) {
         try {
-            chatService = authenticationService.login(phoneNumber, password);
-            return chatService;
+            Pair < String ,IChatService> temp=authenticationService.login(phoneNumber, password);
+            chatService = temp.getValue();
+            return temp;
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -160,6 +162,7 @@ public class Client extends UnicastRemoteObject implements IClientService {
     public void acceptRequest(int fromUserId) {
         try {
             chatService.acceptRequest(fromUserId, user.getId());
+            chatController.removeNotification(fromUserId);
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -178,8 +181,8 @@ public class Client extends UnicastRemoteObject implements IClientService {
 
     public boolean rejectFriendRequest(int userId) {
         try {
-            System.out.println("UserId: " + userId);
             boolean done = chatService.cancelFriendRequest(userId, chatService.getUser().getId());
+            chatController.removeNotification(userId);
             return done;
         } catch (RemoteException e) {
             e.printStackTrace();

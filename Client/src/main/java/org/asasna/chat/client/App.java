@@ -70,8 +70,9 @@ public class App extends Application {
         if(primaryController.setTheChatScene) {
             primaryController.createMyFile("KeepMeLoggedIn");
             primaryController.signOut();
-            System.exit(0);
         }
+        System.exit(0);
+
     }
 
 
