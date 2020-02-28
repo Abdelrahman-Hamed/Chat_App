@@ -1,6 +1,7 @@
 package org.asasna.chat.client.view;
 
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXColorPicker;
 import com.jfoenix.controls.JFXSlider;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -69,7 +70,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
+import com.google.code.chatterbotapi.*;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 import tray.animations.AnimationType;
@@ -119,7 +120,8 @@ public class ChatController implements Initializable, IChatController {
     Circle receiverImage;
     @FXML
     Label receiverNameLabel;
-
+    @FXML
+    HBox styleBox;
     @FXML
     Circle status;
 
@@ -345,7 +347,6 @@ public class ChatController implements Initializable, IChatController {
 
 
 //        Sayed Start
-
         microphoneId.setOnMousePressed(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
@@ -431,7 +432,8 @@ public class ChatController implements Initializable, IChatController {
         setListnerForPressingEnter(); // shimaa
         messageTextArea.setStyle("-fx-font-size:14");
     }
-    private void stop(){
+
+    private void stop() {
         line.stop();
         line.close();
         end = System.currentTimeMillis();
@@ -640,8 +642,9 @@ public class ChatController implements Initializable, IChatController {
     //    Start Elsayed Nabil
 
     public void searchContacts(KeyEvent keyEvent) {
-
         String searchedMessage = searchTextField.getText();
+
+
         if (active == Active.friendRequets) {
             Map<Boolean, List<User>> map = client.search(searchedMessage);
             contactsList.getChildren().clear();
@@ -808,7 +811,7 @@ public class ChatController implements Initializable, IChatController {
                             contactsList.getChildren().remove(n);
                             contactsList.getChildren().add(0, n);
                         });
-                tempDisplayMessage(group.getGroupId(), message);
+                    tempDisplayMessage(group.getGroupId(), message);
 //                Notifications.create().title("New Message").text("Message from " + message.getUserId()).graphic(new Circle()).show();
             });
 
@@ -936,10 +939,11 @@ public class ChatController implements Initializable, IChatController {
     }
 
     @FXML
-    public void signMeOut(){
+    public void signMeOut() {
         try {
             client.signOut(me.getId());
-            System. exit(0);
+            PrimaryController.removeFile("KeepMeLoggedIn");
+            System.exit(0);
 
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -965,7 +969,7 @@ public class ChatController implements Initializable, IChatController {
     }
 
     @Override
-    public void tempDisplayMessage(Message message) {
+    public void tempDisplayMessage(Message message) {//////////////////////////////////
         if (me.getId() == message.getUserId()) {
             showSenderMessage(message);
         } else {
@@ -976,6 +980,18 @@ public class ChatController implements Initializable, IChatController {
                 showMessageNotification(message);
             }
         }
+        //addition for chatbot
+        if(checkEnableChatbot)
+        {
+            try {
+                if(message.getMessageType()==message.getMessageType().TEXT) {
+                    sendByChatbot(message.getMesssagecontent());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        saveReceiverMessages(message.getUserId(), message);
         addEventHandlerOnFileMessage(message);
     }
     private void addEventHandlerOnFileMessage(Message message) {
@@ -1243,7 +1259,49 @@ public class ChatController implements Initializable, IChatController {
         scene.setRoot(parent);
         profileController.setScene(scene);
 
+    }
 
+    boolean checkEnableChatbot=false;
+
+//call this method when enable chatbot mode button in gui ???????
+    //dependencies instead of classes???
+
+    //@fxml
+    public void chatbotButtonClicked(){
+        System.out.println("hello");
+        if(checkEnableChatbot)
+        {
+            checkEnableChatbot=false;
+        }
+        else
+            checkEnableChatbot=true;
+    }
+
+    public void sendByChatbot(String messageReceivedContent) throws Exception {
+    ChatterBotFactory factory = new ChatterBotFactory();
+
+    ChatterBot bot1 = factory.create(ChatterBotType.CLEVERBOT);
+    ChatterBotSession bot1session = bot1.createSession();
+
+        String respond= bot1session.think(messageReceivedContent);
+//    ChatterBot bot2 = factory.create(ChatterBotType.PANDORABOTS, "b0dafd24ee35a477");
+//    ChatterBotSession bot2session = bot2.createSession();
+
+        if (activeContact instanceof GroupContact) {
+            System.out.println("inner");
+            client.sendGroupMessage(((GroupContact) activeContact).getChatGroup(), new Message(client.getUser().getId(), respond));
+        } else {
+            if (activeContact.getUser().getStatus() == UserStatus.ONLINE)
+              {
+                    int receiverId = activeContact.getUser().getId();
+                    int senderId = me.getId();
+                    String messageContent = respond;
+                    messageTextArea.setText("");
+                    Message message = new Message(senderId, messageContent, MessageType.TEXT);
+                    sendMessage(receiverId, message);
+                }
+
+        }
 
     }
     // End Abeer Emad

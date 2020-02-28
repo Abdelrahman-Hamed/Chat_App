@@ -9,7 +9,11 @@
 <?import javafx.scene.text.*?>
 <?import org.kordamp.ikonli.javafx.*?>
 
-<BorderPane fx:id="mainWindow" prefHeight="500.0" prefWidth="900.0" stylesheets="@../chat.css"
+<?import com.jfoenix.controls.JFXColorPicker?>
+<?import com.jfoenix.skins.JFXCustomColorPicker?>
+<?import com.jfoenix.skins.JFXColorPickerUI?>
+<?import org.controlsfx.dialog.FontSelectorDialog.FontPanel?>
+<BorderPane fx:id="mainWindow" prefHeight="500.0" prefWidth="1200.0" stylesheets="@../chat.css"
             xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
     <left>
         <HBox>
@@ -122,6 +126,12 @@
                             </cursor>
                         </FontIcon>
                     </HBox>
+               <VBox prefHeight="86.0" prefWidth="124.0">
+                  <children>
+                     <HBox prefHeight="212.0" prefWidth="79.0" />
+                     <JFXToggleButton mnemonicParsing="false" onAction="#chatbotButtonClicked" prefHeight="58.0" prefWidth="45.0" toggleColor="#045ba5" toggleLineColor="#1e82dc" />
+                  </children>
+               </VBox>
 
                 </HBox>
             </top>
@@ -133,6 +143,11 @@
             <bottom>
 
                 <BorderPane>
+                    <top>
+                        <HBox prefHeight="50" fx:id="styleBox">
+                            <ColorPicker></ColorPicker>
+                        </HBox>
+                    </top>
                     <center>
                         <HBox fx:id="chatArea_hbox" prefHeight="95.0">
                             <padding>
@@ -148,7 +163,8 @@
                                 </cursor>
                             </FontIcon>
                             <TextArea fx:id="messageTextArea" prefHeight="68.0" HBox.hgrow="ALWAYS" maxWidth="Infinity"
-                                      promptText="Enter Your Message" stylesheets="@../textArea.css" wrapText="true">
+                                      promptText="Enter Your Message ..." stylesheets="@../textArea.css" wrapText="true"
+                                      style="-fx-text-alignment: bottom">
                                 <HBox.margin>
                                     <Insets left="10.0" top="15.0"/>
                                 </HBox.margin>
