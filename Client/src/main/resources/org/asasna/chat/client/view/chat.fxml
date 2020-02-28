@@ -13,6 +13,7 @@
 <?import com.jfoenix.skins.JFXCustomColorPicker?>
 <?import com.jfoenix.skins.JFXColorPickerUI?>
 <?import org.controlsfx.dialog.FontSelectorDialog.FontPanel?>
+<?import com.jfoenix.controls.JFXToggleButton?>
 <BorderPane fx:id="mainWindow" prefHeight="500.0" prefWidth="1200.0" stylesheets="@../chat.css"
             xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
     <left>
@@ -117,7 +118,7 @@
                             </cursor>
                         </FontIcon>
                         <FontIcon iconColor="#1e82dc" iconLiteral="dashicons-paperclip" iconSize="30"
-                                  onMouseClicked="#chooseFile" wrappingWidth="28.25">
+                                  onMouseClicked="#chooseFile" wrappingWidth="28.25" fx:id="attachmentIcon">
                             <HBox.margin>
                                 <Insets top="35.0"/>
                             </HBox.margin>
