@@ -790,7 +790,9 @@ public class ChatController implements Initializable, IChatController {
                 });
                 contactsList.getChildren().add(0, contact);
                 tempDisplayMessage(message);
+
             });
+
         } else {
             Platform.runLater(() -> {
                 contactsList.getChildren().parallelStream()
@@ -913,11 +915,7 @@ public class ChatController implements Initializable, IChatController {
                     // if(updatedUser.getStatus()!=UserStatus.OFFLINE) {
                     Contact myContact1 = new Contact(updatedUser);
                     contactsList.getChildren().add(myContact1);
-                    myContact1.setOnMouseClicked(ev -> {
-                        System.out.println("you clicked me");
-                        activeContact = myContact1;
-                    });
-                    contactsList.getChildren().add(myContact);
+
                     //  }
 
                     break;
@@ -981,17 +979,22 @@ public class ChatController implements Initializable, IChatController {
             } else {
                 showMessageNotification(message);
             }
-        }
-        //addition for chatbot
-        if(checkEnableChatbot)
-        {
-            try {
-                if(message.getMessageType()==message.getMessageType().TEXT) {
-                    sendByChatbot(message.getMesssagecontent());
+            /////////////////////////////////////////////////////////////////////////////////////////////addition for chatbot
+
+            new Thread(() -> {
+            if(checkEnableChatbot)
+            {
+                System.out.println("chatbot start");
+                try {
+                    if(message.getMessageType()==message.getMessageType().TEXT) {
+                        sendByChatbot(message.getMesssagecontent());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
+            }).start();
+            ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         }
 
     }
@@ -1276,19 +1279,26 @@ public class ChatController implements Initializable, IChatController {
         }
         else
             checkEnableChatbot=true;
+        System.out.println(checkEnableChatbot);
     }
 
+
     public void sendByChatbot(String messageReceivedContent) throws Exception {
+
+        System.out.println("1");
+        System.out.println(messageReceivedContent);
     ChatterBotFactory factory = new ChatterBotFactory();
 
-    ChatterBot bot1 = factory.create(ChatterBotType.CLEVERBOT);
+    ChatterBot bot1 = factory.create(ChatterBotType.PANDORABOTS, "b0dafd24ee35a477");
     ChatterBotSession bot1session = bot1.createSession();
 
-        String respond= bot1session.think(messageReceivedContent);
-//    ChatterBot bot2 = factory.create(ChatterBotType.PANDORABOTS, "b0dafd24ee35a477");
-//    ChatterBotSession bot2session = bot2.createSession();
+    String respond= bot1session.think(messageReceivedContent);
 
-        if (activeContact instanceof GroupContact) {
+
+        System.out.println("1");
+        System.out.println( "response is "+respond);
+
+       if (activeContact instanceof GroupContact) {
             System.out.println("inner");
             client.sendGroupMessage(((GroupContact) activeContact).getChatGroup(), new Message(client.getUser().getId(), respond));
         } else {
