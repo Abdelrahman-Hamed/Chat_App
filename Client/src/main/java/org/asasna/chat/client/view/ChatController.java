@@ -1383,9 +1383,6 @@ public class ChatController implements Initializable, IChatController {
 
         ChatterBot bot1 = factory.create(ChatterBotType.CLEVERBOT);
         ChatterBotSession bot1session = bot1.createSession();
-    ChatterBot bot1 = factory.create(ChatterBotType.PANDORABOTS, "b0dafd24ee35a477");
-    ChatterBotSession bot1session = bot1.createSession();
-
         String respond = bot1session.think(messageReceivedContent);
 //    ChatterBot bot2 = factory.create(ChatterBotType.PANDORABOTS, "b0dafd24ee35a477");
 //    ChatterBotSession bot2session = bot2.createSession();
