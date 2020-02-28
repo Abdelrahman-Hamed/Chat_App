@@ -108,8 +108,7 @@
                                 <Cursor fx:constant="HAND"/>
                             </cursor>
                         </FontIcon>
-                        <FontIcon iconColor="#1e82dc" iconLiteral="dashicons-phone" iconSize="30"
-                                  onMouseClicked="#cleanchat">
+                        <FontIcon iconColor="#1e82dc" iconLiteral="dashicons-phone" iconSize="30" >
                             <HBox.margin>
                                 <Insets right="15.0" top="35.0"/>
                             </HBox.margin>
@@ -131,9 +130,8 @@
                 </HBox>
             </top>
             <center>
-                <ScrollPane fx:id="chatArea_scroll">
-                    <VBox fx:id="view"
-                          style="-fx-border-color: #ffffff  #ffffff  #1e82dc #ffffff;"/>
+                <ScrollPane fx:id="chatArea_scroll" >
+                    <VBox fx:id="view"/>
                 </ScrollPane>
             </center>
             <bottom>
@@ -144,7 +142,6 @@
                         </HBox>
                     </top>
                     <center>
-
                         <HBox fx:id="chatArea_hbox" prefHeight="95.0">
                             <padding>
                                 <Insets left="10.0" top="10.0" right="30.0" bottom="20.0"/>
@@ -158,7 +155,6 @@
                                     <Cursor fx:constant="HAND"/>
                                 </cursor>
                             </FontIcon>
-
                             <TextArea fx:id="messageTextArea" prefHeight="68.0" HBox.hgrow="ALWAYS" maxWidth="Infinity"
                                       promptText="Enter Your Message ..." stylesheets="@../textArea.css" wrapText="true"
                                       style="-fx-text-alignment: bottom">

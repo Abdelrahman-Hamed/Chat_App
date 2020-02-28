@@ -83,6 +83,10 @@ public class AuthenticationService extends UnicastRemoteObject implements IAuthe
         userDao = new UserDao();
         return  userDao.getUsersByGender();
     }
+    public ObservableList<PieChart.Data> getCountryData() throws RemoteException, SQLException {
+        userDao = new UserDao();
+        return  userDao.getUsersByCountry();
+    }
     public ObservableList<PieChart.Data> getStatusData() throws RemoteException, SQLException {
         userDao = new UserDao();
         return  userDao.getUsersByStatus();

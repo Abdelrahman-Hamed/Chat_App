@@ -263,8 +263,19 @@ public class UserDao implements IUserDao {
 
     @Override
     public ObservableList<PieChart.Data> getUsersByCountry() {
-        return null;
-        // need to ask for number of countries and what are they ?
+        ResultSet resultSet ;
+        ObservableList<PieChart.Data> countriesData = FXCollections.observableArrayList();
+        String query = "SELECT count(country),country FROM users group by country" ;
+        try {
+            resultSet = statement.executeQuery(query);
+            while (resultSet.next()){
+                PieChart.Data countryData = new PieChart.Data(resultSet.getString(2), resultSet.getInt(1));
+                countriesData.add(countryData);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return countriesData;
     }
 
     @Override
@@ -426,8 +437,10 @@ public class UserDao implements IUserDao {
             preparedStatement.setString(2, user.getPhone());
             preparedStatement.setString(3, user.getName());
             preparedStatement.setString(4, user.getEmail());
-            ImageIO.write(SwingFXUtils.fromFXImage(user.getImage(), null), "png", new File("./org/asasna/chat/server/assets/"+user.getPhone()));
-            preparedStatement.setString(5, user.getPhone()+".png");
+            File file = new File("Server\\src\\main\\resources\\org\\asasna\\chat\\server\\"+user.getPhone()+".jpg");
+            file.mkdirs();//nehal edit
+            ImageIO.write(SwingFXUtils.fromFXImage(user.getImage(), null), "jpg", file);
+            preparedStatement.setString(5, user.getPhone()+".jpg");
             preparedStatement.setString(6, user.getPassword());
             Gender gender = user.getGender();
             String genderString = "Male";

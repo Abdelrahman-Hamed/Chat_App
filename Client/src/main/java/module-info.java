@@ -13,8 +13,9 @@ module org.asasna.client {
     requires java.desktop;
     requires javafx.media;
     requires jcodec;
-
+    requires notification;
     opens org.asasna.chat.client;
     opens org.asasna.chat.client.view to javafx.fxml;
     exports org.asasna.chat.client;
+    exports org.asasna.chat.client.Controller;
 }
