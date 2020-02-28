@@ -37,10 +37,6 @@ import javafx.util.Duration;
 import org.apache.commons.io.FileDeleteStrategy;
 import org.asasna.chat.client.Controller.Client;
 import org.asasna.chat.client.model.*;
-import org.asasna.chat.client.model.chatbot.ChatterBot;
-import org.asasna.chat.client.model.chatbot.ChatterBotFactory;
-import org.asasna.chat.client.model.chatbot.ChatterBotSession;
-import org.asasna.chat.client.model.chatbot.ChatterBotType;
 import org.asasna.chat.common.model.Message;
 import org.asasna.chat.common.model.Notification;
 import org.asasna.chat.common.model.User;
@@ -82,6 +78,8 @@ import tray.notification.TrayNotification;
 import java.io.FileWriter;
 import java.io.File;
 import java.io.IOException;
+import com.google.code.chatterbotapi.*;
+
 
 
 public class ChatController implements Initializable, IChatController {
