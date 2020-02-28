@@ -26,7 +26,7 @@ import org.asasna.chat.server.view.PasswordAuthentication;
 
 public class ChatService extends UnicastRemoteObject implements IChatService {
 
-    private static Map<Integer, IClientService> onlineUsers = new HashMap<>(); // will need it
+    public static Map<Integer, IClientService> onlineUsers = new HashMap<>(); // will need it
     IUserDao userDao;
     private User user;
 
