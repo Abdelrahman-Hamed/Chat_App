@@ -971,6 +971,7 @@ public class ChatController implements Initializable, IChatController {
     @Override
     public void tempDisplayMessage(Message message) {//////////////////////////////////
         if (me.getId() == message.getUserId()) {
+            saveReceiverMessages(activeContact.getUser().getId(), message);
             showSenderMessage(message);
         } else {
             saveReceiverMessages(message.getUserId(), message);
@@ -996,8 +997,8 @@ public class ChatController implements Initializable, IChatController {
             }).start();
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         }
-        saveReceiverMessages(message.getUserId(), message);
-        addEventHandlerOnFileMessage(message);
+//        saveReceiverMessages(message.getUserId(), message);
+//        addEventHandlerOnFileMessage(message);
     }
     private void addEventHandlerOnFileMessage(Message message) {
         if (message.getMessageType() == MessageType.FILE) {
@@ -1221,11 +1222,12 @@ public class ChatController implements Initializable, IChatController {
             public void run() {
                 try {
                     TrayNotification tray = new TrayNotification();
-                    if (message.getUserId() == 8000 && !ifAdminContactExist()) {
-                        Contact admin = createAdminContact();
+                    if (message.getUserId() == 8000) {
                         tray.setTitle(admin.getUser().getName());
                         tray.setImage(admin.getUser().getImage());
-                        contactsList.getChildren().add(0, admin);
+                        if (!ifAdminContactExist()) {
+                            contactsList.getChildren().add(0, admin);
+                        }
                     } else{
                         User notSelectedFriend = client.getUser(message.getUserId());
                         tray.setTitle(notSelectedFriend.getName());
@@ -1265,23 +1267,24 @@ public class ChatController implements Initializable, IChatController {
         });
     }
 
-    private Contact createAdminContact() {
-        Image adminImage = new Image(getClass().getResource("admin.jpg").toExternalForm());
+    private static User createAdminContact() {
+        Image adminImage = new Image(ChatController.class.getResource("admin.jpg").toExternalForm());
         User admin = new User();
         admin.setId(8000);
         admin.setName("Admin");
         admin.setStatus(UserStatus.ONLINE);
         admin.setImage(adminImage);
-        Contact adminContact = new Contact(admin);
-        return adminContact;
+        return admin;
     }
 
+    static Contact admin = new Contact(createAdminContact());
+
     private boolean ifAdminContactExist() {
-        List<Node> contacts;
+        ObservableList<Node> contacts;
         boolean isExist = false;
         contacts = contactsList.getChildren();
         for (Node c : contacts) {
-            if(createAdminContact().equals(c)){
+            if(admin.equals(c)){
                 isExist =true;
             }
         }
