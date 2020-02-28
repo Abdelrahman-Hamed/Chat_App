@@ -242,6 +242,7 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     @Override
     public void sendAnnouncementsToOnlineUsers(Message message) throws RemoteException {
         for (IClientService client : onlineUsers.values()){
+            System.out.println("At ChatService --------> " + message);
             client.receiveAnnouncementFromAdmin(message);
         }
     }

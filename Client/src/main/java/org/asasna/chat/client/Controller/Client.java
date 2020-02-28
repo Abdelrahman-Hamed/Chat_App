@@ -335,6 +335,7 @@ public class Client extends UnicastRemoteObject implements IClientService {
 
     @Override
     public void receiveAnnouncementFromAdmin(Message message) throws RemoteException {
+        System.out.println("At Client -----> " + message);
         chatController.tempDisplayMessage(message);
     }
 
