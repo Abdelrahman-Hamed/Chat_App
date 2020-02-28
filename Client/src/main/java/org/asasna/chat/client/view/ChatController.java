@@ -1,5 +1,9 @@
 package org.asasna.chat.client.view;
 
+import com.google.code.chatterbotapi.ChatterBot;
+import com.google.code.chatterbotapi.ChatterBotFactory;
+import com.google.code.chatterbotapi.ChatterBotSession;
+import com.google.code.chatterbotapi.ChatterBotType;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXColorPicker;
 import com.jfoenix.controls.JFXSlider;
@@ -71,7 +75,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import com.google.code.chatterbotapi.*;
+
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 import tray.animations.AnimationType;
@@ -269,10 +273,6 @@ public class ChatController implements Initializable, IChatController {
             });
             notificationIcon.setOnMouseClicked(e -> {
                 active = Active.Notifications;
-                contactsList.getChildren().clear();
-                notifications.stream().forEach(notification -> {
-                    contactsList.getChildren().add(new NotificationView(client, notification));
-                });
             });
             /*this.root.prefHeightProperty().bind(root.getScene().heightProperty());
             this.root.prefWidthProperty().bind(root.getScene().widthProperty());
@@ -286,7 +286,7 @@ public class ChatController implements Initializable, IChatController {
             this.chatArea_scroll.prefWidthProperty().bind(root.getScene().widthProperty().multiply(.5));
             this.chatArea_scroll.prefHeightProperty().bind(root.getScene().heightProperty());
             //this.chatArea_scroll.vvalueProperty().bind(this.view.heightProperty());
-            //this.chatArea_scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER); // shimaa
+            this.chatArea_scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER); // shimaa
             this.view.prefHeightProperty().bind(this.root.getScene().heightProperty());
             this.view.prefWidthProperty().bind(this.root.getScene().widthProperty().multiply(.5));
             this.messageTextArea.prefHeightProperty().bind(root.getScene().heightProperty());
@@ -327,6 +327,7 @@ public class ChatController implements Initializable, IChatController {
         }).start();
         new Thread(() -> {
             this.notifications = client.loadNotifications();
+            System.out.println("Size: " + notifications.size());
         }).start();
         searchTextField.setOnKeyReleased(this::searchContacts);
         /*SearchedGroupContact searchedGroupContact = new SearchedGroupContact(user);
@@ -437,8 +438,7 @@ public class ChatController implements Initializable, IChatController {
         setListnerForPressingEnter(); // shimaa
         messageTextArea.setStyle("-fx-font-size:14");
     }
-
-    private void stop() {
+    private void stop(){
         line.stop();
         line.close();
         end = System.currentTimeMillis();
@@ -462,21 +462,20 @@ public class ChatController implements Initializable, IChatController {
             }).start();
         }
     }
-
-    private byte[] convertFileToBytes() {
+    private byte[] convertFileToBytes(){
         byte[] buf = new byte[1024];
-        try {
+        try{
             File wavFile = new File("./Client/src/main/resources/org/asasna/chat/client/audio/record.wav");
             FileInputStream fileInputStream = new FileInputStream(wavFile);
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            for (int readNum; (readNum = fileInputStream.read(buf)) != -1; ) {
+            for (int readNum; (readNum = fileInputStream.read(buf)) != -1;) {
                 bos.write(buf, 0, readNum); //no doubt here is 0
                 System.out.println("read " + readNum + " bytes,");
             }
             removeWavFile();
             buf = bos.toByteArray();
             return buf;
-        } catch (FileNotFoundException ex) {
+        }catch(FileNotFoundException ex){
             ex.printStackTrace();
             return buf;
         } catch (IOException e) {
@@ -484,8 +483,7 @@ public class ChatController implements Initializable, IChatController {
             return buf;
         }
     }
-
-    private void removeWavFile() {
+    private void removeWavFile(){
         try {
             File wavFile = new File("./Client/src/main/resources/org/asasna/chat/client/audio/record.wav");
             FileDeleteStrategy.FORCE.delete(wavFile);
@@ -551,17 +549,15 @@ public class ChatController implements Initializable, IChatController {
         this.client = client;
     }
 
-    /*@FXML
+    @FXML
     private void getSelectedContact() {
         ObservableList<Node> contacts;
         contacts = contactsList.getChildren();
         for (Node c : contacts) {
             c.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
                 this.activeContact = (Contact) c;
-                System.out.println("active Contact is : " + this.activeContact.getUser().getName());
             });
         }
-    }*/
         /*    });
         }
         System.out.println("active Contact is : " + this.activeContact.getUser().getName());
@@ -678,14 +674,13 @@ public class ChatController implements Initializable, IChatController {
                         contactsList.getChildren().add(contact);
                     });
 
-        } else if (active == Active.Notifications) {
+        }else if(active == Active.Notifications){
             contactsList.getChildren().clear();
             notifications.stream().forEach(notification -> {
                 contactsList.getChildren().add(new NotificationView(client, notification));
             });
         }
     }
-
     @Override
     public void recieveRecord(int senderId, byte[] buf) {
         AudioFormat.Encoding encoding = AudioFormat.Encoding.PCM_SIGNED;
@@ -707,8 +702,8 @@ public class ChatController implements Initializable, IChatController {
 //            SourceDataLine line = (SourceDataLine) AudioSystem.getLine(info);
 //
 //            line.write(buf, 0, buf.length);
-        for (int i = 0; i < 10; i++)
-            System.out.println("Buf: " + buf[i]);
+            for(int i=0; i<10; i++)
+                System.out.println("Buf: " +  buf[i]);
 
         AudioInputStream ais = new AudioInputStream(new ByteArrayInputStream(buf), format, buf.length / format.getFrameSize());
         File wavFile = new File("./Client/src/main/resources/org/asasna/chat/client/audio/record2.wav");
@@ -821,7 +816,7 @@ public class ChatController implements Initializable, IChatController {
                             contactsList.getChildren().remove(n);
                             contactsList.getChildren().add(0, n);
                         });
-                tempDisplayMessage(group.getGroupId(), message);
+                    tempDisplayMessage(group.getGroupId(), message);
 //                Notifications.create().title("New Message").text("Message from " + message.getUserId()).graphic(new Circle()).show();
             });
 
@@ -863,7 +858,6 @@ public class ChatController implements Initializable, IChatController {
             }).start();
         }
     }
-
     @Override
     public void tempFileDisplayMessage(Message message) {
         viewTextMessage = new MSGview(message,this);
@@ -909,7 +903,7 @@ public class ChatController implements Initializable, IChatController {
                 myStatus = UserStatus.ONLINE;
             }
             me.setStatus(myStatus);
-            client.changeStatus(me, myStatus);
+            client.changeStatus(me,myStatus);
             System.out.println("chatController2");
             //circle.setfill()//wel list bta3tha
 
@@ -918,7 +912,6 @@ public class ChatController implements Initializable, IChatController {
         }
 
     }
-
     @Override
     public void updateMyContactList(User updatedUser) {
 
@@ -964,6 +957,14 @@ public class ChatController implements Initializable, IChatController {
             e.printStackTrace();
         }
     }
+   /* public void  removeKeepMeLoggedInFile(){
+        try {
+            File rememberMeFile = new File("./Client/src/main/java/org/asasna/chat/client/Auth/KeepMeLoggedIn.xml");
+            FileDeleteStrategy.FORCE.delete(rememberMeFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }*/
 
     // End Aya
 
@@ -983,6 +984,7 @@ public class ChatController implements Initializable, IChatController {
         }
     }
 
+
     @Override
     public void tempDisplayMessage(Message message) {//////////////////////////////////
         if (me.getId() == message.getUserId()) {
@@ -999,8 +1001,7 @@ public class ChatController implements Initializable, IChatController {
             }
         }
         //addition for chatbot
-        if(checkEnableChatbot)
-        {
+        if (checkEnableChatbot) {
             try {
                 if(message.getMessageType()==message.getMessageType().TEXT) {
                     sendByChatbot(message.getMesssagecontent());
