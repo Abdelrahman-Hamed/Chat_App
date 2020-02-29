@@ -6,6 +6,7 @@ import org.asasna.chat.common.model.*;
 import org.asasna.chat.common.service.IChatService;
 import org.asasna.chat.common.service.IClientService;
 import org.asasna.chat.server.App;
+import org.asasna.chat.server.model.dao.ContactDao;
 import org.asasna.chat.server.model.dao.IUserDao;
 import org.asasna.chat.server.model.dao.UserDao;
 
@@ -235,7 +236,23 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
         });
     }
 
-
+    @Override
+    public boolean removeFriend(int friendId) throws RemoteException {
+        try {
+            ContactDao contactDao = new ContactDao();
+            boolean result =  contactDao.removeFriend(user.getId(), friendId);
+            System.out.println("Get In Remove Friend");
+            if(result){
+                IClientService clientService = onlineUsers.get(friendId);
+                if(clientService != null)
+                    clientService.removeFriendFromList(user.getId());
+            }
+            return result;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
     /* end sayed */
 
     /* start nehal */
