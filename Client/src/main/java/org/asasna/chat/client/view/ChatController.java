@@ -1146,7 +1146,9 @@ public class ChatController implements Initializable, IChatController {
                     System.out.println("chatbot start");
                     try {
                         if (message.getMessageType() == message.getMessageType().TEXT) {
-                            sendByChatbot(message);
+                            sendByChatbot(message,false);
+                        }else{
+                            sendByChatbot(message,true);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -1546,9 +1548,7 @@ public class ChatController implements Initializable, IChatController {
 //        } else {
 //            if (activeContact.getUser().getStatus() == UserStatus.ONLINE) {
 //                int receiverId = activeContact.getUser().getId();
-    public void sendByChatbot(Message messageReceivedContent) throws Exception {
-
-        String respond = bot1session.think(messageReceivedContent.getMesssagecontent());
+    public void sendByChatbot(Message messageReceivedContent,boolean sendMsgToMedia) throws Exception {
 
         int receiverId;
         ObservableList<Node> contacts;
@@ -1560,7 +1560,14 @@ public class ChatController implements Initializable, IChatController {
             if (!(myContact instanceof GroupContact) && myContact.getUser().getStatus() == UserStatus.ONLINE) {
                 receiverId = messageReceivedContent.getUserId();
                 int senderId = me.getId();
-                String messageContent = respond;
+                String messageContent;
+                if(!sendMsgToMedia) {
+                    String respond = bot1session.think(messageReceivedContent.getMesssagecontent());
+                   messageContent = respond;
+                }
+                else{
+                    messageContent = "i am not allowed to reply to this kind of messages "+ me.getName()+" will get back to you late";
+                }
                 messageTextArea.setText("");
                 Message message = new Message(senderId, messageContent, MessageType.TEXT);
                 sendMessage(receiverId, message);
@@ -1576,10 +1583,11 @@ public class ChatController implements Initializable, IChatController {
             //  if ((((GroupContact) activeContact).getChatGroup().getGroupId() == group.getGroupId())) {
             System.out.println("inner");
             try {
-                message.setMesssagecontent(respond);
-                message.setUserId(me.getId());
+                Message message2=new Message(me.getId(),respond);
+               // message.setMesssagecontent(respond);
+                //message.setUserId(me.getId());
                 System.out.println(respond);
-                sendGroupMessage(group, message);
+                sendGroupMessage(group, message2);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
