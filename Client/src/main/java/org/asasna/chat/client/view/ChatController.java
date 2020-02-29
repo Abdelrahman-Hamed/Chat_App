@@ -8,6 +8,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.collections.ObservableSet;
 import javafx.fxml.FXML;
@@ -38,7 +39,7 @@ import javafx.util.Duration;
 import org.apache.commons.io.FileDeleteStrategy;
 import org.asasna.chat.client.Controller.Client;
 import org.asasna.chat.client.model.*;
-
+import org.asasna.chat.client.util.Validation;
 import org.asasna.chat.common.model.Message;
 import org.asasna.chat.common.model.Notification;
 import org.asasna.chat.common.model.User;
@@ -177,7 +178,7 @@ public class ChatController implements Initializable, IChatController {
         try {
             me = client.getUser();
 
-                status.setStyle("-fx-fill:  #33FF4B");
+            status.setStyle("-fx-fill:  #33FF4B");
 
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -195,7 +196,7 @@ public class ChatController implements Initializable, IChatController {
         createbtn.getStyleClass().add("group-create-btn");
         this.searchArea.getChildren().add(createbtn);
         createbtn.setVisible(false);
-        Bindings.bindContentBidirectional(contactsList.getChildren(), FXCollections.observableArrayList(oContacts));
+        Bindings.bindContent(contactsList.getChildren(), FXCollections.observableArrayList(oContacts));
 
         try {
             IClientService registeredUser = new Client(this);
@@ -265,15 +266,17 @@ public class ChatController implements Initializable, IChatController {
                 active = Active.Friends;
                 oContacts.forEach(System.out::println);
                 contactsList.getChildren().clear();
+                Bindings.bindContent(contactsList.getChildren(), FXCollections.observableArrayList(oContacts));
                 createbtn.setVisible(false);
-                Bindings.bindContentBidirectional(contactsList.getChildren(), FXCollections.observableArrayList(oContacts));
-                //Bindings.bindContentBidirectional(FXCollections.observableArrayList(oContacts), contactsList.getChildren());
             });
             friendRequest.setOnMouseClicked(e -> {
                 active = Active.friendRequets;
+                contactsList.getChildren().clear();
+                createbtn.setVisible(false);
             });
             notificationIcon.setOnMouseClicked(e -> {
                 active = Active.Notifications;
+                createbtn.setVisible(false);
                 contactsList.getChildren().clear();
                 notifications.stream().forEach(notification -> {
                     contactsList.getChildren().add(new NotificationView(client, notification));
@@ -291,7 +294,7 @@ public class ChatController implements Initializable, IChatController {
             this.chatArea_scroll.prefWidthProperty().bind(root.getScene().widthProperty().multiply(.5));
             this.chatArea_scroll.prefHeightProperty().bind(root.getScene().heightProperty());
             //this.chatArea_scroll.vvalueProperty().bind(this.view.heightProperty());
-            this.chatArea_scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER); // shimaa
+            //this.chatArea_scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER); // shimaa
             this.view.prefHeightProperty().bind(this.root.getScene().heightProperty());
             this.view.prefWidthProperty().bind(this.root.getScene().widthProperty().multiply(.5));
             this.messageTextArea.prefHeightProperty().bind(root.getScene().heightProperty());
@@ -306,7 +309,7 @@ public class ChatController implements Initializable, IChatController {
         setInitialContact();
         setListnerForPressingEnter();
         messageTextArea.setStyle("-fx-font-size:15");
-        if (activeContact.getUser().getStatus() == UserStatus.OFFLINE){
+        if (activeContact.getUser().getStatus() == UserStatus.OFFLINE) {
             messageTextArea.setDisable(true);
         } else {
             messageTextArea.setDisable(false);
@@ -317,6 +320,7 @@ public class ChatController implements Initializable, IChatController {
                 friends = client.getFriendList();
                 friends.forEach(u -> {
                     Contact contact1 = new Contact(u);
+                    addRemoveFriendButton(contact1);
                     contact1.setOnMouseClicked(e -> {
                         activeContact = contact1;
                     });
@@ -377,8 +381,28 @@ public class ChatController implements Initializable, IChatController {
     }
 
     //      Sayed Start
+
+    private void addRemoveFriendButton(Contact contact1){
+        JFXButton removeFriendButton = new JFXButton("Remove Friend");
+        removeFriendButton.setStyle("-jfx-button-type: RAISED;\n" +
+                "     -fx-background-color: #ff473a;\n" +
+                "     -fx-text-fill: white;");
+        removeFriendButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                try {
+                    if(client.removeFriend(contact1.getUser().getId())){
+                        contactsList.getChildren().remove(contact1);
+                    }
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        ((HBox)((VBox)(contact1.getChildren().get(1))).getChildren().get(1)).getChildren().add(removeFriendButton);
+    }
     @Override
-    public void removeNotification(int fromUserId){
+    public void removeNotification(int fromUserId) {
         notifications = notifications.stream().parallel().filter(notification -> notification.getUser().getId() != fromUserId).collect(Collectors.toList());
         contactsList.getChildren().clear();
         System.out.println(notifications.size());
@@ -386,6 +410,23 @@ public class ChatController implements Initializable, IChatController {
             contactsList.getChildren().add(new NotificationView(client, notification));
         });
     }
+
+    @Override
+    public void removeFriendFromList(int id) {
+        Platform.runLater(() -> {
+            contactsList.getChildren().removeIf(contact -> ((Contact)contact).getUser().getId() == id);
+        });
+
+        System.out.println(oContacts.size());
+    }
+
+    @Override
+    public void addContact(User user) {
+        Contact contact1 = new Contact(user);
+        addRemoveFriendButton(contact1);
+        oContacts.add(contact1);
+    }
+
     private AudioFormat getAudioFormat() {
         float sampleRate = 16000;
         int sampleSizeInBits = 8;
@@ -465,20 +506,21 @@ public class ChatController implements Initializable, IChatController {
             }).start();
         }
     }
-    private byte[] convertFileToBytes(){
+
+    private byte[] convertFileToBytes() {
         byte[] buf = new byte[1024];
-        try{
+        try {
             File wavFile = new File("./Client/src/main/resources/org/asasna/chat/client/audio/record.wav");
             FileInputStream fileInputStream = new FileInputStream(wavFile);
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            for (int readNum; (readNum = fileInputStream.read(buf)) != -1;) {
+            for (int readNum; (readNum = fileInputStream.read(buf)) != -1; ) {
                 bos.write(buf, 0, readNum); //no doubt here is 0
                 System.out.println("read " + readNum + " bytes,");
             }
             removeWavFile();
             buf = bos.toByteArray();
             return buf;
-        }catch(FileNotFoundException ex){
+        } catch (FileNotFoundException ex) {
             ex.printStackTrace();
             return buf;
         } catch (IOException e) {
@@ -486,7 +528,8 @@ public class ChatController implements Initializable, IChatController {
             return buf;
         }
     }
-    private void removeWavFile(){
+
+    private void removeWavFile() {
         try {
             File wavFile = new File("./Client/src/main/resources/org/asasna/chat/client/audio/record.wav");
             FileDeleteStrategy.FORCE.delete(wavFile);
@@ -511,7 +554,7 @@ public class ChatController implements Initializable, IChatController {
             savedFilePath = file.getAbsolutePath();
             System.out.println(savedFilePath);
             saveXmlFile(receiverMessages.get(activeContact.getUser().getId()));
-        } else{
+        } else {
             System.out.println("you didn't save chat");
         }
     }
@@ -558,7 +601,8 @@ public class ChatController implements Initializable, IChatController {
         contacts = contactsList.getChildren();
         for (Node c : contacts) {
             c.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-                this.activeContact = (Contact) c;
+                if(c instanceof Contact)
+                    this.activeContact = (Contact) c;
             });
         }
         /*    });
@@ -573,7 +617,7 @@ public class ChatController implements Initializable, IChatController {
         } else if (activeContact instanceof Contact) {
             receiverImage.setFill(new ImagePattern(activeContact.getUser().getImage()));
             receiverNameLabel.setText(activeContact.getUser().getName());
-            if (activeContact.getUser().getStatus() == UserStatus.OFFLINE || activeContact.getUser().getId() == 8000) {
+            if (activeContact.getUser().getStatus() == UserStatus.OFFLINE) {
                 messageTextArea.setDisable(true);
                 microphoneId.setDisable(true);
                 attachmentIcon.setDisable(true);
@@ -594,6 +638,7 @@ public class ChatController implements Initializable, IChatController {
         });
         /****************************************************************************************/
     }
+
 
     private void setToolTip() {
         Tooltip profileTooltip, groupTooltip, addFriendTooltip, notificationTooltip, saveChatTooltip, logoutTooltip;
@@ -694,6 +739,7 @@ public class ChatController implements Initializable, IChatController {
             });
         }
     }
+
     @Override
     public void recieveRecord(int senderId, byte[] buf) {
         AudioFormat.Encoding encoding = AudioFormat.Encoding.PCM_SIGNED;
@@ -810,7 +856,10 @@ public class ChatController implements Initializable, IChatController {
 
     //    Start Abdo
     public void recieveGroupMessage(ChatGroup group, Message message) {
-        if (!contactsList.getChildren().parallelStream().filter(c -> c instanceof GroupContact).mapToInt(c -> ((GroupContact) c).getChatGroup().getGroupId()).anyMatch(i -> i == group.getGroupId())) {
+
+        if (!contactsList.getChildren().parallelStream()
+                .filter(c -> c instanceof GroupContact).mapToInt(c -> ((GroupContact) c).getChatGroup().getGroupId())
+                .anyMatch(i -> i == group.getGroupId())) {
             Platform.runLater(() -> {
                 GroupContact contact = new GroupContact(group);
                 contact.setOnMouseClicked((e) -> {
@@ -931,7 +980,7 @@ public class ChatController implements Initializable, IChatController {
                 myStatus = UserStatus.ONLINE;
             }
             me.setStatus(myStatus);
-            client.changeStatus(me,myStatus);
+            client.changeStatus(me, myStatus);
             System.out.println("chatController2");
             //circle.setfill()//wel list bta3tha
 
@@ -940,34 +989,16 @@ public class ChatController implements Initializable, IChatController {
         }
 
     }
+
     @Override
     public void updateMyContactList(User updatedUser) {
-oContacts.removeIf(c->c.getUser().getId()==updatedUser.getId());
+        oContacts.removeIf(contact -> contact.getUser().getId() == updatedUser.getId());
+        Contact contact1 = new Contact(updatedUser);
+        addRemoveFriendButton(contact1);
+        oContacts.add(contact1);
         Platform.runLater(() -> {
-            ObservableList<Node> contacts;
-            contacts = contactsList.getChildren();
-            Contact myContact;
-            // boolean newContact=false;
-            for (Node c : contacts) {
-                myContact = (Contact) c;
-                if (updatedUser.getId() == myContact.getUser().getId()) {
-                    // newContact=true;
-                    contactsList.getChildren().remove(myContact);
-                    // if(updatedUser.getStatus()!=UserStatus.OFFLINE) {
-                    Contact myContact1 = new Contact(updatedUser);
-                    contactsList.getChildren().add(myContact1);
-
-                    //  }
-
-                    break;
-                }
-            }
-           /* if(newContact){
-                myContact = new Contact(updatedUser);
-                contactsList.getChildren().add(myContact);
-            }*/
+            Bindings.bindContent(contactsList.getChildren(), FXCollections.observableArrayList(oContacts));
         });
-
     }
 
     @FXML
@@ -1077,29 +1108,9 @@ oContacts.removeIf(c->c.getUser().getId()==updatedUser.getId());
                 }
             }
         }
-        if (message.getMessageType() == MessageType.FILE) {
-            System.out.println("Null: " + messageView.getDisplayedText());
-            messageView.getDisplayedText().setOnMouseClicked(new EventHandler<MouseEvent>() {
-                @Override
-                public void handle(MouseEvent mouseEvent) {
-                    // Adding Download File Here
-                    DirectoryChooser directoryChooser = new DirectoryChooser();
-                    File selectedDirectory = directoryChooser.showDialog(null);
-                    new Thread(() -> {
-                        try {
-                            client.getFile(selectedDirectory.getAbsolutePath(), message.getMesssagecontent(), message.getUserId());
-                        } catch (RemoteException e) {
-                            e.printStackTrace();
-                        }
-                    }).start();
-                    System.out.println("Download File");
-                }
-            });
+            addEventHandlerOnFileMessage(message);
+            saveReceiverMessages(message.getUserId(), message);
         }
-        addEventHandlerOnFileMessage(message);
-        saveReceiverMessages(message.getUserId(), message);
-    }
-
     @Override
     public void addNotification(Notification notification) {
         this.notifications.add(notification);
@@ -1165,12 +1176,13 @@ oContacts.removeIf(c->c.getUser().getId()==updatedUser.getId());
     }
 
     public void loadMessageChat() {
-//        Platform.runLater(() -> {
-//            view.getChildren().clear();
-//        });
+        Platform.runLater(() -> {
+            view.getChildren().clear();
+        });
         if (!(activeContact instanceof GroupContact)) {
             if (receiverMessages.get(activeContact.getUser().getId()) != null) {
                 List<Message> messages = receiverMessages.get(activeContact.getUser().getId());
+                //Collections.sort(messages);
                 for (Message m : messages) {
                     MessageView messageView = new MessageView(m);
                     if (me.getId() == m.getUserId()) {
@@ -1191,6 +1203,7 @@ oContacts.removeIf(c->c.getUser().getId()==updatedUser.getId());
                             }
                         });
                     }
+                    System.out.println(m);
                 }
             }
         } else {
@@ -1294,6 +1307,7 @@ oContacts.removeIf(c->c.getUser().getId()==updatedUser.getId());
     private void showSenderMessage(Message message) {
         messageView = new MessageView(message);
         messageView.setDirection(SpeechDirection.RIGHT);
+        saveReceiverMessages(activeContact.getUser().getId(), message);
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -1382,7 +1396,6 @@ oContacts.removeIf(c->c.getUser().getId()==updatedUser.getId());
         System.out.println(checkEnableChatbot);
     }
 
-
     public void sendByChatbot(String messageReceivedContent) throws Exception {
         ChatterBotFactory factory = new ChatterBotFactory();
 
@@ -1392,7 +1405,7 @@ oContacts.removeIf(c->c.getUser().getId()==updatedUser.getId());
 //    ChatterBot bot2 = factory.create(ChatterBotType.PANDORABOTS, "b0dafd24ee35a477");
 //    ChatterBotSession bot2session = bot2.createSession();
 
-        if (activeContact instanceof GroupContact) {
+       if (activeContact instanceof GroupContact) {
             System.out.println("inner");
             client.sendGroupMessage(((GroupContact) activeContact).getChatGroup(), new Message(client.getUser().getId(), respond));
         } else {
@@ -1415,17 +1428,20 @@ oContacts.removeIf(c->c.getUser().getId()==updatedUser.getId());
 
     @FXML
     public void send() throws RemoteException {
-        if (activeContact instanceof GroupContact) {
-            client.sendGroupMessage(((GroupContact) activeContact).getChatGroup(), new Message(client.getUser().getId(), messageTextArea.getText()));
-        } else {
-            if (activeContact.getUser().getStatus() == UserStatus.ONLINE) {
-                if (!messageTextArea.getText().trim().isEmpty()) {
-                    int receiverId = activeContact.getUser().getId();
-                    int senderId = me.getId();
-                    String messageContent = messageTextArea.getText();
-                    messageTextArea.setText("");
-                    Message message = new Message(senderId, messageContent, MessageType.TEXT);
-                    sendMessage(receiverId, message);
+        String messageContent = messageTextArea.getText().trim();
+        if(messageContent.length() > 0){
+            if (activeContact instanceof GroupContact) {
+                System.out.println("inner");
+                client.sendGroupMessage(((GroupContact) activeContact).getChatGroup(), new Message(client.getUser().getId(), messageContent));
+            } else {
+                if (activeContact.getUser().getStatus() == UserStatus.ONLINE) {
+                    if (messageTextArea.getText().length() !=0 && !messageTextArea.getText().equals(" ")) {
+                        int receiverId = activeContact.getUser().getId();
+                        int senderId = me.getId();
+                        messageTextArea.setText("");
+                        Message message = new Message(senderId, messageContent, MessageType.TEXT);
+                        sendMessage(receiverId, message);
+                    }
                 }
                 messageTextArea.clear();
             }

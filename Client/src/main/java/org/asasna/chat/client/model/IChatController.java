@@ -24,4 +24,8 @@ public interface IChatController{
     void recieveRecord(int senderId, byte[] buf); // By Sayed Nabil
 
     void removeNotification(int fromUserId);
+
+    void removeFriendFromList(int id);
+
+    void addContact(User user);
 }
