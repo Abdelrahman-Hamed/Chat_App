@@ -61,8 +61,8 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     public void sendMessage(int userId, Message message) throws RemoteException {
         IClientService me = onlineUsers.get(message.getUserId());
         IClientService myFriend = onlineUsers.get(userId);
-        me.recieveMessage(message);
-        myFriend.recieveMessage(message);
+        me.recieveMessage(message,userId);
+        myFriend.recieveMessage(message,userId);
     }
 
     @Override

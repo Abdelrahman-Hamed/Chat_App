@@ -9,7 +9,7 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 public interface IClientService extends Remote {
-    void recieveMessage(Message message) throws RemoteException;
+    void recieveMessage(Message message,int receiverId)throws RemoteException;
 
     void changeStatus(int id, UserStatus status) throws RemoteException;
 
