@@ -29,7 +29,7 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     public static Map<Integer, IClientService> onlineUsers = new HashMap<>(); // will need it
     IUserDao userDao;
     private User user;
-
+    private static long uniqueGroupId = 1;
     /*public ChatService() throws RemoteException {
         try {
             userDao = new UserDao();
@@ -255,11 +255,11 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     public boolean removeFriend(int friendId) throws RemoteException {
         try {
             ContactDao contactDao = new ContactDao();
-            boolean result =  contactDao.removeFriend(user.getId(), friendId);
+            boolean result = contactDao.removeFriend(user.getId(), friendId);
             System.out.println("Get In Remove Friend");
-            if(result){
+            if (result) {
                 IClientService clientService = onlineUsers.get(friendId);
-                if(clientService != null)
+                if (clientService != null)
                     clientService.removeFriendFromList(user.getId());
             }
             return result;
@@ -399,6 +399,10 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     public User getUser(int id) throws RemoteException {
         return userDao.getUser(id);
     }
-    /* end shimaa */
 
+    /* end shimaa */
+    @Override
+    public long getUniqueGroupId() {
+        return uniqueGroupId++;
+    }
 }
