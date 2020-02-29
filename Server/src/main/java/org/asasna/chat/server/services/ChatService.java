@@ -73,7 +73,7 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     @Override
     public void register(int userId, IClientService client) throws RemoteException {
         onlineUsers.put(userId, client);
-        Logger.getLogger(App.class).info("Client Connected : "+client);
+        Logger.getLogger(App.class).info("Client Connected : " + client);
 
         //System.out.println(onlineUsers);
     }
@@ -135,7 +135,7 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
             if (notified) {
 //                 Call Receive Notification On Client Side
                 IClientService toClient = onlineUsers.get(toUserId);
-                if( toClient != null){
+                if (toClient != null) {
                     System.out.println("Get In Here");
                     toClient.recieveNotivication(new Notification(NotificationType.FRIEND_REQUEST, userDao.getUser(fromUserId)));
                 }
@@ -182,7 +182,6 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     }
 
 
-
     @Override
     public User getUser() throws RemoteException {
         return user;
@@ -203,7 +202,8 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
         myFriend.recieveRecord(senderId, buf);
         return true;
     }
-    private String createFileInServer(RemoteInputStream export, String extension, Message message){
+
+    private String createFileInServer(RemoteInputStream export, String extension, Message message) {
 
         try {
             InputStream istream = RemoteInputStreamClient.wrap(export);
@@ -214,11 +214,12 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
                 IOUtils.copy(istream, out);
                 return tempFile.getName();
             }
-        }catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
     }
+
     @Override
     public void sendGroupFile(RemoteInputStream export, String extension, ChatGroup chatGroup, Message message) throws RemoteException {
         String name = createFileInServer(export, extension, message);
@@ -226,7 +227,8 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
         chatGroup.getParticipents().forEach((participentId) -> {
             try {
                 IClientService myFriend = onlineUsers.get(participentId);
-                myFriend.recieveGroupMessage(chatGroup, message);
+                if (myFriend != null)
+                    myFriend.recieveGroupMessage(chatGroup, message);
                 System.out.println("Server " + message.getMesssagecontent());
             } catch (RemoteException e) {
                 e.printStackTrace();
@@ -257,9 +259,10 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     public ChatService() throws RemoteException {
         super();
     }
+
     @Override
     public void sendAnnouncementsToOnlineUsers(Message message) throws RemoteException {
-        for (IClientService client : onlineUsers.values()){
+        for (IClientService client : onlineUsers.values()) {
             client.receiveAnnouncementFromAdmin(message);
         }
     }
@@ -267,7 +270,7 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
 
     /* start aya */
     @Override
-    public void sendFile(RemoteInputStream inFile, String suffix,int friendId ,Message message){
+    public void sendFile(RemoteInputStream inFile, String suffix, int friendId, Message message) {
         try {
             String name = createFileInServer(inFile, suffix, message);
             message.setMesssagecontent(name);
@@ -283,7 +286,7 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     }
 
     @Override
-    public void getFile(String direcotryPath, String fileName,int clickerId) throws RemoteException {
+    public void getFile(String direcotryPath, String fileName, int clickerId) throws RemoteException {
 
         RemoteInputStreamServer istream = null;
         try {
@@ -291,32 +294,33 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
             istream = new GZIPRemoteInputStream(new BufferedInputStream(new FileInputStream("./Server/src/main/resources/org/asasna/chat/server/files/" + fileName)));///pathhhhhhhhh
             String fileExtension = fileName.substring(fileName.lastIndexOf("."), fileName.length());
             IClientService clicker = onlineUsers.get(clickerId);
-            clicker.downloadFile(istream ,fileExtension,direcotryPath,fileName);
+            clicker.downloadFile(istream, fileExtension, direcotryPath, fileName);
             System.out.println("ChatService getfile");
         } catch (IOException e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             if (istream != null) istream.close();
         }
     }
 
-    public void changeUserStatus(int id,UserStatus status)throws RemoteException{
-       // System.out.println("chatServer");
+    public void changeUserStatus(int id, UserStatus status) throws RemoteException {
+        // System.out.println("chatServer");
         userDao.updateUserStatues(id, status);
     }
-    public void notifyMyfriends(int myId)throws RemoteException{
-        List<User> myFriends= getMyFriendList(myId);
-        System.out.println(" id "+myId);
-        System.out.println(" size "+myFriends.size());
-        User me=userDao.getUser(myId);
-        for(int i=0;i<myFriends.size();i++){
-            if(myFriends.get(i).getStatus()!=UserStatus.OFFLINE) {
+
+    public void notifyMyfriends(int myId) throws RemoteException {
+        List<User> myFriends = getMyFriendList(myId);
+        System.out.println(" id " + myId);
+        System.out.println(" size " + myFriends.size());
+        User me = userDao.getUser(myId);
+        for (int i = 0; i < myFriends.size(); i++) {
+            if (myFriends.get(i).getStatus() != UserStatus.OFFLINE) {
                 IClientService myFriend = onlineUsers.get(myFriends.get(i).getId());
-                System.out.println(" id  to send to "+myFriends.get(i).getId());
-                System.out.println(" looooooooooooooooooooooop  i"+i);
-                if(myFriend==null){
+                System.out.println(" id  to send to " + myFriends.get(i).getId());
+                System.out.println(" looooooooooooooooooooooop  i" + i);
+                if (myFriend == null) {
                     System.out.println(" null friend ");
-                }else{
+                } else {
                     myFriend.reciveUpateNotification(me);
                     System.out.println(" not null friend ");
                 }
@@ -325,20 +329,20 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
             }
         }
     }
+
     @Override
     public List<User> getMyFriendList(int id) throws RemoteException {
-        User friend=new User();
+        User friend = new User();
         friend.setId(id);
         return userDao.getFriendList(friend);
     }
 
 
     public boolean removeClient(int id) throws RemoteException {
-        IClientService returnedValue = (IClientService)onlineUsers.remove(id);
-        if(returnedValue!=null){
+        IClientService returnedValue = (IClientService) onlineUsers.remove(id);
+        if (returnedValue != null) {
             return true;
-        }
-        else{
+        } else {
             return false;
         }
     }
@@ -347,13 +351,13 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
 
     /* start abeer */
     @Override
-    public void UpdateUser(User user){
+    public void UpdateUser(User user) {
         try {
-            UserDao userdao=new UserDao();
-            PasswordAuthentication passwordAuthentication= new PasswordAuthentication();
+            UserDao userdao = new UserDao();
+            PasswordAuthentication passwordAuthentication = new PasswordAuthentication();
             user.setPassword(passwordAuthentication.hash(user.getPassword()));
-            boolean done= userdao.updateUser(user.getId(),user);
-            if(!done)
+            boolean done = userdao.updateUser(user.getId(), user);
+            if (!done)
                 System.out.println("cant update user ");
 
         } catch (SQLException e) {

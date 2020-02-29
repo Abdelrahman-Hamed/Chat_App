@@ -83,6 +83,7 @@ public class ServerHomeController implements Initializable {
     }
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        homePage();
         tg = new ToggleGroup();
         female.setToggleGroup(tg);
         male.setToggleGroup(tg);
