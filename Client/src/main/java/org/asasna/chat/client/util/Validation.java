@@ -15,7 +15,7 @@ public class Validation {
         return Pattern.matches("^[a-zA-Z0-9?><;,{}_+=!@#$%^&*|']*$", password);
     }
     public static boolean validatePassword(String password){
-        return Pattern.matches("(?=.*\\d)(?=.*[a-zA-Z]).{4,8}",password);
+        return Pattern.matches("^[a-zA-Z0-9?><;,{}_+.=!@#$%^&*|']*$",password);
     }
     public static boolean validateConfiermedPassword(String password,String confirmedpassword){
         return confirmedpassword.equals(password)? true: false ;

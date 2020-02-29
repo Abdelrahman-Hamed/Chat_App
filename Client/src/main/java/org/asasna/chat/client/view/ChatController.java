@@ -8,6 +8,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.collections.ObservableSet;
 import javafx.fxml.FXML;
@@ -265,15 +266,17 @@ public class ChatController implements Initializable, IChatController {
                 active = Active.Friends;
                 oContacts.forEach(System.out::println);
                 contactsList.getChildren().clear();
+                Bindings.bindContent(contactsList.getChildren(), FXCollections.observableArrayList(oContacts));
                 createbtn.setVisible(false);
-                Bindings.bindContentBidirectional(contactsList.getChildren(), FXCollections.observableArrayList(oContacts));
-                //Bindings.bindContentBidirectional(FXCollections.observableArrayList(oContacts), contactsList.getChildren());
             });
             friendRequest.setOnMouseClicked(e -> {
                 active = Active.friendRequets;
+                contactsList.getChildren().clear();
+                createbtn.setVisible(false);
             });
             notificationIcon.setOnMouseClicked(e -> {
                 active = Active.Notifications;
+                createbtn.setVisible(false);
                 contactsList.getChildren().clear();
                 notifications.stream().forEach(notification -> {
                     contactsList.getChildren().add(new NotificationView(client, notification));
@@ -323,6 +326,7 @@ public class ChatController implements Initializable, IChatController {
                 friends = client.getFriendList();
                 friends.forEach(u -> {
                     Contact contact1 = new Contact(u);
+                    addRemoveFriendButton(contact1);
                     contact1.setOnMouseClicked(e -> {
                         activeContact = contact1;
                     });
@@ -383,8 +387,28 @@ public class ChatController implements Initializable, IChatController {
     }
 
     //      Sayed Start
+
+    private void addRemoveFriendButton(Contact contact1){
+        JFXButton removeFriendButton = new JFXButton("Remove Friend");
+        removeFriendButton.setStyle("-jfx-button-type: RAISED;\n" +
+                "     -fx-background-color: #ff473a;\n" +
+                "     -fx-text-fill: white;");
+        removeFriendButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                try {
+                    if(client.removeFriend(contact1.getUser().getId())){
+                        contactsList.getChildren().remove(contact1);
+                    }
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        ((HBox)((VBox)(contact1.getChildren().get(1))).getChildren().get(1)).getChildren().add(removeFriendButton);
+    }
     @Override
-    public void removeNotification(int fromUserId){
+    public void removeNotification(int fromUserId) {
         notifications = notifications.stream().parallel().filter(notification -> notification.getUser().getId() != fromUserId).collect(Collectors.toList());
         contactsList.getChildren().clear();
         System.out.println(notifications.size());
@@ -392,6 +416,23 @@ public class ChatController implements Initializable, IChatController {
             contactsList.getChildren().add(new NotificationView(client, notification));
         });
     }
+
+    @Override
+    public void removeFriendFromList(int id) {
+        Platform.runLater(() -> {
+            contactsList.getChildren().removeIf(contact -> ((Contact)contact).getUser().getId() == id);
+        });
+
+        System.out.println(oContacts.size());
+    }
+
+    @Override
+    public void addContact(User user) {
+        Contact contact1 = new Contact(user);
+        addRemoveFriendButton(contact1);
+        oContacts.add(contact1);
+    }
+
     private AudioFormat getAudioFormat() {
         float sampleRate = 16000;
         int sampleSizeInBits = 8;
@@ -564,7 +605,8 @@ public class ChatController implements Initializable, IChatController {
         contacts = contactsList.getChildren();
         for (Node c : contacts) {
             c.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-                this.activeContact = (Contact) c;
+                if(c instanceof Contact)
+                    this.activeContact = (Contact) c;
             });
         }
         /*    });
@@ -816,7 +858,10 @@ public class ChatController implements Initializable, IChatController {
 
     //    Start Abdo
     public void recieveGroupMessage(ChatGroup group, Message message) {
-        if (!contactsList.getChildren().parallelStream().filter(c -> c instanceof GroupContact).mapToInt(c -> ((GroupContact) c).getChatGroup().getGroupId()).anyMatch(i -> i == group.getGroupId())) {
+
+        if (!contactsList.getChildren().parallelStream()
+                .filter(c -> c instanceof GroupContact).mapToInt(c -> ((GroupContact) c).getChatGroup().getGroupId())
+                .anyMatch(i -> i == group.getGroupId())) {
             Platform.runLater(() -> {
                 GroupContact contact = new GroupContact(group);
                 contact.setOnMouseClicked((e) -> {
@@ -948,32 +993,13 @@ public class ChatController implements Initializable, IChatController {
     }
     @Override
     public void updateMyContactList(User updatedUser) {
-oContacts.removeIf(c->c.getUser().getId()==updatedUser.getId());
+        oContacts.removeIf(contact -> contact.getUser().getId() == updatedUser.getId());
+        Contact contact1 = new Contact(updatedUser);
+        addRemoveFriendButton(contact1);
+        oContacts.add(contact1);
         Platform.runLater(() -> {
-            ObservableList<Node> contacts;
-            contacts = contactsList.getChildren();
-            Contact myContact;
-            // boolean newContact=false;
-            for (Node c : contacts) {
-                myContact = (Contact) c;
-                if (updatedUser.getId() == myContact.getUser().getId()) {
-                    // newContact=true;
-                    contactsList.getChildren().remove(myContact);
-                    // if(updatedUser.getStatus()!=UserStatus.OFFLINE) {
-                    Contact myContact1 = new Contact(updatedUser);
-                    contactsList.getChildren().add(myContact1);
-
-                    //  }
-
-                    break;
-                }
-            }
-           /* if(newContact){
-                myContact = new Contact(updatedUser);
-                contactsList.getChildren().add(myContact);
-            }*/
+            Bindings.bindContent(contactsList.getChildren(), FXCollections.observableArrayList(oContacts));
         });
-
     }
 
     @FXML
@@ -1083,29 +1109,9 @@ oContacts.removeIf(c->c.getUser().getId()==updatedUser.getId());
                 }
             }
         }
-        if (message.getMessageType() == MessageType.FILE) {
-            System.out.println("Null: " + messageView.getDisplayedText());
-            messageView.getDisplayedText().setOnMouseClicked(new EventHandler<MouseEvent>() {
-                @Override
-                public void handle(MouseEvent mouseEvent) {
-                    // Adding Download File Here
-                    DirectoryChooser directoryChooser = new DirectoryChooser();
-                    File selectedDirectory = directoryChooser.showDialog(null);
-                    new Thread(() -> {
-                        try {
-                            client.getFile(selectedDirectory.getAbsolutePath(), message.getMesssagecontent(), message.getUserId());
-                        } catch (RemoteException e) {
-                            e.printStackTrace();
-                        }
-                    }).start();
-                    System.out.println("Download File");
-                }
-            });
+            addEventHandlerOnFileMessage(message);
+            saveReceiverMessages(message.getUserId(), message);
         }
-        addEventHandlerOnFileMessage(message);
-        saveReceiverMessages(message.getUserId(), message);
-    }
-
     @Override
     public void addNotification(Notification notification) {
         this.notifications.add(notification);
@@ -1400,7 +1406,7 @@ oContacts.removeIf(c->c.getUser().getId()==updatedUser.getId());
 //    ChatterBot bot2 = factory.create(ChatterBotType.PANDORABOTS, "b0dafd24ee35a477");
 //    ChatterBotSession bot2session = bot2.createSession();
 
-        if (activeContact instanceof GroupContact) {
+       if (activeContact instanceof GroupContact) {
             System.out.println("inner");
             client.sendGroupMessage(((GroupContact) activeContact).getChatGroup(), new Message(client.getUser().getId(), respond));
         } else {
@@ -1423,17 +1429,20 @@ oContacts.removeIf(c->c.getUser().getId()==updatedUser.getId());
 
     @FXML
     public void send() throws RemoteException {
-        if (activeContact instanceof GroupContact) {
-            client.sendGroupMessage(((GroupContact) activeContact).getChatGroup(), new Message(client.getUser().getId(), messageTextArea.getText()));
-        } else {
-            if (activeContact.getUser().getStatus() == UserStatus.ONLINE) {
-                if (!messageTextArea.getText().trim().isEmpty()) {
-                    int receiverId = activeContact.getUser().getId();
-                    int senderId = me.getId();
-                    String messageContent = messageTextArea.getText();
-                    messageTextArea.setText("");
-                    Message message = new Message(senderId, messageContent, MessageType.TEXT);
-                    sendMessage(receiverId, message);
+        String messageContent = messageTextArea.getText().trim();
+        if(messageContent.length() > 0){
+            if (activeContact instanceof GroupContact) {
+                System.out.println("inner");
+                client.sendGroupMessage(((GroupContact) activeContact).getChatGroup(), new Message(client.getUser().getId(), messageContent));
+            } else {
+                if (activeContact.getUser().getStatus() == UserStatus.ONLINE) {
+                    if (messageTextArea.getText().length() !=0 && !messageTextArea.getText().equals(" ")) {
+                        int receiverId = activeContact.getUser().getId();
+                        int senderId = me.getId();
+                        messageTextArea.setText("");
+                        Message message = new Message(senderId, messageContent, MessageType.TEXT);
+                        sendMessage(receiverId, message);
+                    }
                 }
                 messageTextArea.clear();
             }

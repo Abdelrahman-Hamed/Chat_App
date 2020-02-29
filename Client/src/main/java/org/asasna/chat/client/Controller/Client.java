@@ -3,6 +3,7 @@ package org.asasna.chat.client.Controller;
 import javafx.stage.DirectoryChooser;
 import javafx.util.Pair;
 import org.asasna.chat.client.model.IChatController;
+import org.asasna.chat.client.view.PrimaryController;
 import org.asasna.chat.client.view.RegisterController;
 import org.asasna.chat.common.model.Message;
 import org.asasna.chat.common.model.Notification;
@@ -35,6 +36,7 @@ import javax.rmi.ssl.SslRMIClientSocketFactory;
 public class Client extends UnicastRemoteObject implements IClientService {
     IChatController chatController;
     RegisterController registerController;
+    PrimaryController primaryController;
    public IChatService chatService;
     IAuthenticationService authenticationService;
     private User user;
@@ -78,7 +80,30 @@ public class Client extends UnicastRemoteObject implements IClientService {
             ex.printStackTrace();
         }
     }
+    public Client(IChatController chatController, PrimaryController primaryController) throws RemoteException {
+        this.primaryController=primaryController;
+        this.chatController = chatController;
+        Registry reg = null;
+//        try {
+        /*System.setProperty("javax.net.ssl.keyStore", "/home/abdulrahman/IdeaProjects/ITI_Chat/sysdmsim.ks");
+        System.setProperty("javax.net.ssl.keyStorePassword", "123456");
+        System.setProperty("javax.net.ssl.trustStore", "/home/abdulrahman/IdeaProjects/ITI_Chat/sysdmtruststore.ks");
+        System.setProperty("javax.net.ssl.trustStorePassword", "123456");*/
 
+        //reg = LocateRegistry.getRegistry("127.0.0.1", 5001, new SslRMIClientSocketFactory());
+        reg=LocateRegistry.getRegistry(5001);
+//            this.user = new User(4, "Mohamed", "01027420575");
+//            chatService.register(this.user.getId(), this);
+//        } catch (RemoteException | NotBoundException e) {
+        try {
+            authenticationService = (IAuthenticationService) reg.lookup("AuthenticationService");
+        } catch (java.rmi.ConnectException ex) {
+            primaryController.serverIsDownHandler();
+           // ex.printStackTrace();
+        }catch (NotBoundException ex) {
+            ex.printStackTrace();
+        }
+    }
     @Override
     public void recieveMessage(Message message) throws RemoteException {
         chatController.tempDisplayMessage(message);
@@ -129,9 +154,12 @@ public class Client extends UnicastRemoteObject implements IClientService {
 
     public Pair< String ,IChatService> login(String phoneNumber, String password) {
         try {
-            Pair < String ,IChatService> temp=authenticationService.login(phoneNumber, password);
-            chatService = temp.getValue();
-            return temp;
+            if (authenticationService != null){
+                Pair < String ,IChatService> temp=authenticationService.login(phoneNumber, password);
+                chatService = temp.getValue();
+                return temp;
+            }
+
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -213,6 +241,21 @@ public class Client extends UnicastRemoteObject implements IClientService {
     @Override
     public void recieveRecord(int senderId, byte[] buf) throws RemoteException {
         chatController.recieveRecord(senderId, buf);
+    }
+
+
+    public boolean removeFriend(int friendId) throws RemoteException {
+        return chatService.removeFriend(friendId);
+    }
+
+    @Override
+    public void removeFriendFromList(int id) throws RemoteException {
+        System.out.println("Remove Friend From List Client");
+        chatController.removeFriendFromList(id);
+    }
+
+    public void addFriend(User user){
+        chatController.addContact(user);
     }
     /* end sayed */
 

@@ -398,7 +398,7 @@ public class UserDao implements IUserDao {
             user.setImageURL(resultSet.getString(5));
             user.setPassword(resultSet.getString(6));
             System.out.println(user.getImageURL());
-            user.setImage(new Image(getClass().getResource(user.getImageURL()).toExternalForm()));
+            user.setImage(new Image(new FileInputStream("./Server/src/main/resources/org/asasna/chat/server/model/dao/" + user.getImageURL())));
             Gender gender = Gender.Male;
             switch (resultSet.getString(7)) {
                 case "Female":
@@ -427,6 +427,9 @@ public class UserDao implements IUserDao {
             return user;
         } catch (SQLException e) {
             return null;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
@@ -437,8 +440,8 @@ public class UserDao implements IUserDao {
             preparedStatement.setString(2, user.getPhone());
             preparedStatement.setString(3, user.getName());
             preparedStatement.setString(4, user.getEmail());
-            File file = new File("Server\\src\\main\\resources\\org\\asasna\\chat\\server\\"+user.getPhone()+".jpg");
-            file.mkdirs();//nehal edit
+            File file = new File("Server\\src\\main\\resources\\org\\asasna\\chat\\server\\model\\dao\\"+user.getPhone()+".jpg");
+//            file.mkdirs();//nehal edit
             ImageIO.write(SwingFXUtils.fromFXImage(user.getImage(), null), "jpg", file);
             preparedStatement.setString(5, user.getPhone()+".jpg");
             preparedStatement.setString(6, user.getPassword());
