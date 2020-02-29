@@ -627,7 +627,7 @@ public class ChatController implements Initializable, IChatController {
         } else if (activeContact instanceof Contact) {
             receiverImage.setFill(new ImagePattern(activeContact.getUser().getImage()));
             receiverNameLabel.setText(activeContact.getUser().getName());
-            if (activeContact.getUser().getStatus() == UserStatus.OFFLINE) {
+            if (activeContact.getUser().getStatus() == UserStatus.OFFLINE || activeContact.getUser().getId() == 8000) {
                 messageTextArea.setDisable(true);
                 microphoneId.setDisable(true);
                 attachmentIcon.setDisable(true);
