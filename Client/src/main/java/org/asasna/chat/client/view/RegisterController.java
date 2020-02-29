@@ -247,7 +247,8 @@ public class RegisterController implements Initializable {
                 if (addingUser(me)) {
                     App.setRoot("login");
                 } else {
-                    phoneNumber.setText("phone already registered !");
+                    errorPhoneNumber.setVisible(true);
+                    errorPhoneNumber.setText("phone already registered !");
                 }
             } catch (IOException e) {
                 System.out.println("no fxml file");
