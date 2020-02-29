@@ -38,7 +38,7 @@ public interface IClientService extends Remote {
     /* end sayed */
 
     /* start nehal */
-
+    void closeIt() throws RemoteException;
     /* end nehal */
 
     /* start aya */

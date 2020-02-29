@@ -49,7 +49,10 @@ public class AuthenticationService extends UnicastRemoteObject implements IAuthe
     public int getUserToSave()throws RemoteException{
         return user.getId();
     }
-/////////////////////////////////////////////////////////////////////////////////
+
+
+
+    /////////////////////////////////////////////////////////////////////////////////
     IUserDao userDao ;
     {
         try {
@@ -107,5 +110,11 @@ public class AuthenticationService extends UnicastRemoteObject implements IAuthe
         }
     }
     /*end*/
+    /*nehal*/
+    @Override
+    public IChatService getThisChatService() throws RemoteException {
+        return thisChatService;
+    }
+    /*end nehal*/
 
 }

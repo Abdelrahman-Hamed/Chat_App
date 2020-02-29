@@ -29,4 +29,7 @@ public interface IChatController{
     void removeFriendFromList(int id);
 
     void addContact(User user);
+    /*nehal*/
+    void serverIsDownHandler();
+    /*nehal end*/
 }

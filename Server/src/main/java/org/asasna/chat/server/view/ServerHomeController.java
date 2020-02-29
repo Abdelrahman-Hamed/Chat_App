@@ -97,28 +97,10 @@ public class ServerHomeController implements Initializable {
 
         }
         genderButton.setOnAction((actionEvent) -> {
-            try {
-                data = authenticationService.getGenderData();
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            Platform.runLater(() -> {
-                chart.setData(data);
-            });
+            getGenderData();
         });
         statusButton.setOnAction((actionEvent) -> {
-            try {
-                data = authenticationService.getStatusData();
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            Platform.runLater(() -> {
-                chart.setData(data);
-            });
+            getStatusData();
         });
         contryButton.setOnAction((actionEvent) -> {
             try {
@@ -133,24 +115,7 @@ public class ServerHomeController implements Initializable {
             });
         });
         service.setOnMouseClicked((event) -> {
-            if (!service.isSelected()) {
-                try {
-                    System.out.println(app.getReg());
-                    app.getReg().unbind("AuthenticationService");
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                } catch (NotBoundException e) {
-                    e.printStackTrace();
-                }
-                System.out.println("service off");
-            } else {
-                try {
-                    app.getReg().rebind("AuthenticationService", app.getiAuthenticationService());
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-                System.out.println("service on");
-            }
+            closeService();
         });
 
         sendAnnounce.setOnAction((actionEvent) -> {
@@ -166,6 +131,14 @@ public class ServerHomeController implements Initializable {
                     e.printStackTrace();
                 }
                 announce.clear();
+            }
+
+        });
+
+        homePane.setOnKeyPressed((keyEvent) -> {
+            if(keyEvent.getCode() == KeyCode.ENTER )
+            {
+                login();
             }
 
         });
@@ -199,18 +172,31 @@ public class ServerHomeController implements Initializable {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        chart.setData(data);
+        Platform.runLater(() -> {
+            chart.setData(data);
+        });
     }
 
     @FXML
-    public void closeService() throws RemoteException, NotBoundException {
-        if (service.isSelected()) {
-            service.fire();
-            app.getReg().unbind("AuthenticationService");
+    public void closeService(){
+        if (!service.isSelected()) {
+            try {
+                System.out.println(app.getReg());
+                App.iAuthenticationService.getThisChatService().closeServer();
+                App.iAuthenticationService.getThisChatService().unRegisterAll();
+                app.getReg().unbind("AuthenticationService");
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            } catch (NotBoundException e) {
+                e.printStackTrace();
+            }
             System.out.println("service off");
         } else {
-            service.fire();
-            app.getReg().rebind("AuthenticationService", app.getiAuthenticationService());
+            try {
+                app.getReg().rebind("AuthenticationService", App.iAuthenticationService);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
             System.out.println("service on");
         }
     }
@@ -265,22 +251,7 @@ public class ServerHomeController implements Initializable {
 
     @FXML
     public void loginButtonClicked(ActionEvent event) {
-
-        if (!phoneNumber.getText().equals("adminPhone") || !password.getText().equals("adminPass")) {
-            errorPhoneNumber.setVisible(true);
-            errorPhoneNumber.setText("Not A UserName !");
-            errorPassword.setVisible(true);
-            errorPassword.setText("Not A Password !");
-
-        } else {
-            System.out.println("Admin Loggedin");
-            home.setDisable(true);
-            announcements.setDisable(false);
-            settings.setDisable(false);
-            charts.setDisable(false);
-            this.settingsPage();
-
-        }
+        login();
     }
 
     public void setApp(App app) {
@@ -328,6 +299,22 @@ public class ServerHomeController implements Initializable {
 
     }
 
+    private void login(){
+        if (!phoneNumber.getText().equals("adminPhone") || !password.getText().equals("adminPass")) {
+            errorPhoneNumber.setVisible(true);
+            errorPhoneNumber.setText("Not A UserName !");
+            errorPassword.setVisible(true);
+            errorPassword.setText("Not A Password !");
+
+        } else {
+            System.out.println("Admin Loggedin");
+            home.setDisable(true);
+            announcements.setDisable(false);
+            settings.setDisable(false);
+            charts.setDisable(false);
+            this.settingsPage();
+        }
+    }
     public boolean checkingName() {
         if (name.getText().equals("")) {
             nameError.setVisible(true);
@@ -497,6 +484,7 @@ public class ServerHomeController implements Initializable {
             return true;
         } else return false;
     }
+
 
     public Date convertToDateViaSqlDate(LocalDate dateToConvert) {
         return java.sql.Date.valueOf(dateToConvert);

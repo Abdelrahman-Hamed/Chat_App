@@ -280,7 +280,9 @@ public class Client extends UnicastRemoteObject implements IClientService {
     public void addUser(User me) throws RemoteException {
         authenticationService.addUser(me);
     }
-
+    public void closeIt(){
+        chatController.serverIsDownHandler();
+    }
     public boolean isvalidUser(User me) throws RemoteException {
         return authenticationService.isValid(me);
     }

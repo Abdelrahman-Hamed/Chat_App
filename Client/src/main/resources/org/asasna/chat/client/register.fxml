@@ -15,12 +15,17 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 
 <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="700.0" style="-fx-background-color: WHITE;" stylesheets="@view/login.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.asasna.chat.client.view.RegisterController">
    <children>
       <VBox prefHeight="500.0" prefWidth="150.0" styleClass="main-background-color">
          <children>
-
+            <Button mnemonicParsing="false" onAction="#handleBackAction" style="-fx-background-color: transparent;" translateX="46.0">
+               <graphic>
+                  <FontIcon iconColor="WHITE" iconLiteral="mdi-chevron-right" iconSize="45" rotate="180.0" />
+               </graphic>
+            </Button>
          </children></VBox>
       <BorderPane prefHeight="500.0" prefWidth="550.0" styleClass="color-white">
          <top>
@@ -40,9 +45,9 @@
                         <AnchorPane prefHeight="200.0" prefWidth="200.0">
                            <children>
                               <Circle fx:id="circlePhoto" fill="#cacaca" layoutX="99.0" layoutY="56.0" radius="51.0" stroke="BLACK" strokeType="INSIDE" />
-                              <Button layoutX="59.0" layoutY="85.0" mnemonicParsing="false" onAction="#handleAddPhotoAction" prefHeight="26.0" prefWidth="80.0" style="-fx-background-color: TRANSPARNT;" text="Add Photo">
+                              <Button layoutX="59.0" layoutY="85.0" mnemonicParsing="false" onAction="#handleAddPhotoAction" prefHeight="26.0" prefWidth="80.0" style="-fx-background-color: TRANSPARNT;" text="Add Photo" textFill="WHITE" translateX="1.0" translateY="-8.0">
                                  <font>
-                                    <Font name="Bodoni MT Black Italic" size="8.0" />
+                                    <Font name="Bodoni MT Black" size="10.0" />
                                  </font></Button>
                            </children>
                         </AnchorPane>
