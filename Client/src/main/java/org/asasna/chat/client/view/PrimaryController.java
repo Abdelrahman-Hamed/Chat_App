@@ -168,7 +168,7 @@ public class PrimaryController implements Initializable {
                     userID = client.getUserId();
                 } catch (RemoteException e) {
                     serverIsDownHandler();
-                    e.printStackTrace();
+                   // e.printStackTrace();
                 }
 
 
@@ -313,7 +313,10 @@ public class PrimaryController implements Initializable {
             try {
                 userID = client.getUserId();
                 System.out.println(userID);
-            } catch (RemoteException e) {
+            } catch (java.rmi.ConnectException ex) {
+                 serverIsDownHandler();
+                // ex.printStackTrace();
+            }catch (RemoteException e) {
                 e.printStackTrace();
             }
             removeFile("KeepMeLoggedIn");
