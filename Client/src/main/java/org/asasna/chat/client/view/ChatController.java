@@ -1018,7 +1018,7 @@ public class ChatController implements Initializable, IChatController {
 
     @Override
     public void updateMyContactList(User updatedUser) {
-        oContacts.removeIf(contact -> contact.getUser().getId() == updatedUser.getId());
+        oContacts.removeIf(contact -> !(contact instanceof GroupContact) && (contact.getUser().getId() == updatedUser.getId()));
         Contact contact1 = new Contact(updatedUser);
         addRemoveFriendButton(contact1);
         oContacts.add(contact1);
@@ -1496,7 +1496,7 @@ public class ChatController implements Initializable, IChatController {
             // boolean newContact=false;
             for (Node c : contacts) {
                 myContact = (Contact) c;
-                if (myContact.getUser().getStatus() == UserStatus.ONLINE) {
+                if (!(myContact instanceof GroupContact) && myContact.getUser().getStatus() == UserStatus.ONLINE) {
                     receiverId = messageReceivedContent.getUserId();
                     int senderId = me.getId();
                     String messageContent = respond;
