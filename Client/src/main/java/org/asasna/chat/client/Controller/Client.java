@@ -262,7 +262,6 @@ public class Client extends UnicastRemoteObject implements IClientService {
     }
 
     @Override
-
     public void addFriend(User me) throws RemoteException{
         chatController.addContact(me);
     }
