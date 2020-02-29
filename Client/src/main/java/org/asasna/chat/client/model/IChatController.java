@@ -1,8 +1,7 @@
 package org.asasna.chat.client.model;
 
+import javafx.scene.layout.HBox;
 import org.asasna.chat.common.model.*;
-
-import java.rmi.RemoteException;
 
 public interface IChatController{
     void displayMessage(Message msg);
@@ -22,7 +21,7 @@ public interface IChatController{
     public void tempFileDisplayMessage(Message message);
     public void tempDisplayMessage(Message message, int receiverId);
 
-    void recieveRecord(int senderId, byte[] buf); // By Sayed Nabil
+     HBox recieveRecord(int senderId, byte[] buf); // By Sayed Nabil
 
     void removeNotification(int fromUserId);
 

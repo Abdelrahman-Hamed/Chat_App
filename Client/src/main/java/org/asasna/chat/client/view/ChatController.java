@@ -66,6 +66,7 @@ import java.net.URLConnection;
 import java.nio.ByteBuffer;
 import java.nio.file.Paths;
 import java.rmi.RemoteException;
+import java.security.MessageDigestSpi;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -493,6 +494,12 @@ public class ChatController implements Initializable, IChatController {
             // start recording
             File wavFile = new File("./Client/src/main/resources/org/asasna/chat/client/audio/record.wav");
             AudioSystem.write(ais, AudioFileFormat.Type.WAVE, wavFile);
+            try {
+                ais.close();
+               // wavFile.deleteOnExit();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
         } catch (LineUnavailableException ex) {
             ex.printStackTrace();
@@ -516,20 +523,17 @@ public class ChatController implements Initializable, IChatController {
             removeWavFile();
         } else {
             new Thread(() -> {
-                try {
-
                     byte[] buf = convertFileToBytes();
                     int receiverId;
                     if (!(activeContact instanceof GroupContact)) {
                         receiverId = activeContact.getUser().getId();
                         int senderId = me.getId();
-                        boolean sent = client.sendRecord(receiverId, senderId, buf);
+                        //boolean sent = client.sendRecord(receiverId, senderId, buf);
+                        Message message = new Message(senderId, buf);
+                        sendMessage(receiverId, message);
                         System.out.println(buf.length);
                     }
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-
+                    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////else gp
             }).start();
         }
     }
@@ -544,6 +548,8 @@ public class ChatController implements Initializable, IChatController {
                 bos.write(buf, 0, readNum); //no doubt here is 0
                 System.out.println("read " + readNum + " bytes,");
             }
+            fileInputStream.close();
+
             removeWavFile();
             buf = bos.toByteArray();
             return buf;
@@ -778,7 +784,7 @@ public class ChatController implements Initializable, IChatController {
     }
 
     @Override
-    public void recieveRecord(int senderId, byte[] buf) {
+    public  HBox recieveRecord(int senderId, byte[] buf) {
         AudioFormat.Encoding encoding = AudioFormat.Encoding.PCM_SIGNED;
         float rate = 44100.0f;
         int channels = 2;
@@ -809,6 +815,7 @@ public class ChatController implements Initializable, IChatController {
             e.printStackTrace();
         }
         //AudioClip clip=new AudioClip(getClass().getResource("record2.wav").toExternalForm());
+
 
         Media media = new Media(Paths.get("./Client/src/main/resources/org/asasna/chat/client/audio/record2.wav").toUri().toString());
         AudioClip audioClip = new AudioClip(Paths.get("./Client/src/main/resources/org/asasna/chat/client/audio/record2.wav").toUri().toString());
@@ -882,11 +889,10 @@ public class ChatController implements Initializable, IChatController {
         box.setSpacing(10);
         box.getChildren().add(playIcon);
         box.getChildren().add(slider);
-        Platform.runLater(() -> {
-            view.getChildren().add(box);
-        });
+        return box;
 
     }
+
 
     // End Elsayed Nabil
 

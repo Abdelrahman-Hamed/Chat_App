@@ -1,5 +1,6 @@
 package org.asasna.chat.client.view;
 
+import com.jfoenix.controls.JFXTextField;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -32,20 +33,22 @@ public class ProfileController extends Controller implements Initializable {
     public ProfileController(User user, ChatController chatController) {
         this.user = user;
         this.chatController=chatController;
+
+
     }
 
     @FXML
-    TextField Name;
+    JFXTextField Name;
     @FXML
-    TextField Phone;
+    JFXTextField Phone;
     @FXML
-    TextField Email;
+    JFXTextField Email;
     @FXML
-    TextField Country;
+    JFXTextField Country;
     @FXML
-    PasswordField NewPass;
+    JFXTextField NewPass;
     @FXML
-    PasswordField ConfirmPass;
+    JFXTextField ConfirmPass;
     @FXML
     TextField check;
 
@@ -107,14 +110,16 @@ public class ProfileController extends Controller implements Initializable {
              user.setPhone(Phone.getText());
              if(image != null)
                 user.setImageURL(image.getUrl());
+             System.out.println(image.getUrl());
+
              try {
                  chatService.UpdateUser(user);
              } catch (RemoteException e) {
                  e.printStackTrace();
              }
-             check.setVisible(false);
+            check.setVisible(false);
          } else {
-             check.setVisible(true);
+            check.setVisible(true);
          }
 
     }
@@ -192,7 +197,7 @@ public class ProfileController extends Controller implements Initializable {
 @FXML
 public void editPhoto() {
     FileChooser open = new FileChooser();
-   open.getExtensionFilters().addAll(new javafx.stage.FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg"));
+   open.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg"));
     File file = open.showOpenDialog(null);
     if (file != null) {
         Image image1 = new Image(file.toURI().toString());

@@ -245,7 +245,7 @@ public class Client extends UnicastRemoteObject implements IClientService {
 
     @Override
     public void recieveRecord(int senderId, byte[] buf) throws RemoteException {
-        chatController.recieveRecord(senderId, buf);
+       chatController.recieveRecord(senderId, buf);
     }
 
 
