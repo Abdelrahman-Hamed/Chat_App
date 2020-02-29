@@ -193,7 +193,6 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
         return user;
     }
 
-
     /* ِ start  Abdo */
 
     /* end Abdo */
@@ -285,7 +284,6 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
         for (IClientService client : onlineUsers.values()){
             client.closeIt();
         }
-        //closeIt()
     }
     public void unRegisterAll() throws RemoteException{
         onlineUsers.clear();

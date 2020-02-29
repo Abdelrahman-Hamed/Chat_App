@@ -104,7 +104,8 @@ public class Client extends UnicastRemoteObject implements IClientService {
             primaryController.serverIsDownHandler();
            // ex.printStackTrace();
         }catch (NotBoundException ex) {
-            ex.printStackTrace();
+            primaryController.serverIsDownHandler();
+           // ex.printStackTrace();
         }
     }
     @Override

@@ -57,7 +57,6 @@ public class PrimaryController implements Initializable {
 
     private void loadInfoIfExist() {
 
-
         File rememberMeFile = new File("./Client/src/main/java/org/asasna/chat/client/Auth/rememberme.xml");
         if (rememberMeFile.exists()) {
             String[] arr = readFromMyFile(rememberMeFile);

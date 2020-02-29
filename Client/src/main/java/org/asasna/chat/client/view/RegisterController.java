@@ -255,6 +255,7 @@ public class RegisterController implements Initializable {
                     errorPhoneNumber.setText("phone already registered !");
                 }
             } catch (IOException e) {
+                serverIsDownHandler();
                 System.out.println("no fxml file");
             }
         }
