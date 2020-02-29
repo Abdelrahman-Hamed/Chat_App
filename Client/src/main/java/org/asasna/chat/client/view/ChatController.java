@@ -524,14 +524,20 @@ public class ChatController implements Initializable, IChatController {
         } else {
             new Thread(() -> {
                     byte[] buf = convertFileToBytes();
-                    int receiverId;
+                    int senderId = me.getId();
+                    Message message = new Message(senderId, buf);
                     if (!(activeContact instanceof GroupContact)) {
+                        int receiverId;
                         receiverId = activeContact.getUser().getId();
-                        int senderId = me.getId();
                         //boolean sent = client.sendRecord(receiverId, senderId, buf);
-                        Message message = new Message(senderId, buf);
                         sendMessage(receiverId, message);
                         System.out.println(buf.length);
+                    }else{
+                        try {
+                            sendGroupMessage(((GroupContact) activeContact).getChatGroup(),message);
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
                     }
                     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////else gp
             }).start();
