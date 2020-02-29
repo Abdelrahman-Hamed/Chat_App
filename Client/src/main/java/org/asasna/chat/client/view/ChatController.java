@@ -272,9 +272,11 @@ public class ChatController implements Initializable, IChatController {
             });
             friendRequest.setOnMouseClicked(e -> {
                 active = Active.friendRequets;
+                createbtn.setVisible(false);
             });
             notificationIcon.setOnMouseClicked(e -> {
                 active = Active.Notifications;
+                createbtn.setVisible(false);
                 contactsList.getChildren().clear();
                 notifications.stream().forEach(notification -> {
                     contactsList.getChildren().add(new NotificationView(client, notification));
@@ -846,7 +848,10 @@ public class ChatController implements Initializable, IChatController {
 
     //    Start Abdo
     public void recieveGroupMessage(ChatGroup group, Message message) {
-        if (!contactsList.getChildren().parallelStream().filter(c -> c instanceof GroupContact).mapToInt(c -> ((GroupContact) c).getChatGroup().getGroupId()).anyMatch(i -> i == group.getGroupId())) {
+
+        if (!contactsList.getChildren().parallelStream()
+                .filter(c -> c instanceof GroupContact).mapToInt(c -> ((GroupContact) c).getChatGroup().getGroupId())
+                .anyMatch(i -> i == group.getGroupId())) {
             Platform.runLater(() -> {
                 GroupContact contact = new GroupContact(group);
                 contact.setOnMouseClicked((e) -> {
@@ -869,7 +874,7 @@ public class ChatController implements Initializable, IChatController {
                             contactsList.getChildren().add(0, n);
                         });
                 if ((activeContact instanceof GroupContact) && (((GroupContact) activeContact).getChatGroup().getGroupId() == group.getGroupId())) {
-                    MessageView messageView = new MessageView(message);
+                    //MessageView messageView = new MessageView(message);
                     if (message.getUserId() == me.getId())
                         messageView.setDirection(SpeechDirection.RIGHT);
                     else
@@ -980,7 +985,7 @@ public class ChatController implements Initializable, IChatController {
 
     @Override
     public void updateMyContactList(User updatedUser) {
-oContacts.removeIf(c->c.getUser().getId()==updatedUser.getId());
+        oContacts.removeIf(c -> c.getUser().getId() == updatedUser.getId());
         Platform.runLater(() -> {
             ObservableList<Node> contacts;
             contacts = contactsList.getChildren();
@@ -1042,6 +1047,7 @@ oContacts.removeIf(c->c.getUser().getId()==updatedUser.getId());
     public void tempDisplayMessage(Message message) {//////////////////////////////////
         if (me.getId() == message.getUserId()) {
             showSenderMessage(message);
+
         } else {
             saveReceiverMessages(message.getUserId(), message);
             if (activeContact.getUser().getId() == message.getUserId()) {
@@ -1065,7 +1071,7 @@ oContacts.removeIf(c->c.getUser().getId()==updatedUser.getId());
             }).start();
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         }
-        saveReceiverMessages(message.getUserId(), message);
+        //saveReceiverMessages(message.getUserId(), message);
         addEventHandlerOnFileMessage(message);
     }
 
