@@ -45,50 +45,52 @@ public class Contact extends HBox {
     }
 
     public Contact(User user) {
-        this.user = user;
-        this.name = user.getName();
-        this.image = user.getImage();
-        this.status = user.getStatus();
-        Circle circle = new Circle();
-        circle.setRadius(30);
-        if (image != null)
-            circle.setFill(new ImagePattern(image));
-        circle.setCenterY(75);
-        Label nameLabel = new Label(name);
-        nameLabel.setStyle("-fx-font-family: 'Comic Sans MS';-fx-font-size: 18;-fx-font-weight: 500;-fx-text-fill: WHITE;-fx-padding: 5 0 0 0;");
-        hBox = new HBox(5);
-        Circle statusCircle=null;
-        Label statusLabel=null;
-        switch (status) {
-            case ONLINE:
-                statusCircle = new Circle(5);
-                statusCircle.setStyle("-fx-fill:  #33FF4B");
-                statusLabel = new Label("Online");
-                statusLabel.setStyle("-fx-text-fill: White");
-                break;
-            case BUSY:
-                statusCircle = new Circle(5);
-                statusCircle.setStyle("-fx-fill:  #FF8C00");
-                statusLabel = new Label("Busy");
-                statusLabel.setStyle("-fx-text-fill: White");
-                break;
-            case OFFLINE:
-                statusCircle = new Circle(5);
-                statusCircle.setStyle("-fx-fill:  #A9A9A9");
-                statusLabel = new Label("Offline");
-                statusLabel.setStyle("-fx-text-fill: White");
-                break;
-            case AWAY:
-                statusCircle = new Circle(5);
-                statusCircle.setStyle("-fx-fill:  #8B0000");
-                statusLabel = new Label("Away");
-                statusLabel.setStyle("-fx-text-fill: White");
-                break;
+        if(user != null){
+            this.user = user;
+            this.name = user.getName();
+            this.image = user.getImage();
+            this.status = user.getStatus();
+            Circle circle = new Circle();
+            circle.setRadius(30);
+            if (image != null)
+                circle.setFill(new ImagePattern(image));
+            circle.setCenterY(75);
+            Label nameLabel = new Label(name);
+            nameLabel.setStyle("-fx-font-family: 'Comic Sans MS';-fx-font-size: 18;-fx-font-weight: 500;-fx-text-fill: WHITE;-fx-padding: 5 0 0 0;");
+            hBox = new HBox(5);
+            Circle statusCircle=null;
+            Label statusLabel=null;
+            switch (status) {
+                case ONLINE:
+                    statusCircle = new Circle(5);
+                    statusCircle.setStyle("-fx-fill:  #33FF4B");
+                    statusLabel = new Label("Online");
+                    statusLabel.setStyle("-fx-text-fill: White");
+                    break;
+                case BUSY:
+                    statusCircle = new Circle(5);
+                    statusCircle.setStyle("-fx-fill:  #FF8C00");
+                    statusLabel = new Label("Busy");
+                    statusLabel.setStyle("-fx-text-fill: White");
+                    break;
+                case OFFLINE:
+                    statusCircle = new Circle(5);
+                    statusCircle.setStyle("-fx-fill:  #A9A9A9");
+                    statusLabel = new Label("Offline");
+                    statusLabel.setStyle("-fx-text-fill: White");
+                    break;
+                case AWAY:
+                    statusCircle = new Circle(5);
+                    statusCircle.setStyle("-fx-fill:  #8B0000");
+                    statusLabel = new Label("Away");
+                    statusLabel.setStyle("-fx-text-fill: White");
+                    break;
+            }
+            hBox.getChildren().addAll(statusCircle, statusLabel);
+            VBox vBox = new VBox(10);
+            vBox.getChildren().addAll(nameLabel, hBox);
+            getChildren().addAll(circle, vBox);
         }
-        hBox.getChildren().addAll(statusCircle, statusLabel);
-        VBox vBox = new VBox(10);
-        vBox.getChildren().addAll(nameLabel, hBox);
-        getChildren().addAll(circle, vBox);
     }
 
     Contact(String name, Image image){
