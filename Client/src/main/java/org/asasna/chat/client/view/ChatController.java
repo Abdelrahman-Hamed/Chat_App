@@ -58,7 +58,9 @@ import org.jcodec.common.model.AudioBuffer;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.ByteBuffer;
 import java.nio.file.Paths;
 import java.rmi.RemoteException;
@@ -1078,7 +1080,11 @@ public class ChatController implements Initializable, IChatController {
         if (me.getId() == message.getUserId()) {
             if (receiverId == activeContact.getUser().getId()) {
                 showSenderMessage(message);
+                saveReceiverMessages(activeContact.getUser().getId(), message);
+            }else{
+                saveReceiverMessages(receiverId, message);
             }
+
             /////////////////////////////////////////////////////else save in messagelist
         } else {
             saveReceiverMessages(message.getUserId(), message);/////////////////////////////////////////////hattms7
@@ -1102,7 +1108,6 @@ public class ChatController implements Initializable, IChatController {
             }
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         }
-        saveReceiverMessages(message.getUserId(), message);
         addEventHandlerOnFileMessage(message);
     }
 
@@ -1364,7 +1369,6 @@ public class ChatController implements Initializable, IChatController {
     private void showSenderMessage(Message message) {
         messageView = new MessageView(message);
         messageView.setDirection(SpeechDirection.RIGHT);
-        saveReceiverMessages(activeContact.getUser().getId(), message);
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -1437,9 +1441,22 @@ public class ChatController implements Initializable, IChatController {
         if (checkEnableChatbot) {
             checkEnableChatbot = false;
         } else {
-            checkEnableChatbot = true;
+            try {
+                URL url = new URL("http://www.google.com");
+                URLConnection connection = url.openConnection();
+                connection.connect();
+                checkEnableChatbot = true;
+
+            } catch (IOException e) {
+                checkEnableChatbot = false;
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setHeaderText(null);
+                alert.setContentText("NO INTERNET CONNECTION ,Please check your internet network");
+                alert.show();
+            }
+            System.out.println(checkEnableChatbot);
         }
-        System.out.println(checkEnableChatbot);
+
     }
 
     public void sendByChatbot(Message messageReceivedContent) throws Exception {
