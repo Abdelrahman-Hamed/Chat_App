@@ -10,7 +10,7 @@
    <children>
       <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="700.0" stylesheets="@login.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="350.0" style="-fx-padding: 30px;" styleClass="main-background-color">
+            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="350.0" style="-fx-padding: 30px;" styleClass="main-background-color" HBox.hgrow="ALWAYS">
                <children>
                   <VBox alignment="CENTER" prefHeight="236.0" prefWidth="350.0" spacing="40.0" style="-fx-border-radius: 20px; -fx-border-width: 4px;">
                      <children>
