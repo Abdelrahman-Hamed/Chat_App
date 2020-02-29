@@ -75,13 +75,6 @@
                   <PieChart fx:id="chart" layoutX="-1.0" layoutY="114.0" prefHeight="294.0" prefWidth="521.0" stylesheets="@colors.css" title="Statistics" />
                </children>
             </Pane>
-            <Pane fx:id="announcmentPane" opacity="0.0" prefHeight="406.0" prefWidth="521.0">
-               <children>
-                  <TextArea fx:id="announce" layoutX="4.0" layoutY="3.0" prefHeight="400.0" prefWidth="408.0" promptText="send anouncments" />
-                  <Button fx:id="sendAnnounce" layoutX="421.0" layoutY="151.0" mnemonicParsing="false" onAction="#sendAnnouncements" onMouseClicked="#send" prefHeight="76.0" prefWidth="79.0" style="-fx-background-radius: 50; -fx-border-radius: 50;" />
-                  <FontIcon iconColor="#045ba5" iconLiteral="mdi-chevron-right" iconSize="80" layoutX="422.0" layoutY="220.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="1.0" />
-               </children>
-            </Pane>
             <Pane fx:id="settingPane" disable="true" opacity="0.0" prefHeight="400.0" prefWidth="521.0">
                <children>
                   <ToggleSwitch fx:id="service" layoutX="399.0" layoutY="14.0" prefHeight="30.0" prefWidth="107.0" selected="true" text="Service" textFill="WHITE" textOverrun="CENTER_ELLIPSIS" viewOrder="1.0" wrapText="true">
@@ -216,6 +209,22 @@
                         <Glow />
                      </effect>
                   </Text>
+               </children>
+            </Pane>
+            <Pane fx:id="announcmentPane" disable="true" opacity="0.0" prefHeight="406.0" prefWidth="521.0">
+               <children>
+                  <TextArea fx:id="announce" layoutX="4.0" layoutY="3.0" prefHeight="400.0" prefWidth="408.0" promptText="send anouncments" />
+                  <Button fx:id="sendAnnounce" layoutX="429.0" layoutY="170.0" minWidth="54.0" mnemonicParsing="false" onAction="#sendAnnouncements" prefHeight="64.0" prefWidth="66.0" style="-fx-background-radius: 80; -fx-border-radius: 80; -fx-background-color: #045ba5;">
+                     <graphic>
+                        <FontIcon iconColor="WHITE" iconLiteral="mdi-chevron-right" iconSize="50" strokeType="OUTSIDE" strokeWidth="0.0" />
+                     </graphic>
+                     <effect>
+                        <Glow />
+                     </effect>
+                     <cursor>
+                        <Cursor fx:constant="HAND" />
+                     </cursor>
+                  </Button>
                </children>
             </Pane>
             <Pane fx:id="homePane" prefHeight="406.0" prefWidth="521.0" stylesheets="@login.css">
