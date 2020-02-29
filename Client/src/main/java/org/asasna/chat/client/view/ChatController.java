@@ -306,10 +306,16 @@ public class ChatController implements Initializable, IChatController {
         setInitialContact();
         setListnerForPressingEnter();
         messageTextArea.setStyle("-fx-font-size:15");
-        if (activeContact.getUser().getStatus() == UserStatus.OFFLINE){
-            messageTextArea.setDisable(true);
-        } else {
-            messageTextArea.setDisable(false);
+        try {
+            if(client.getFriendList().size() > 0) {
+                if (activeContact.getUser().getStatus() == UserStatus.OFFLINE) {
+                    messageTextArea.setDisable(true);
+                } else {
+                    messageTextArea.setDisable(false);
+                }
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
         }
         /*******************************/
         new Thread(() -> {
@@ -1007,7 +1013,7 @@ oContacts.removeIf(c->c.getUser().getId()==updatedUser.getId());
             showSenderMessage(message);
         } else {
             saveReceiverMessages(message.getUserId(), message);
-            if (activeContact.getUser().getId() == message.getUserId()) {
+            if (activeContact != null && activeContact.getUser().getId() == message.getUserId()) {
                 showReceiverMessage(message);
             } else {
                 showMessageNotification(message);
@@ -1240,27 +1246,29 @@ oContacts.removeIf(c->c.getUser().getId()==updatedUser.getId());
 
     private void setInitialContact() {
         try {
-            friends = client.getFriendList();
+            if(client.getFriendList().size() > 0) {
+                friends = client.getFriendList();
+                Contact initialContact = new Contact(friends.get(0));
+                activeContact = initialContact;
+                System.out.println("At initialize function ---> active user " + activeContact.getUser().getName());
+                receiverImage.setFill(new ImagePattern(activeContact.getUser().getImage()));
+                receiverNameLabel.setText(activeContact.getUser().getName());
+                Label sayHello = new Label(" Say Hello to " + activeContact.getUser().getName() + " ");
+                sayHello.setAlignment(Pos.CENTER);
+                sayHello.setStyle("-fx-background-color: GAINSBORO; -fx-background-radius: 10;" +
+                        " -fx-font-size: 14px; -fx-font-family: Consolas; -fx-font-weight: bold");
+                HBox hBox = new HBox(sayHello);
+                hBox.setAlignment(Pos.CENTER);
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        view.getChildren().add(hBox);
+                    }
+                });
+            }
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-        Contact initialContact = new Contact(friends.get(0));
-        activeContact = initialContact;
-        System.out.println("At initialize function ---> active user " + activeContact.getUser().getName());
-        receiverImage.setFill(new ImagePattern(activeContact.getUser().getImage()));
-        receiverNameLabel.setText(activeContact.getUser().getName());
-        Label sayHello = new Label(" Say Hello to " + activeContact.getUser().getName() + " ");
-        sayHello.setAlignment(Pos.CENTER);
-        sayHello.setStyle("-fx-background-color: GAINSBORO; -fx-background-radius: 10;" +
-                " -fx-font-size: 14px; -fx-font-family: Consolas; -fx-font-weight: bold");
-        HBox hBox = new HBox(sayHello);
-        hBox.setAlignment(Pos.CENTER);
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                view.getChildren().add(hBox);
-            }
-        });
     }
 
     private void showMessageNotification(Message message) {
