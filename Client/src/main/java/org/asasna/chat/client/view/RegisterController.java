@@ -239,7 +239,7 @@ public class RegisterController implements Initializable {
     public void handleSubmitAction() {
         if (checkingPhoneNum() & checkingRadioButtons() & checkComboBox() & checkBio() & checkingName() & checkingEmail() & checkingPassword() & checkingConfirmPassword() & checkDatePicker()) {
             try {
-                User me = new User(name.getText(), phoneNumber.getText(), email.getText(), password.getText(), getSelectedGender(), countryBox.getValue(), convertToDateViaSqlDate(dateOfBirth.getValue()), bio.getText(), UserStatus.ONLINE, "abdo.jpg", true, false);
+                User me = new User(name.getText(), phoneNumber.getText(), email.getText(), password.getText(), getSelectedGender(), countryBox.getValue(), convertToDateViaSqlDate(dateOfBirth.getValue()), bio.getText(), UserStatus.OFFLINE , "abdo.jpg", true, false);
                 if (image == null)
                     me.setImage(defaultImage);
                 else
