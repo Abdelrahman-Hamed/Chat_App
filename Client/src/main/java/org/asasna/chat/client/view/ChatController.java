@@ -1446,6 +1446,26 @@ public class ChatController implements Initializable, IChatController {
             }
         }
     }
+    @FXML
+    Button closeONDown; //close all app if server is down
+    @FXML
+    Pane serverIsDown;//enable if Server is down
+    @FXML
+    private void close() {
+        closeONDown.setOnAction((actionEvent) -> {
+            Platform.exit();
+            System.exit(0);
+        });
+    }
+
+    public void serverIsDownHandler() {
+        mainWindow.setDisable(true);
+        serverIsDown.setOpacity(1);
+        serverIsDown.setDisable(false);
+        close();
+    }
+
+
     // End Nehal Adel
 }
 

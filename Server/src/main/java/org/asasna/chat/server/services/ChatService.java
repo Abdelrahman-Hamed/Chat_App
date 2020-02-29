@@ -266,6 +266,15 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
             client.receiveAnnouncementFromAdmin(message);
         }
     }
+    public void closeServer()throws RemoteException{
+        for (IClientService client : onlineUsers.values()){
+            client.closeIt();
+        }
+        //closeIt()
+    }
+    public void unRegisterAll() throws RemoteException{
+        onlineUsers.clear();
+    }
     /* end nehal */
 
     /* start aya */

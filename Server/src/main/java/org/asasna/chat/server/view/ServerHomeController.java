@@ -182,6 +182,8 @@ public class ServerHomeController implements Initializable {
         if (!service.isSelected()) {
             try {
                 System.out.println(app.getReg());
+                App.iAuthenticationService.getThisChatService().closeServer();
+                App.iAuthenticationService.getThisChatService().unRegisterAll();
                 app.getReg().unbind("AuthenticationService");
             } catch (RemoteException e) {
                 e.printStackTrace();
@@ -191,7 +193,7 @@ public class ServerHomeController implements Initializable {
             System.out.println("service off");
         } else {
             try {
-                app.getReg().rebind("AuthenticationService", app.getiAuthenticationService());
+                app.getReg().rebind("AuthenticationService", App.iAuthenticationService);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
