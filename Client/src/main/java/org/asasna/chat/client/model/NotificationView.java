@@ -15,6 +15,7 @@ import org.asasna.chat.common.model.Notification;
 import org.asasna.chat.common.model.NotificationType;
 
 import javax.swing.text.html.ImageView;
+import java.rmi.RemoteException;
 
 public class NotificationView extends VBox {
     private Client client;
@@ -39,8 +40,13 @@ public class NotificationView extends VBox {
             accept.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent actionEvent) {
-                    client.acceptRequest(notification.getUser().getId());
-                    client.addFriend(notification.getUser());
+                    try {
+                        client.acceptRequest(notification.getUser().getId());
+                        client.addFriend(notification.getUser());
+                        client.addMeAsFriend(notification.getUser().getId());
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
                 }
             });
             reject.setOnAction(new EventHandler<ActionEvent>() {

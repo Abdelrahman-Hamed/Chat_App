@@ -52,8 +52,8 @@
                       <RowConstraints minHeight="10.0" prefHeight="412.0" vgrow="ALWAYS"/>
                       <RowConstraints minHeight="3.0" prefHeight="96.0" vgrow="ALWAYS"/>
                   </rowConstraints>
-      
-      
+
+
               </GridPane>-->
               <BorderPane>
                   <top>
@@ -118,7 +118,7 @@
                       </ScrollPane>
                   </center>
                   <bottom>
-      
+
                       <BorderPane>
                           <top>
                               <HBox fx:id="styleBox" prefHeight="28.0" prefWidth="764.0">
@@ -172,7 +172,7 @@
                               </HBox>
                           </center>
                       </BorderPane>
-      
+
                   </bottom>
               </BorderPane>
               <!--</AnchorPane>-->
