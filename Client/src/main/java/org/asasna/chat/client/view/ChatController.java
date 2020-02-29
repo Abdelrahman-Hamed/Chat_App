@@ -1053,8 +1053,9 @@ public class ChatController implements Initializable, IChatController {
             }).start();
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         }
-        //saveReceiverMessages(message.getUserId(), message);
+        System.out.println("Display Message ...");
         addEventHandlerOnFileMessage(message);
+        //saveReceiverMessages(message.getUserId(), message);
     }
     private void addEventHandlerOnFileMessage(Message message) {
         if (message.getMessageType() == MessageType.FILE) {
@@ -1062,6 +1063,7 @@ public class ChatController implements Initializable, IChatController {
                 @Override
                 public void handle(MouseEvent mouseEvent) {
                     // Adding Download File Here
+                    System.out.println("File Will Download...");
                     DirectoryChooser directoryChooser = new DirectoryChooser();
                     File selectedDirectory = directoryChooser.showDialog(null);
                     new Thread(() -> {
@@ -1101,25 +1103,6 @@ public class ChatController implements Initializable, IChatController {
                     System.out.println("Message:  " + message.getMesssagecontent() + " from  " + message.getUserId());
                 }
             }
-        }
-        if (message.getMessageType() == MessageType.FILE) {
-            System.out.println("Null: " + messageView.getDisplayedText());
-            messageView.getDisplayedText().setOnMouseClicked(new EventHandler<MouseEvent>() {
-                @Override
-                public void handle(MouseEvent mouseEvent) {
-                    // Adding Download File Here
-                    DirectoryChooser directoryChooser = new DirectoryChooser();
-                    File selectedDirectory = directoryChooser.showDialog(null);
-                    new Thread(() -> {
-                        try {
-                            client.getFile(selectedDirectory.getAbsolutePath(), message.getMesssagecontent(), message.getUserId());
-                        } catch (RemoteException e) {
-                            e.printStackTrace();
-                        }
-                    }).start();
-                    System.out.println("Download File");
-                }
-            });
         }
             addEventHandlerOnFileMessage(message);
             saveReceiverMessages(message.getUserId(), message);
@@ -1189,9 +1172,9 @@ public class ChatController implements Initializable, IChatController {
     }
 
     public void loadMessageChat() {
-//        Platform.runLater(() -> {
-//            view.getChildren().clear();
-//        });
+        Platform.runLater(() -> {
+            view.getChildren().clear();
+        });
         if (!(activeContact instanceof GroupContact)) {
             if (receiverMessages.get(activeContact.getUser().getId()) != null) {
                 List<Message> messages = receiverMessages.get(activeContact.getUser().getId());
