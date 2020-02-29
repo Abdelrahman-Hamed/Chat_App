@@ -82,7 +82,7 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     public void unRegister(IClientService client) throws RemoteException {
         IClientService removedUser = onlineUsers.remove(client.getUser().getId());
         if (removedUser == null) { // Check User In Map
-            System.out.println("Not Found To Remove");
+            //System.out.println("Not Found To Remove");
         }
     }
 
