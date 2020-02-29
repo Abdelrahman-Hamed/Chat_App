@@ -33,6 +33,7 @@ public interface IClientService extends Remote {
 
     /* start sayed */
     boolean sendRecord(int receiverId, int senderId, byte[] buf) throws RemoteException;
+
     void recieveRecord(int senderId, byte[] buf) throws RemoteException;
     /* end sayed */
 
@@ -41,14 +42,18 @@ public interface IClientService extends Remote {
     /* end nehal */
 
     /* start aya */
-    void sendFileToServer(String filePath, String extension, int senderId ,Message message) throws RemoteException;
+    void sendFileToServer(String filePath, String extension, int senderId, Message message) throws RemoteException;
 
-    void recieveFileMessage(Message message)throws RemoteException;
+    void recieveFileMessage(Message message) throws RemoteException;
 
-    public void downloadFile(RemoteInputStream inFile, String suffix, String direcotryPath,String name) throws RemoteException;
-    void getFile(String directoryPath, String fileName,int senderId)throws RemoteException;
-    public void reciveUpateNotification(User updatedUser)  throws RemoteException;
+    public void downloadFile(RemoteInputStream inFile, String suffix, String direcotryPath, String name) throws RemoteException;
+
+    void getFile(String directoryPath, String fileName, int senderId) throws RemoteException;
+
+    public void reciveUpateNotification(User updatedUser) throws RemoteException;
+
     public void changeStatus(User me, UserStatus status) throws RemoteException;
+
     void signOut(int id) throws RemoteException;
 
     /* end aya */
@@ -59,10 +64,12 @@ public interface IClientService extends Remote {
 
     /* start shimaa */
     User getUser(int id) throws RemoteException;
+
     void receiveAnnouncementFromAdmin(Message message) throws RemoteException;
 
     void removeFriendFromList(int id) throws RemoteException;
 
+    long getUniqueGroupId() throws RemoteException;
     /* end shimaa */
 
 }

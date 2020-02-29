@@ -4,6 +4,7 @@ import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXColorPicker;
 import com.jfoenix.controls.JFXSlider;
 import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
@@ -72,6 +73,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
 import com.google.code.chatterbotapi.*;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
@@ -128,7 +130,8 @@ public class ChatController implements Initializable, IChatController {
     Circle status;
     @FXML
     FontIcon attachmentIcon;
-
+    @FXML
+    ScrollPane contactsScroll;
     @FXML
     FontIcon microphoneId;
     private long start, end;
@@ -183,6 +186,12 @@ public class ChatController implements Initializable, IChatController {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+        contactsScroll.setContent(contactsList);
+        contactsList.heightProperty().addListener((ob, ol, nw) -> {
+            contactsScroll.setVvalue((double) nw);
+        });
+        contactsList.prefHeightProperty().bind(contactsScroll.heightProperty());
+        contactsList.prefWidthProperty().bind(contactsScroll.widthProperty());
         chatArea_scroll.setContent(view);
         view.heightProperty().addListener((ob, ol, nw) -> {
             chatArea_scroll.setVvalue((double) nw);
@@ -196,7 +205,13 @@ public class ChatController implements Initializable, IChatController {
         createbtn.getStyleClass().add("group-create-btn");
         this.searchArea.getChildren().add(createbtn);
         createbtn.setVisible(false);
-        Bindings.bindContent(contactsList.getChildren(), FXCollections.observableArrayList(oContacts));
+
+        oContacts.addListener((InvalidationListener) (e) -> {
+            Platform.runLater(() -> {
+                Bindings.bindContent(contactsList.getChildren(), FXCollections.observableArrayList(oContacts));
+            });
+        });
+        //Bindings.bindContent(contactsList.getChildren(), FXCollections.observableArrayList(oContacts));
 
         try {
             IClientService registeredUser = new Client(this);
@@ -221,16 +236,22 @@ public class ChatController implements Initializable, IChatController {
                 active = Active.Group;
                 groupIcon.setIconColor(Color.BLACK);
                 createbtn.setVisible(true);
+
                 createbtn.setOnAction(e1 -> {
-                    ChatGroup chatGroup1 = new ChatGroup(1, (List<Integer>)
+                    int id = 0;
+                    try {
+                        id = (int) client.getUniqueGroupId();
+                    } catch (RemoteException ex) {
+                        ex.printStackTrace();
+                    }
+                    ChatGroup chatGroup1 = new ChatGroup(id,
                             contactsList.getChildren().stream()
                                     .filter(c -> ((SearchedGroupContact) c).getSelected())
                                     .map(c -> ((SearchedGroupContact) c).getUser())
-                                    .peek(System.out::println)
                                     .mapToInt(u -> u.getId())
                                     .boxed()
                                     .collect(Collectors.toList())
-                            , null, "Group1");
+                            , null, "Group" + id);
                     chatGroup1.getParticipents().add(me.getId());
                     GroupContact groupContact = new GroupContact(chatGroup1);
                     groupContact.setOnMouseClicked(ec -> {
@@ -244,29 +265,20 @@ public class ChatController implements Initializable, IChatController {
                             contact1.setOnMouseClicked(ev -> {
                                 activeContact = contact1;
                             });
-                            oContacts.add(contact1);
-                            contactsList.getChildren().add(contact1);
-
-
                         });
                     } catch (RemoteException er) {
                         er.printStackTrace();
                     }
-                    contactsList.getChildren().add(groupContact);
                     oContacts.add(groupContact);
                     createbtn.setVisible(false);
                     active = Active.Friends;
-//                    Bindings.bindContent(contactsList.getChildren(), FXCollections.observableArrayList(oContacts));
-                    //Bindings.bindContentBidirectional(FXCollections.observableArrayList(oContacts), contactsList.getChildren());
-                    //oContacts.forEach(System.out::println);
                 });
             });
 
             friendList.setOnMouseClicked(e -> {
                 active = Active.Friends;
-                oContacts.forEach(System.out::println);
                 contactsList.getChildren().clear();
-                Bindings.bindContent(contactsList.getChildren(), FXCollections.observableArrayList(oContacts));
+                contactsList.getChildren().addAll(oContacts);
                 createbtn.setVisible(false);
             });
             friendRequest.setOnMouseClicked(e -> {
@@ -282,26 +294,10 @@ public class ChatController implements Initializable, IChatController {
                     contactsList.getChildren().add(new NotificationView(client, notification));
                 });
             });
-            /*this.root.prefHeightProperty().bind(root.getScene().heightProperty());
-            this.root.prefWidthProperty().bind(root.getScene().widthProperty());
-            this.messageTextArea.prefHeightProperty().bind(root.getScene().heightProperty());
-
-            this.sidePanel.prefHeightProperty().bind(root.getScene().heightProperty());
-            this.mainWindow.prefHeightProperty().bind(root.getScene().heightProperty());
-            this.contactsView.prefHeightProperty().bind(root.getScene().heightProperty());
-            this.chatArea.prefHeightProperty().bind(root.getScene().heightProperty());
-            this.chatArea.prefWidthProperty().bind(root.getScene().widthProperty());
-            this.chatArea_scroll.prefWidthProperty().bind(root.getScene().widthProperty().multiply(.5));
-            this.chatArea_scroll.prefHeightProperty().bind(root.getScene().heightProperty());
-            //this.chatArea_scroll.vvalueProperty().bind(this.view.heightProperty());
-            //this.chatArea_scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER); // shimaa
-            this.view.prefHeightProperty().bind(this.root.getScene().heightProperty());
-            this.view.prefWidthProperty().bind(this.root.getScene().widthProperty().multiply(.5));
-            this.messageTextArea.prefHeightProperty().bind(root.getScene().heightProperty());
-            this.messageTextArea.prefWidthProperty().bind(root.getScene().widthProperty().multiply(.66).subtract(120));
-*/
             this.chatArea_scroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER); // shimaa
             this.chatArea_scroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER); // shimaa
+            this.contactsScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+            this.contactsScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
         }).start();
         /*******************************/
@@ -325,9 +321,9 @@ public class ChatController implements Initializable, IChatController {
                         activeContact = contact1;
                     });
                     oContacts.add(contact1);
-                    Platform.runLater(() -> {
+                    /*Platform.runLater(() -> {
                         contactsList.getChildren().add(contact1);
-                    });
+                    });*/
 
                 });
             } catch (RemoteException e) {
@@ -382,7 +378,7 @@ public class ChatController implements Initializable, IChatController {
 
     //      Sayed Start
 
-    private void addRemoveFriendButton(Contact contact1){
+    private void addRemoveFriendButton(Contact contact1) {
         JFXButton removeFriendButton = new JFXButton("Remove Friend");
         removeFriendButton.setStyle("-jfx-button-type: RAISED;\n" +
                 "     -fx-background-color: #ff473a;\n" +
@@ -391,7 +387,7 @@ public class ChatController implements Initializable, IChatController {
             @Override
             public void handle(ActionEvent actionEvent) {
                 try {
-                    if(client.removeFriend(contact1.getUser().getId())){
+                    if (client.removeFriend(contact1.getUser().getId())) {
                         contactsList.getChildren().remove(contact1);
                     }
                 } catch (RemoteException e) {
@@ -399,8 +395,9 @@ public class ChatController implements Initializable, IChatController {
                 }
             }
         });
-        ((HBox)((VBox)(contact1.getChildren().get(1))).getChildren().get(1)).getChildren().add(removeFriendButton);
+        ((HBox) ((VBox) (contact1.getChildren().get(1))).getChildren().get(1)).getChildren().add(removeFriendButton);
     }
+
     @Override
     public void removeNotification(int fromUserId) {
         notifications = notifications.stream().parallel().filter(notification -> notification.getUser().getId() != fromUserId).collect(Collectors.toList());
@@ -414,7 +411,7 @@ public class ChatController implements Initializable, IChatController {
     @Override
     public void removeFriendFromList(int id) {
         Platform.runLater(() -> {
-            contactsList.getChildren().removeIf(contact -> ((Contact)contact).getUser().getId() == id);
+            contactsList.getChildren().removeIf(contact -> ((Contact) contact).getUser().getId() == id);
         });
 
         System.out.println(oContacts.size());
@@ -601,7 +598,7 @@ public class ChatController implements Initializable, IChatController {
         contacts = contactsList.getChildren();
         for (Node c : contacts) {
             c.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-                if(c instanceof Contact)
+                if (c instanceof Contact)
                     this.activeContact = (Contact) c;
             });
         }
@@ -865,7 +862,9 @@ public class ChatController implements Initializable, IChatController {
                 contact.setOnMouseClicked((e) -> {
                     this.activeContact = contact;
                 });
-                contactsList.getChildren().add(0, contact);
+                if (active == Active.Friends)
+                    contactsList.getChildren().add(0, contact);
+                oContacts.add(contact);
                 groupMessages.put(group.getGroupId(), new ArrayList<>());
                 groupMessages.get(group.getGroupId()).add(message);
                 //tempDisplayMessage(message);
@@ -935,6 +934,7 @@ public class ChatController implements Initializable, IChatController {
             }).start();
         }
     }
+
     @Override
     public void tempFileDisplayMessage(Message message) {
         viewTextMessage = new MSGview(message, this);
@@ -992,7 +992,7 @@ public class ChatController implements Initializable, IChatController {
 
     @Override
     public void updateMyContactList(User updatedUser) {
-        oContacts.removeIf(contact -> contact.getUser().getId() == updatedUser.getId());
+        oContacts.removeIf(contact -> !(contact instanceof GroupContact) && (contact.getUser().getId() == updatedUser.getId()));
         Contact contact1 = new Contact(updatedUser);
         addRemoveFriendButton(contact1);
         oContacts.add(contact1);
@@ -1038,11 +1038,12 @@ public class ChatController implements Initializable, IChatController {
             showSenderMessage(message);
         } else {
             saveReceiverMessages(message.getUserId(), message);
-            if (activeContact.getUser().getId() == message.getUserId()) {
-                showReceiverMessage(message);
-            } else {
-                showMessageNotification(message);
-            }
+            if (!(activeContact instanceof GroupContact))
+                if (activeContact.getUser().getId() == message.getUserId()) {
+                    showReceiverMessage(message);
+                } else {
+                    showMessageNotification(message);
+                }
             /////////////////////////////////////////////////////////////////////////////////////////////addition for chatbot
 
             new Thread(() -> {
@@ -1062,6 +1063,7 @@ public class ChatController implements Initializable, IChatController {
         //saveReceiverMessages(message.getUserId(), message);
         addEventHandlerOnFileMessage(message);
     }
+
     private void addEventHandlerOnFileMessage(Message message) {
         if (message.getMessageType() == MessageType.FILE) {
             messageView.getDisplayedText().setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -1082,6 +1084,7 @@ public class ChatController implements Initializable, IChatController {
             });
         }
     }
+
     public void tempDisplayMessage(int groupId, Message message) {
         messageView = new MessageView(message);
         if (me.getId() == message.getUserId()) {
@@ -1108,9 +1111,10 @@ public class ChatController implements Initializable, IChatController {
                 }
             }
         }
-            addEventHandlerOnFileMessage(message);
-            saveReceiverMessages(message.getUserId(), message);
-        }
+        addEventHandlerOnFileMessage(message);
+        saveReceiverMessages(message.getUserId(), message);
+    }
+
     @Override
     public void addNotification(Notification notification) {
         this.notifications.add(notification);
@@ -1288,7 +1292,7 @@ public class ChatController implements Initializable, IChatController {
                         if (!ifAdminContactExist()) {
                             contactsList.getChildren().add(0, admin);
                         }
-                    } else{
+                    } else {
                         User notSelectedFriend = client.getUser(message.getUserId());
                         tray.setTitle(notSelectedFriend.getName());
                         tray.setImage(notSelectedFriend.getImage());
@@ -1345,8 +1349,8 @@ public class ChatController implements Initializable, IChatController {
         boolean isExist = false;
         contacts = contactsList.getChildren();
         for (Node c : contacts) {
-            if(admin.equals(c)){
-                isExist =true;
+            if (admin.equals(c)) {
+                isExist = true;
             }
         }
         return isExist;
@@ -1405,7 +1409,7 @@ public class ChatController implements Initializable, IChatController {
 //    ChatterBot bot2 = factory.create(ChatterBotType.PANDORABOTS, "b0dafd24ee35a477");
 //    ChatterBotSession bot2session = bot2.createSession();
 
-       if (activeContact instanceof GroupContact) {
+        if (activeContact instanceof GroupContact) {
             System.out.println("inner");
             client.sendGroupMessage(((GroupContact) activeContact).getChatGroup(), new Message(client.getUser().getId(), respond));
         } else {
@@ -1429,13 +1433,13 @@ public class ChatController implements Initializable, IChatController {
     @FXML
     public void send() throws RemoteException {
         String messageContent = messageTextArea.getText().trim();
-        if(messageContent.length() > 0){
+        if (messageContent.length() > 0) {
             if (activeContact instanceof GroupContact) {
                 System.out.println("inner");
                 client.sendGroupMessage(((GroupContact) activeContact).getChatGroup(), new Message(client.getUser().getId(), messageContent));
             } else {
                 if (activeContact.getUser().getStatus() == UserStatus.ONLINE) {
-                    if (messageTextArea.getText().length() !=0 && !messageTextArea.getText().equals(" ")) {
+                    if (messageTextArea.getText().length() != 0 && !messageTextArea.getText().equals(" ")) {
                         int receiverId = activeContact.getUser().getId();
                         int senderId = me.getId();
                         messageTextArea.setText("");

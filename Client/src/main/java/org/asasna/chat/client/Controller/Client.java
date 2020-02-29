@@ -35,7 +35,7 @@ import javax.rmi.ssl.SslRMIClientSocketFactory;
 public class Client extends UnicastRemoteObject implements IClientService {
     IChatController chatController;
     RegisterController registerController;
-   public IChatService chatService;
+    public IChatService chatService;
     IAuthenticationService authenticationService;
     private User user;
 
@@ -68,7 +68,7 @@ public class Client extends UnicastRemoteObject implements IClientService {
         System.setProperty("javax.net.ssl.trustStorePassword", "123456");*/
 
         //reg = LocateRegistry.getRegistry("127.0.0.1", 5001, new SslRMIClientSocketFactory());
-        reg=LocateRegistry.getRegistry(5001);
+        reg = LocateRegistry.getRegistry(5001);
 //            this.user = new User(4, "Mohamed", "01027420575");
 //            chatService.register(this.user.getId(), this);
 //        } catch (RemoteException | NotBoundException e) {
@@ -127,9 +127,9 @@ public class Client extends UnicastRemoteObject implements IClientService {
         chatService.sendGroupMsg(group, message);
     }
 
-    public Pair< String ,IChatService> login(String phoneNumber, String password) {
+    public Pair<String, IChatService> login(String phoneNumber, String password) {
         try {
-            Pair < String ,IChatService> temp=authenticationService.login(phoneNumber, password);
+            Pair<String, IChatService> temp = authenticationService.login(phoneNumber, password);
             chatService = temp.getValue();
             return temp;
         } catch (RemoteException e) {
@@ -189,6 +189,7 @@ public class Client extends UnicastRemoteObject implements IClientService {
         }
         return false;
     }
+
     public boolean cancelFriendRequest(int userId) {
         try {
             System.out.println("UserId: " + userId);
@@ -226,7 +227,7 @@ public class Client extends UnicastRemoteObject implements IClientService {
         chatController.removeFriendFromList(id);
     }
 
-    public void addFriend(User user){
+    public void addFriend(User user) {
         chatController.addContact(user);
     }
     /* end sayed */
@@ -239,7 +240,8 @@ public class Client extends UnicastRemoteObject implements IClientService {
     public boolean isvalidUser(User me) throws RemoteException {
         return authenticationService.isValid(me);
     }
-    public void sendGroupFileToServer(String filePath, String extension, ChatGroup chatGroup, Message message){
+
+    public void sendGroupFileToServer(String filePath, String extension, ChatGroup chatGroup, Message message) {
         RemoteInputStreamServer istream = null;
         try {
             istream = new GZIPRemoteInputStream(new BufferedInputStream(new FileInputStream(filePath)));
@@ -268,11 +270,13 @@ public class Client extends UnicastRemoteObject implements IClientService {
             if (istream != null) istream.close();
         }
     }
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////keep me not in the interface
     public int getUserId() throws RemoteException {
         return authenticationService.getUserToSave();
     }
-/////////////////////////////////////////////////////////////////////////////////////
+
+    /////////////////////////////////////////////////////////////////////////////////////
     @Override
     public void downloadFile(RemoteInputStream inFile, String suffix, String direcotryPath, String name) throws RemoteException {
         // new Thread(() -> {
@@ -299,9 +303,10 @@ public class Client extends UnicastRemoteObject implements IClientService {
         System.out.println("Recieve File Message");
         chatController.tempDisplayMessage(message);
     }
+
     @Override
-    public void getFile(String directoryPath, String fileName,int senderId)throws RemoteException{
-        chatService.getFile(directoryPath, fileName,senderId);
+    public void getFile(String directoryPath, String fileName, int senderId) throws RemoteException {
+        chatService.getFile(directoryPath, fileName, senderId);
     }
 
     public List<Integer> setMyFriendsIds(List<User> myFriends) {
@@ -333,6 +338,7 @@ public class Client extends UnicastRemoteObject implements IClientService {
         chatController.updateMyContactList(updatedUser);
         System.out.println("Recived2");
     }
+
     public void signOut(int id) throws RemoteException {
         authenticationService.signOut(id);
     }
@@ -357,5 +363,9 @@ public class Client extends UnicastRemoteObject implements IClientService {
         chatController.tempDisplayMessage(message);
     }
 
+    @Override
+    public long getUniqueGroupId() throws RemoteException {
+        return chatService.getUniqueGroupId();
+    }
     /* end shimaa */
 }

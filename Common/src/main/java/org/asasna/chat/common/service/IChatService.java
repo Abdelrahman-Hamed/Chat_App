@@ -39,7 +39,7 @@ public interface IChatService extends Remote {
 
     void sendFile(RemoteInputStream inFile, String suffix, int friendId, Message message) throws RemoteException;
 
-    void getFile(String directoryPath, String fileName,int clickerId) throws RemoteException;
+    void getFile(String directoryPath, String fileName, int clickerId) throws RemoteException;
 
     void acceptRequest(int fromUserId, int id) throws RemoteException;
 
@@ -53,6 +53,7 @@ public interface IChatService extends Remote {
 
     /* start sayed */
     boolean sendRecord(int receiverId, int senderId, byte[] buf) throws RemoteException;
+
     void sendGroupFile(RemoteInputStream export, String extension, ChatGroup chatGroup, Message message) throws RemoteException;
     /* end sayed */
 
@@ -61,16 +62,19 @@ public interface IChatService extends Remote {
     /* end nehal */
 
     /* start aya */
-    public void changeUserStatus(int id,UserStatus status)throws RemoteException;
-    void notifyMyfriends(int myId)throws RemoteException;
+    public void changeUserStatus(int id, UserStatus status) throws RemoteException;
+
+    void notifyMyfriends(int myId) throws RemoteException;
+
     public List<User> getMyFriendList(int id) throws RemoteException;
-     boolean removeClient(int id) throws RemoteException;
+
+    boolean removeClient(int id) throws RemoteException;
 
 
     /* end aya */
 
     /* start abeer */
-    void UpdateUser(User user )throws RemoteException;
+    void UpdateUser(User user) throws RemoteException;
     /* end abeer */
 
     /* start shimaa */
@@ -78,6 +82,6 @@ public interface IChatService extends Remote {
 
     boolean removeFriend(int friendId) throws RemoteException;
 
-
+    long getUniqueGroupId() throws RemoteException;
     /* end shimaa */
 }
