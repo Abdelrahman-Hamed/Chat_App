@@ -573,7 +573,7 @@ public class ChatController implements Initializable, IChatController {
         } else if (activeContact instanceof Contact) {
             receiverImage.setFill(new ImagePattern(activeContact.getUser().getImage()));
             receiverNameLabel.setText(activeContact.getUser().getName());
-            if (activeContact.getUser().getStatus() == UserStatus.OFFLINE) {
+            if (activeContact.getUser().getStatus() == UserStatus.OFFLINE || activeContact.getUser().getId() == 8000) {
                 messageTextArea.setDisable(true);
                 microphoneId.setDisable(true);
                 attachmentIcon.setDisable(true);
@@ -1028,7 +1028,7 @@ oContacts.removeIf(c->c.getUser().getId()==updatedUser.getId());
             }).start();
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         }
-        saveReceiverMessages(message.getUserId(), message);
+        //saveReceiverMessages(message.getUserId(), message);
         addEventHandlerOnFileMessage(message);
     }
     private void addEventHandlerOnFileMessage(Message message) {
@@ -1165,13 +1165,12 @@ oContacts.removeIf(c->c.getUser().getId()==updatedUser.getId());
     }
 
     public void loadMessageChat() {
-        Platform.runLater(() -> {
-            view.getChildren().clear();
-        });
+//        Platform.runLater(() -> {
+//            view.getChildren().clear();
+//        });
         if (!(activeContact instanceof GroupContact)) {
             if (receiverMessages.get(activeContact.getUser().getId()) != null) {
                 List<Message> messages = receiverMessages.get(activeContact.getUser().getId());
-                //Collections.sort(messages);
                 for (Message m : messages) {
                     MessageView messageView = new MessageView(m);
                     if (me.getId() == m.getUserId()) {
@@ -1192,7 +1191,6 @@ oContacts.removeIf(c->c.getUser().getId()==updatedUser.getId());
                             }
                         });
                     }
-                    System.out.println(m);
                 }
             }
         } else {
@@ -1374,7 +1372,7 @@ oContacts.removeIf(c->c.getUser().getId()==updatedUser.getId());
 //call this method when enable chatbot mode button in gui ???????
     //dependencies instead of classes???
 
-    //@fxml
+    @FXML
     public void chatbotButtonClicked() {
         System.out.println("hello");
         if (checkEnableChatbot) {
