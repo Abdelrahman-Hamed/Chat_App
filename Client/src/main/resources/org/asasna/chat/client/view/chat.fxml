@@ -72,7 +72,7 @@
                                 <Insets left="15.0" />
                             </HBox.margin>
                         </Label>
-                  <Button mnemonicParsing="false" onAction="#chatbotButtonClicked" text="Button" />
+<!--                        <Button mnemonicParsing="false" onAction="#chatbotButtonClicked" text="Button" />-->
                     </HBox>
                     <HBox alignment="CENTER_RIGHT" maxWidth="Infinity" HBox.hgrow="ALWAYS">
                         <FontIcon iconColor="#1e82dc" iconLiteral="dashicons-video-alt2" iconSize="30">
@@ -99,14 +99,14 @@
                                 <Cursor fx:constant="HAND" />
                             </cursor>
                         </FontIcon>
-                  <FontIcon iconColor="#1e82dc" iconLiteral="ri-reddit" iconSize="30" onMouseClicked="#chatbotButtonClicked" wrappingWidth="28.25">
-                     <cursor>
-                        <Cursor fx:constant="HAND" />
-                     </cursor>
-                     <HBox.margin>
-                        <Insets left="15.0" top="35.0" />
-                     </HBox.margin>
-                  </FontIcon>
+                        <FontIcon iconColor="#1e82dc" iconLiteral="ri-reddit" iconSize="30" onMouseClicked="#chatbotButtonClicked" wrappingWidth="28.25">
+                            <cursor>
+                                <Cursor fx:constant="HAND" />
+                            </cursor>
+                            <HBox.margin>
+                                <Insets left="15.0" top="35.0" />
+                            </HBox.margin>
+                        </FontIcon>
                     </HBox>
                 </HBox>
             </top>
