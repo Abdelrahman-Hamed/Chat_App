@@ -1307,7 +1307,6 @@ public class ChatController implements Initializable, IChatController {
     private void showSenderMessage(Message message) {
         messageView = new MessageView(message);
         messageView.setDirection(SpeechDirection.RIGHT);
-        saveReceiverMessages(activeContact.getUser().getId(), message);
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
