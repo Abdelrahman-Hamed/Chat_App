@@ -91,6 +91,18 @@ public class Contact extends HBox {
         getChildren().addAll(circle, vBox);
     }
 
+    Contact(String name, Image image){
+        this.name = name;
+        this.image = image;
+        Circle circle = new Circle();
+        circle.setRadius(30);
+        if (image != null)
+            circle.setFill(new ImagePattern(image));
+        circle.setCenterY(75);
+        Label nameLabel = new Label(name);
+        nameLabel.setStyle("-fx-font-family: 'Comic Sans MS';-fx-font-size: 18;-fx-font-weight: 500;-fx-text-fill: WHITE;-fx-padding: 5 0 0 0;");
+        getChildren().addAll(circle, nameLabel);
+    }
     public Image getImage() {
         return image;
     }
