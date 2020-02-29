@@ -105,8 +105,8 @@ public class Client extends UnicastRemoteObject implements IClientService {
         }
     }
     @Override
-    public void recieveMessage(Message message) throws RemoteException {
-        chatController.tempDisplayMessage(message);
+    public void recieveMessage(Message message,int receiverId) throws RemoteException {
+        chatController.tempDisplayMessage(message,receiverId);
     }
 
     @Override
