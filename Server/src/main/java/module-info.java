@@ -14,6 +14,7 @@ module org.asasna.server {
     requires org.kordamp.ikonli.javafx;
     requires javafx.swing;
     requires org.asasna.client;
+    requires org.junit.jupiter.api;
     opens org.asasna.chat.server to javafx.fxml;
     opens org.asasna.chat.server.view to javafx.fxml;
     exports org.asasna.chat.server;
