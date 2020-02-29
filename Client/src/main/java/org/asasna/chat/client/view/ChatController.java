@@ -616,7 +616,13 @@ public class ChatController implements Initializable, IChatController {
                 microphoneId.setDisable(true);
                 attachmentIcon.setDisable(true);
             } else {
-                messageTextArea.setDisable(false);
+                ///////////////////////////////////////////////////////////////////////////////////////////////chatbot
+                if(checkEnableChatbot&&checkConnection()) {
+                    messageTextArea.setDisable(true);
+                }else{
+                    messageTextArea.setDisable(false);
+                }
+                ///////////////////////////////////////////////////////////////////////////////////////////////////
                 microphoneId.setDisable(false);
                 attachmentIcon.setDisable(false);
             }
@@ -1440,12 +1446,16 @@ public class ChatController implements Initializable, IChatController {
         }
         if (checkEnableChatbot) {
             checkEnableChatbot = false;
+            messageTextArea.setDisable(false);
         } else {
             if(checkConnection()) {
                 checkEnableChatbot = true;
+                messageTextArea.setDisable(true);
+
             }
             else{
                 checkEnableChatbot = false;
+                messageTextArea.setDisable(false);
             }
         }
         System.out.println(checkEnableChatbot);
@@ -1456,15 +1466,18 @@ public class ChatController implements Initializable, IChatController {
             URL url = new URL("http://www.google.com");
             URLConnection connection = url.openConnection();
             connection.connect();
+            messageTextArea.setDisable(true);
             return true;
 
         } catch (IOException e) {
             Platform.runLater(() -> {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setHeaderText(null);
-                alert.setContentText("NO INTERNET CONNECTION ,Please check your internet network");
+                alert.setContentText("NO INTERNET CONNECTION ,Please check your internet network then enable chatbot again");
                 alert.show();
             });
+            messageTextArea.setDisable(false);
+            checkEnableChatbot=false;
             return false;
         }
     }
