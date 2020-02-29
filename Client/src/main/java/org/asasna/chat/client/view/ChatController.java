@@ -870,7 +870,7 @@ public class ChatController implements Initializable, IChatController {
                 view.getChildren().add(box);
             });
 
-      
+
 
     }
 
