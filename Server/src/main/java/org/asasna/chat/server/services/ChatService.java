@@ -377,7 +377,7 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
         try {
             UserDao userdao = new UserDao();
             PasswordAuthentication passwordAuthentication = new PasswordAuthentication();
-            user.setPassword(passwordAuthentication.hash(user.getPassword()));
+//            user.setPassword(passwordAuthentication.hash(user.getPassword()));
             boolean done = userdao.updateUser(user.getId(), user);
             if (!done)
                 System.out.println("cant update user ");
