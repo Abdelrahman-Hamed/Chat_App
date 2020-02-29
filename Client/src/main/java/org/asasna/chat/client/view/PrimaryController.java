@@ -1,5 +1,6 @@
 package org.asasna.chat.client.view;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -8,6 +9,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.util.Pair;
 import org.apache.commons.io.FileDeleteStrategy;
@@ -42,7 +45,7 @@ public class PrimaryController implements Initializable {
     ChatController chatController;
     String phoneNo;
     String pass;
-    public Boolean setTheChatScene =false;
+    public Boolean setTheChatScene = false;
 
     public PrimaryController() {
     }
@@ -96,12 +99,10 @@ public class PrimaryController implements Initializable {
     @FXML
     public void switchToLogin() {
         try {
-            //App.setRoot("register");
-            RegisterController registerController = new RegisterController();
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("register" + ".fxml"));
-            fxmlLoader.setController(registerController);
-            Parent parent = fxmlLoader.load();
-            scene.setRoot(parent);
+            App.setRoot("register");
+//            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("register" + ".fxml"));
+//            Parent parent = fxmlLoader.load();
+//            scene.setRoot(parent);
         } catch (IOException e) {
             System.out.println("no fxml file");
         }
@@ -125,7 +126,7 @@ public class PrimaryController implements Initializable {
 
     public static void removeFile(String fileName) {
         try {
-            File rememberMeFile = new File("./Client/src/main/java/org/asasna/chat/client/Auth/"+fileName+".xml");
+            File rememberMeFile = new File("./Client/src/main/java/org/asasna/chat/client/Auth/" + fileName + ".xml");
             FileDeleteStrategy.FORCE.delete(rememberMeFile);
         } catch (IOException e) {
             e.printStackTrace();
@@ -139,12 +140,10 @@ public class PrimaryController implements Initializable {
         if (!Validation.validatePhoneNumber(phoneNumber.getText())) {
             errorPhoneNumber.setVisible(true);
             errorPhoneNumber.setText("Not A Valid Phone Number");
-        }
-        else if(!Validation.validateLoginPassword(password.getText())){
+        } else if (!Validation.validateLoginPassword(password.getText())) {
             errorPassword.setVisible(true);
             errorPassword.setText("Not A Valid English Password");
-        }
-        else {
+        } else {
             System.out.println("Clicked");
             /////////////////////////////////////////////////////////////////////////////////////keep me
             phoneNo = phoneNumber.getText();
@@ -154,7 +153,7 @@ public class PrimaryController implements Initializable {
             errorPhoneNumber.setVisible(false);
 
             IChatService chatService = createChatService(phoneNumber.getText(), password.getText());
-            if (chatService != null)  {
+            if (chatService != null) {
                 if (rememberMe.isSelected()) {
                     //createRememberMeFile(phoneNumber.getText(), password.getText());
                     createMyFile("rememberme");
@@ -166,7 +165,8 @@ public class PrimaryController implements Initializable {
                 try {
                     userID = client.getUserId();
                 } catch (RemoteException e) {
-                    e.printStackTrace();
+                    serverIsDownHandler();
+                   // e.printStackTrace();
                 }
 
 
@@ -200,15 +200,17 @@ public class PrimaryController implements Initializable {
         IChatService chatService = null;
         try {
             chatController = new ChatController();
-            client = new Client(chatController);
-            Pair< String ,IChatService> temp=client.login(myPhoneNumber, myPassword);
-            chatService = temp.getValue();
-            if(chatService==null){
-                System.out.println(temp.getKey());
-                Alert alert = new Alert(Alert.AlertType.ERROR);
-                alert.setHeaderText(null);
-                alert.setContentText(temp.getKey());
-                alert.show();
+            client = new Client(chatController, this);
+            Pair<String, IChatService> temp = client.login(myPhoneNumber, myPassword);
+            if (temp != null) {
+                chatService = temp.getValue();
+                if (chatService == null) {
+                    System.out.println(temp.getKey());
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setHeaderText(null);
+                    alert.setContentText(temp.getKey());
+                    alert.show();
+                }
             }
 
         } catch (RemoteException e) {
@@ -220,7 +222,7 @@ public class PrimaryController implements Initializable {
 
     public void setChatScene() {
         try {
-            setTheChatScene=true;
+            setTheChatScene = true;
             chatController.setClient(client);
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("chat" + ".fxml"));
             fxmlLoader.setController(chatController);
@@ -303,13 +305,16 @@ public class PrimaryController implements Initializable {
         pass = arr[1];
 
         IChatService chatService = createChatService(phoneNo, pass);
-        if (chatService != null)  {
+        if (chatService != null) {
 
             /////////////////////////////////////////////////////////////////////////////////////////////keep me logged in
             try {
                 userID = client.getUserId();
                 System.out.println(userID);
-            } catch (RemoteException e) {
+            } catch (java.rmi.ConnectException ex) {
+                 serverIsDownHandler();
+                // ex.printStackTrace();
+            }catch (RemoteException e) {
                 e.printStackTrace();
             }
             removeFile("KeepMeLoggedIn");
@@ -319,8 +324,28 @@ public class PrimaryController implements Initializable {
 
         }
 
-
     }
 
+    @FXML
+    Button closeONDown; //close all app if server is down
+    @FXML
+    BorderPane disableServerDown;
+    @FXML
+    Pane serverIsDown;//enable if Server is down
+
+    @FXML
+    private void close() {
+        closeONDown.setOnAction((actionEvent) -> {
+            Platform.exit();
+            System.exit(0);
+        });
+    }
+
+    public void serverIsDownHandler() {
+        disableServerDown.setDisable(true);
+        serverIsDown.setOpacity(1);
+        serverIsDown.setDisable(false);
+        close();
+    }
 
 }

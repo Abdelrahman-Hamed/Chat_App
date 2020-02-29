@@ -35,7 +35,7 @@ public class App extends Application {
     private static Scene scene;
     Registry reg;
     public ServerHomeController controller;
-    IAuthenticationService iAuthenticationService ;
+    public static IAuthenticationService iAuthenticationService ;
     @Override
     public void start(Stage primaryStage) throws IOException {
         try {
@@ -52,6 +52,8 @@ public class App extends Application {
         primaryStage.show();
         primaryStage.setOnCloseRequest((WindowEvent event1) -> {
             try {
+                iAuthenticationService.getThisChatService().closeServer();
+                iAuthenticationService.getThisChatService().unRegisterAll();
                 reg.unbind("AuthenticationService");
                 Platform.exit();
                 System.exit(0);

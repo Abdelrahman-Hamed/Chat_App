@@ -61,8 +61,8 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     public void sendMessage(int userId, Message message) throws RemoteException {
         IClientService me = onlineUsers.get(message.getUserId());
         IClientService myFriend = onlineUsers.get(userId);
-        me.recieveMessage(message);
-        myFriend.recieveMessage(message);
+        me.recieveMessage(message,userId);
+        myFriend.recieveMessage(message,userId);
     }
 
     @Override
@@ -153,6 +153,12 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
         try {
             UserDao userDao = new UserDao();
             boolean notified = userDao.cancelNotification(fromUserId, toUserId);
+            IClientService toUserClient = onlineUsers.get(toUserId);
+            System.out.println("chatService 1");
+            if(toUserClient != null){
+                System.out.println("chatService 2");
+                toUserClient.removeNotification(fromUserId);
+            }
             return notified;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -203,6 +209,13 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
         return true;
     }
 
+    @Override
+    public void addMeAsFriend(int meId, int newFriend) throws RemoteException {
+        IClientService newFriendClient = onlineUsers.get(newFriend);
+        if(newFriendClient != null) {
+            newFriendClient.addFriend(userDao.getUser(meId));
+        }
+    }
     private String createFileInServer(RemoteInputStream export, String extension, Message message) {
 
         try {
@@ -236,6 +249,8 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
         });
     }
 
+
+
     @Override
     public boolean removeFriend(int friendId) throws RemoteException {
         try {
@@ -265,6 +280,15 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
         for (IClientService client : onlineUsers.values()) {
             client.receiveAnnouncementFromAdmin(message);
         }
+    }
+    public void closeServer()throws RemoteException{
+        for (IClientService client : onlineUsers.values()){
+            client.closeIt();
+        }
+        //closeIt()
+    }
+    public void unRegisterAll() throws RemoteException{
+        onlineUsers.clear();
     }
     /* end nehal */
 

@@ -40,7 +40,6 @@ public class App extends Application {
             stage.setMinHeight(600);
             primaryController.setScene(scene);
             stage.show();
-
         File keepMeLoggedInFile = new File("./Client/src/main/java/org/asasna/chat/client/Auth/KeepMeLoggedIn.xml");
         if (keepMeLoggedInFile.exists()) {
             primaryController.loadChatByDefault(keepMeLoggedInFile);
@@ -57,7 +56,9 @@ public class App extends Application {
     private static Parent loadFXML(String fxml) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
         Parent parent = fxmlLoader.load();
-        primaryController = (PrimaryController) fxmlLoader.getController();
+        if(fxmlLoader.getController() instanceof PrimaryController){
+            primaryController = (PrimaryController) fxmlLoader.getController();
+        }
         return parent;
     }
 

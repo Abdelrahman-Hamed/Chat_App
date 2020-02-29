@@ -9,7 +9,7 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 public interface IClientService extends Remote {
-    void recieveMessage(Message message) throws RemoteException;
+    void recieveMessage(Message message,int receiverId)throws RemoteException;
 
     void changeStatus(int id, UserStatus status) throws RemoteException;
 
@@ -33,12 +33,12 @@ public interface IClientService extends Remote {
 
     /* start sayed */
     boolean sendRecord(int receiverId, int senderId, byte[] buf) throws RemoteException;
-
     void recieveRecord(int senderId, byte[] buf) throws RemoteException;
+    void addFriend(User me) throws RemoteException;
     /* end sayed */
 
     /* start nehal */
-
+    void closeIt() throws RemoteException;
     /* end nehal */
 
     /* start aya */
@@ -53,7 +53,6 @@ public interface IClientService extends Remote {
     public void reciveUpateNotification(User updatedUser) throws RemoteException;
 
     public void changeStatus(User me, UserStatus status) throws RemoteException;
-
     void signOut(int id) throws RemoteException;
 
     /* end aya */
@@ -64,10 +63,11 @@ public interface IClientService extends Remote {
 
     /* start shimaa */
     User getUser(int id) throws RemoteException;
-
     void receiveAnnouncementFromAdmin(Message message) throws RemoteException;
 
     void removeFriendFromList(int id) throws RemoteException;
+
+    void removeNotification(int fromUserId) throws RemoteException;
 
     long getUniqueGroupId() throws RemoteException;
     /* end shimaa */

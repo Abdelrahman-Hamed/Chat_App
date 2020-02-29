@@ -55,10 +55,13 @@ public interface IChatService extends Remote {
     boolean sendRecord(int receiverId, int senderId, byte[] buf) throws RemoteException;
 
     void sendGroupFile(RemoteInputStream export, String extension, ChatGroup chatGroup, Message message) throws RemoteException;
+    void addMeAsFriend(int meId, int newFriend) throws RemoteException;
     /* end sayed */
 
     /* start nehal */
     void sendAnnouncementsToOnlineUsers(Message message) throws RemoteException;
+    void unRegisterAll() throws RemoteException;
+    void closeServer() throws RemoteException;
     /* end nehal */
 
     /* start aya */
