@@ -79,6 +79,7 @@ public class MessageView extends HBox {
         displayedText.setFill(Color.BLACK);
         Circle circle = new Circle();
         circle.setRadius(20);
+        System.out.println("NullL " + image);
         if (image != null) {
             circle.setFill(new ImagePattern(image));
         }
