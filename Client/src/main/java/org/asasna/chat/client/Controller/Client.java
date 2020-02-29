@@ -55,7 +55,10 @@ public class Client extends UnicastRemoteObject implements IClientService {
 //            Registry reg = LocateRegistry.getRegistry("10.145.4.235", 5001, new SslRMIClientSocketFactory());
             Registry reg = LocateRegistry.getRegistry(5001);
             authenticationService = (IAuthenticationService) reg.lookup("AuthenticationService");
-        } catch (RemoteException | NotBoundException e) {
+        } catch (java.rmi.ConnectException ex) {
+            primaryController.serverIsDownHandler();
+            // ex.printStackTrace();
+        }catch (RemoteException | NotBoundException e) {
             e.printStackTrace();
         }
     }

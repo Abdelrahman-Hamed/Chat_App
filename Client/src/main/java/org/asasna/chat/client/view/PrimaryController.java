@@ -104,6 +104,7 @@ public class PrimaryController implements Initializable {
 //            Parent parent = fxmlLoader.load();
 //            scene.setRoot(parent);
         } catch (IOException e) {
+            serverIsDownHandler();
             System.out.println("no fxml file");
         }
     }
