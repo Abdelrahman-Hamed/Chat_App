@@ -284,8 +284,8 @@ public class UserDao implements IUserDao {
         int offline = 0;
         ResultSet resultSet ;
         ObservableList<PieChart.Data> statusData = FXCollections.observableArrayList();
-        String onlineSql = "select count(status_id) from users where status_id =1" ;
-        String offlineSql = "select count(status_id) from users where status_id <> 1"  ;
+        String onlineSql = "select count(status_id) from users where status_id <> 0" ;
+        String offlineSql = "select count(status_id) from users where status_id = 0 "  ;
         try {
             resultSet = statement.executeQuery(onlineSql);
             resultSet.next();
