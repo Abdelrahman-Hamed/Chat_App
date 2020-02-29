@@ -139,6 +139,7 @@ public class ChatController implements Initializable, IChatController {
     public Contact activeContact;
     private User user;
     private Map<Integer, List<Message>> groupMessages;
+    ChatterBotSession bot1session;
 
     public List<Notification> getNotifications() {
         return notifications;
@@ -158,6 +159,7 @@ public class ChatController implements Initializable, IChatController {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        bot1session=null;
         setToolTip();
         /*user = new User(4, "Ahmed", "01027420575");
         Message message = new Message(3, "Hello");
@@ -880,6 +882,22 @@ public class ChatController implements Initializable, IChatController {
                 if (groupMessages.get(group.getGroupId()) == null)
                     groupMessages.put(group.getGroupId(), new ArrayList<>());
                 groupMessages.get(group.getGroupId()).add(message);
+
+
+                /////////////////////////////////////////////////////////////////////////////////////////////addition for chatbot
+                if (checkEnableChatbot&&message.getUserId()!=me.getId()) {
+                    new Thread(() -> {
+                        System.out.println("chatbot for group starts");
+                        try {
+                           System.out.println("1");
+                           sendToGroupByChatBot(group,message);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }).start();
+                }
+                ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
                 //tempDisplayMessage(group.getGroupId(), message);
 //                Notifications.create().title("New Message").text("Message from " + message.getUserId()).graphic(new Circle()).show();
             });
@@ -1404,25 +1422,30 @@ public class ChatController implements Initializable, IChatController {
     //@fxml
     public void chatbotButtonClicked() {
         System.out.println("hello");
+
+        if(bot1session==null){
+            try {
+                ChatterBotFactory factory = new ChatterBotFactory();
+                ChatterBot bot1 = factory.create(ChatterBotType.PANDORABOTS, "b0dafd24ee35a477");
+                bot1session = bot1.createSession();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+
+        }
         if (checkEnableChatbot) {
             checkEnableChatbot = false;
-        } else
+        } else {
             checkEnableChatbot = true;
+        }
         System.out.println(checkEnableChatbot);
     }
 
     public void sendByChatbot(Message messageReceivedContent) throws Exception {
-        ChatterBotFactory factory = new ChatterBotFactory();
 
-        ChatterBot bot1 = factory.create(ChatterBotType.PANDORABOTS, "b0dafd24ee35a477");;
-        ChatterBotSession bot1session = bot1.createSession();
         String respond = bot1session.think(messageReceivedContent.getMesssagecontent());
 
-
-        if (activeContact instanceof GroupContact) {
-            System.out.println("inner");
-            client.sendGroupMessage(((GroupContact) activeContact).getChatGroup(), new Message(client.getUser().getId(), respond));
-        } else {
             int receiverId;
             ObservableList<Node> contacts;
             contacts = contactsList.getChildren();
@@ -1441,7 +1464,29 @@ public class ChatController implements Initializable, IChatController {
                 }
             }
         }
-    }
+        public void sendToGroupByChatBot(ChatGroup group, Message message){
+                System.out.println("sendToGroupByChatBot");
+            try {
+                String respond = bot1session.think(message.getMesssagecontent());
+              //  if ((((GroupContact) activeContact).getChatGroup().getGroupId() == group.getGroupId())) {
+                    System.out.println("inner");
+                    try {
+                        message.setMesssagecontent(respond);
+                        message.setUserId(me.getId());
+                        System.out.println(respond);
+                        sendGroupMessage(group,message);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+            //    }
+              /* else{
+                    System.out.println("sendToGroupByChatBot oho");
+
+                }*/
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     // End Abeer Emad
 
 
