@@ -631,7 +631,9 @@ public class ChatController implements Initializable, IChatController {
                 attachmentIcon.setDisable(false);
             }
         }
-        focusOnContact();
+        if (activeContact != null) {
+            focusOnContact();
+        }
 
         Platform.runLater(new Runnable() {
             @Override
@@ -640,6 +642,7 @@ public class ChatController implements Initializable, IChatController {
                 loadMessageChat();
             }
         });
+
         /****************************************************************************************/
     }
 
@@ -1181,7 +1184,7 @@ public class ChatController implements Initializable, IChatController {
 //            view.getChildren().clear();
 //        });
         if (!(activeContact instanceof GroupContact)) {
-            if (receiverMessages.get(activeContact.getUser().getId()) != null) {
+            if (activeContact != null && receiverMessages.get(activeContact.getUser().getId()) != null) {
                 List<Message> messages = receiverMessages.get(activeContact.getUser().getId());
                 for (Message m : messages) {
                     MessageView messageView = new MessageView(m);
