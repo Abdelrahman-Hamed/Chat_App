@@ -769,13 +769,13 @@ public class ChatController implements Initializable, IChatController {
         } else if (active == Active.Group) {
 
             contactsList.getChildren().clear();
-            friends.stream().filter(f -> f.getPhone().contains(searchTextField.getText()) && f.getStatus() == UserStatus.ONLINE).forEach(f -> {
+            friends.stream().filter(f -> f.getPhone().contains(searchTextField.getText()) && f.getStatus() != UserStatus.OFFLINE).forEach(f -> {
                 contactsList.getChildren().add(new SearchedGroupContact(f));
             });
         } else if (active == Active.Friends) {
             contactsList.getChildren().clear();
             friends.stream()
-                    .filter(f -> f.getPhone().contains(searchTextField.getText()) && f.getStatus() == UserStatus.ONLINE)
+                    .filter(f -> f.getPhone().contains(searchTextField.getText()) && f.getStatus() != UserStatus.OFFLINE)
                     .forEach(f -> {
                         Contact contact = new Contact(f);
                         contactsList.getChildren().add(contact);
@@ -1446,7 +1446,7 @@ public class ChatController implements Initializable, IChatController {
         // boolean newContact=false;
         for (Node c : contacts) {
             myContact = (Contact) c;
-            if (!(myContact instanceof GroupContact) && myContact.getUser().getStatus() == UserStatus.ONLINE) {
+            if (!(myContact instanceof GroupContact) && myContact.getUser().getStatus() != UserStatus.OFFLINE) {
                 receiverId = messageReceivedContent.getUserId();
                 int senderId = me.getId();
                 String messageContent;
@@ -1502,7 +1502,7 @@ public class ChatController implements Initializable, IChatController {
                 System.out.println("inner");
                 client.sendGroupMessage(((GroupContact) activeContact).getChatGroup(), new Message(client.getUser().getId(), messageContent));
             } else {
-                if (activeContact.getUser().getStatus() == UserStatus.ONLINE) {
+                if (activeContact.getUser().getStatus() != UserStatus.OFFLINE) {
                     if (messageTextArea.getText().length() != 0 && !messageTextArea.getText().equals(" ")) {
                         int receiverId = activeContact.getUser().getId();
                         int senderId = me.getId();
