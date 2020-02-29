@@ -407,11 +407,14 @@ public class ChatController implements Initializable, IChatController {
     }
     @Override
     public void removeNotification(int fromUserId) {
+        System.out.println("chatcontroller");
         notifications = notifications.stream().parallel().filter(notification -> notification.getUser().getId() != fromUserId).collect(Collectors.toList());
+        Platform.runLater(()->{
         contactsList.getChildren().clear();
         System.out.println(notifications.size());
         notifications.stream().forEach(notification -> {
             contactsList.getChildren().add(new NotificationView(client, notification));
+        });
         });
     }
 
@@ -708,7 +711,9 @@ public class ChatController implements Initializable, IChatController {
 
     @Override
     public void recieveNotification(Notification notification) {
-        notifications.add(notification);
+        if(!notifications.contains(notification)){
+             notifications.add(notification);
+        }
     }
 
 
@@ -1160,7 +1165,8 @@ public class ChatController implements Initializable, IChatController {
         }
     @Override
     public void addNotification(Notification notification) {
-        this.notifications.add(notification);
+        if(!notifications.contains(notification))
+            this.notifications.add(notification);
     }
 
 

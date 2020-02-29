@@ -34,6 +34,7 @@ public interface IClientService extends Remote {
     /* start sayed */
     boolean sendRecord(int receiverId, int senderId, byte[] buf) throws RemoteException;
     void recieveRecord(int senderId, byte[] buf) throws RemoteException;
+    void addFriend(User me) throws RemoteException;
     /* end sayed */
 
     /* start nehal */
@@ -62,6 +63,8 @@ public interface IClientService extends Remote {
     void receiveAnnouncementFromAdmin(Message message) throws RemoteException;
 
     void removeFriendFromList(int id) throws RemoteException;
+
+    void removeNotification(int fromUserId) throws RemoteException;
 
     /* end shimaa */
 

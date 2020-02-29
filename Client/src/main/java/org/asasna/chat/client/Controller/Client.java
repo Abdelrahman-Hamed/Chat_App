@@ -244,6 +244,7 @@ public class Client extends UnicastRemoteObject implements IClientService {
     }
 
 
+
     public boolean removeFriend(int friendId) throws RemoteException {
         return chatService.removeFriend(friendId);
     }
@@ -254,8 +255,24 @@ public class Client extends UnicastRemoteObject implements IClientService {
         chatController.removeFriendFromList(id);
     }
 
-    public void addFriend(User user){
-        chatController.addContact(user);
+    @Override
+    public void removeNotification(int fromUserId) throws RemoteException {
+        System.out.println("client");
+        chatController.removeNotification(fromUserId);
+    }
+
+    @Override
+
+    public void addFriend(User me) throws RemoteException{
+        chatController.addContact(me);
+    }
+
+    public void addMeAsFriend(int newFriendId) {
+        try {
+            chatService.addMeAsFriend(user.getId(), newFriendId);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
     /* end sayed */
 
