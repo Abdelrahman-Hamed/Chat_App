@@ -887,7 +887,7 @@ public class ChatController implements Initializable, IChatController {
 
 
                 /////////////////////////////////////////////////////////////////////////////////////////////addition for chatbot
-                if (checkEnableChatbot&&message.getUserId()!=me.getId()) {
+                if (checkEnableChatbot&&checkConnection()&&message.getUserId()!=me.getId()) {
                     new Thread(() -> {
                         System.out.println("chatbot for group starts");
                         try {
@@ -1094,7 +1094,7 @@ public class ChatController implements Initializable, IChatController {
                 showMessageNotification(message);
             }
             /////////////////////////////////////////////////////////////////////////////////////////////addition for chatbot
-            if (checkEnableChatbot) {
+            if (checkEnableChatbot&&checkConnection()) {
                 new Thread(() -> {
                     System.out.println("chatbot start");
                     try {
@@ -1441,22 +1441,32 @@ public class ChatController implements Initializable, IChatController {
         if (checkEnableChatbot) {
             checkEnableChatbot = false;
         } else {
-            try {
-                URL url = new URL("http://www.google.com");
-                URLConnection connection = url.openConnection();
-                connection.connect();
+            if(checkConnection()) {
                 checkEnableChatbot = true;
-
-            } catch (IOException e) {
+            }
+            else{
                 checkEnableChatbot = false;
+            }
+        }
+        System.out.println(checkEnableChatbot);
+
+    }
+    private boolean checkConnection(){
+        try {
+            URL url = new URL("http://www.google.com");
+            URLConnection connection = url.openConnection();
+            connection.connect();
+            return true;
+
+        } catch (IOException e) {
+            Platform.runLater(() -> {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setHeaderText(null);
                 alert.setContentText("NO INTERNET CONNECTION ,Please check your internet network");
                 alert.show();
-            }
-            System.out.println(checkEnableChatbot);
+            });
+            return false;
         }
-
     }
 
     public void sendByChatbot(Message messageReceivedContent) throws Exception {
