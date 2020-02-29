@@ -83,6 +83,7 @@ public class ServerHomeController implements Initializable {
     }
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        homePage();
         tg = new ToggleGroup();
         female.setToggleGroup(tg);
         male.setToggleGroup(tg);
@@ -504,7 +505,9 @@ public class ServerHomeController implements Initializable {
     public void sendAnnouncements() throws RemoteException {
         Message message=new Message(8000 ,announce.getText(), MessageType.TEXT);
         IChatService  iChatService = new ChatService();
+        System.out.println("At server home ----> " + message);
         iChatService.sendAnnouncementsToOnlineUsers(message);
+
     }
 
 }

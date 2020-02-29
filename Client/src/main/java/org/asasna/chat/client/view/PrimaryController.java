@@ -96,12 +96,10 @@ public class PrimaryController implements Initializable {
     @FXML
     public void switchToLogin() {
         try {
-            //App.setRoot("register");
-            RegisterController registerController = new RegisterController();
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("register" + ".fxml"));
-            fxmlLoader.setController(registerController);
-            Parent parent = fxmlLoader.load();
-            scene.setRoot(parent);
+            App.setRoot("register");
+//            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("register" + ".fxml"));
+//            Parent parent = fxmlLoader.load();
+//            scene.setRoot(parent);
         } catch (IOException e) {
             System.out.println("no fxml file");
         }
