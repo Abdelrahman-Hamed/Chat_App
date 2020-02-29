@@ -123,7 +123,6 @@ public class PrimaryController implements Initializable {
 
     }
 
-
     public static void removeFile(String fileName) {
         try {
             File rememberMeFile = new File("./Client/src/main/java/org/asasna/chat/client/Auth/" + fileName + ".xml");
@@ -132,7 +131,6 @@ public class PrimaryController implements Initializable {
             e.printStackTrace();
         }
     }
-
 
     @FXML
     public void loginButtonClicked(ActionEvent event) {
