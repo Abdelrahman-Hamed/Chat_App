@@ -1,5 +1,6 @@
 package org.asasna.chat.client.Controller;
 
+import javafx.application.Platform;
 import javafx.stage.DirectoryChooser;
 import javafx.util.Pair;
 import org.asasna.chat.client.model.IChatController;
@@ -349,7 +350,10 @@ public class Client extends UnicastRemoteObject implements IClientService {
     public void recieveFileMessage(Message message) throws RemoteException {//reciver ID !
         //  chatController.tempDisplayMessage(message);
         System.out.println("Recieve File Message");
-        chatController.tempDisplayMessage(message);
+        Platform.runLater(()->{
+            chatController.tempDisplayMessage(message);
+        });
+
     }
     @Override
     public void getFile(String directoryPath, String fileName, int senderId) throws RemoteException {
