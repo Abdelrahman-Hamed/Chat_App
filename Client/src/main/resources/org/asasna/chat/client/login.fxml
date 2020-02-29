@@ -1,87 +1,106 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.control.Hyperlink?>
-<?import javafx.scene.control.PasswordField?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import org.kordamp.ikonli.javafx.*?>
 
-<HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="700.0" stylesheets="@login.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.asasna.chat.client.view.PrimaryController">
+<AnchorPane xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.asasna.chat.client.view.PrimaryController">
    <children>
-      <VBox alignment="CENTER" prefHeight="200.0" prefWidth="350.0" style="-fx-padding: 30px;" styleClass="main-background-color">
+      <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="700.0" stylesheets="@login.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <VBox alignment="CENTER" prefHeight="236.0" prefWidth="350.0" spacing="40.0" style="-fx-border-radius: 20px; -fx-border-width: 4px;">
+            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="350.0" style="-fx-padding: 30px;" styleClass="main-background-color">
                <children>
-                  <ImageView fitHeight="97.0" fitWidth="146.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@char_logo3.png" />
-                     </image>
-                  </ImageView>
-
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="color-white-text" text="Chat Application">
-                     <font>
-                        <Font name="Comic Sans MS" size="33.0" />
-                     </font></Text>
-               </children>
-            </VBox>
-         </children>
-      </VBox>
-      <BorderPane prefHeight="500.0" prefWidth="350.0">
-         <center>
-            <VBox prefHeight="200.0" prefWidth="350.0" spacing="40.0" BorderPane.alignment="CENTER">
-               <children>
-                  <VBox alignment="CENTER" prefHeight="85.0" prefWidth="210.0">
+                  <VBox alignment="CENTER" prefHeight="236.0" prefWidth="350.0" spacing="40.0" style="-fx-border-radius: 20px; -fx-border-width: 4px;">
                      <children>
-                        <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="main-color-text" text="LOGIN FORM">
+                        <ImageView fitHeight="97.0" fitWidth="146.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@char_logo3.png" />
+                           </image>
+                        </ImageView>
+      
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="color-white-text" text="Chat Application">
                            <font>
-                              <Font name="Comic Sans MS" size="32.0" />
+                              <Font name="Comic Sans MS" size="33.0" />
                            </font>
                         </Text>
-                     </children></VBox>
-                  <VBox prefHeight="41.0" prefWidth="170.0" spacing="15.0">
-                     <children>
-                        <TextField fx:id="phoneNumber" onKeyReleased="#phoneNumberChanged" prefHeight="25.0" prefWidth="250.0" promptText="Phone Number" styleClass="inputStyle" />
-                        <Text fx:id="errorPhoneNumber" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="error-color" text="Text" visible="false" />
                      </children>
                   </VBox>
-                  <VBox prefHeight="45.0" prefWidth="390.0" spacing="15.0">
-                     <children>
-                        <PasswordField fx:id="password" disable="true" promptText="Password" styleClass="inputStyle" />
-                        <Text fx:id="errorPassword" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="error-color" text="Text" visible="false" />
-                     </children>
-                  </VBox>
-                  <HBox alignment="CENTER" prefHeight="4.0" prefWidth="212.0">
-                     <children>
-                        <CheckBox fx:id="rememberMe" mnemonicParsing="false" prefHeight="37.0" prefWidth="103.0" text="Remember Me" />
-                     </children>
-                  </HBox>
-                  <HBox alignment="CENTER" prefHeight="7.0" prefWidth="215.0">
-                     <children>
-                        <Button fx:id="loginButton" disable="true" mnemonicParsing="false" onAction="#loginButtonClicked" prefHeight="32.0" prefWidth="89.0" style="-fx-border-radius: 15px;" styleClass="color-white, main-background-color" text="Login" />
-                     </children>
-                  </HBox>
-                  <HBox alignment="CENTER" prefHeight="0.0" prefWidth="210.0">
-                     <children>
-                        <Hyperlink onAction="#switchToLogin" text="Create Account" />
-                     </children>
-                  </HBox>
                </children>
             </VBox>
-         </center>
-         <right>
-            <AnchorPane prefHeight="500.0" prefWidth="70.0" BorderPane.alignment="CENTER" />
-         </right>
-         <left>
-            <AnchorPane prefHeight="500.0" prefWidth="70.0" BorderPane.alignment="CENTER" />
-         </left>
-      </BorderPane>
+            <BorderPane fx:id="disableServerDown" prefHeight="500.0" prefWidth="350.0">
+               <center>
+                  <VBox prefHeight="200.0" prefWidth="350.0" spacing="40.0" BorderPane.alignment="CENTER">
+                     <children>
+                        <VBox alignment="CENTER" prefHeight="85.0" prefWidth="210.0">
+                           <children>
+                              <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="main-color-text" text="LOGIN FORM">
+                                 <font>
+                                    <Font name="Comic Sans MS" size="32.0" />
+                                 </font>
+                              </Text>
+                           </children>
+                        </VBox>
+                        <VBox prefHeight="41.0" prefWidth="170.0" spacing="15.0">
+                           <children>
+                              <TextField fx:id="phoneNumber" onKeyReleased="#phoneNumberChanged" prefHeight="25.0" prefWidth="250.0" promptText="Phone Number" styleClass="inputStyle" />
+                              <Text fx:id="errorPhoneNumber" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="error-color" text="Text" visible="false" />
+                           </children>
+                        </VBox>
+                        <VBox prefHeight="45.0" prefWidth="390.0" spacing="15.0">
+                           <children>
+                              <PasswordField fx:id="password" disable="true" promptText="Password" styleClass="inputStyle" />
+                              <Text fx:id="errorPassword" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="error-color" text="Text" visible="false" />
+                           </children>
+                        </VBox>
+                        <HBox alignment="CENTER" prefHeight="4.0" prefWidth="212.0">
+                           <children>
+                              <CheckBox fx:id="rememberMe" mnemonicParsing="false" prefHeight="37.0" prefWidth="103.0" text="Remember Me" />
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER" prefHeight="7.0" prefWidth="215.0">
+                           <children>
+                              <Button fx:id="loginButton" disable="true" mnemonicParsing="false" onAction="#loginButtonClicked" prefHeight="32.0" prefWidth="89.0" style="-fx-border-radius: 15px;" styleClass="color-white, main-background-color" text="Login" />
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER" prefHeight="0.0" prefWidth="210.0">
+                           <children>
+                              <Hyperlink onAction="#switchToLogin" text="Create Account" />
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+               </center>
+               <right>
+                  <AnchorPane prefHeight="500.0" prefWidth="70.0" BorderPane.alignment="CENTER" />
+               </right>
+               <left>
+                  <AnchorPane prefHeight="500.0" prefWidth="70.0" BorderPane.alignment="CENTER" />
+               </left>
+            </BorderPane>
+         </children>
+      </HBox>
+      <Pane fx:id="serverIsDown" disable="true" layoutX="180.0" opacity="0.0" prefHeight="112.0" prefWidth="300.0" style="-fx-background-color: white; -fx-border-color: #045ba5;" translateX="4.0" translateY="188.0">
+         <children>
+            <Text fill="#045ba5" layoutX="29.0" layoutY="55.0" strokeType="OUTSIDE" strokeWidth="0.0" text="The Server is Down " wrappingWidth="181.57616725936532">
+               <font>
+                  <Font size="19.0" />
+               </font>
+            </Text>
+            <Text fill="#045ba5" layoutX="22.0" layoutY="77.0" strokeType="OUTSIDE" strokeWidth="0.0" text="You Can Come Later !">
+               <font>
+                  <Font size="19.0" />
+               </font>
+            </Text>
+            <ImageView fitHeight="46.0" fitWidth="49.0" layoutX="222.0" layoutY="33.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@serverDown.png" />
+               </image></ImageView>
+            <Button fx:id="closeONDown" layoutX="258.0" layoutY="2.0" mnemonicParsing="false" onAction="#close" prefHeight="31.0" prefWidth="22.0" style="-fx-background-color: transparent;">
+               <graphic>
+                  <FontIcon iconColor="#108fd3" iconLiteral="oct-x" iconSize="22" wrappingWidth="15.999998897314072" />
+               </graphic></Button>
+         </children></Pane>
    </children>
-</HBox>
+</AnchorPane>
