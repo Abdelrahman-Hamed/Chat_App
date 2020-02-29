@@ -314,10 +314,16 @@ public class ChatController implements Initializable, IChatController {
         setInitialContact();
         setListnerForPressingEnter();
         messageTextArea.setStyle("-fx-font-size:15");
-        if (activeContact.getUser().getStatus() == UserStatus.OFFLINE) {
-            messageTextArea.setDisable(true);
-        } else {
-            messageTextArea.setDisable(false);
+        try {
+            if(client.getFriendList().size() > 0) {
+                if (activeContact.getUser().getStatus() == UserStatus.OFFLINE) {
+                    messageTextArea.setDisable(true);
+                } else {
+                    messageTextArea.setDisable(false);
+                }
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
         }
         /*******************************/
         new Thread(() -> {
@@ -629,7 +635,7 @@ public class ChatController implements Initializable, IChatController {
         } else if (activeContact instanceof Contact) {
             receiverImage.setFill(new ImagePattern(activeContact.getUser().getImage()));
             receiverNameLabel.setText(activeContact.getUser().getName());
-            if (activeContact.getUser().getStatus() == UserStatus.OFFLINE) {
+            if (activeContact.getUser().getStatus() == UserStatus.OFFLINE || activeContact.getUser().getId() == 8000) {
                 messageTextArea.setDisable(true);
                 microphoneId.setDisable(true);
                 attachmentIcon.setDisable(true);
@@ -645,7 +651,9 @@ public class ChatController implements Initializable, IChatController {
                 attachmentIcon.setDisable(false);
             }
         }
-        focusOnContact();
+        if (activeContact != null) {
+            focusOnContact();
+        }
 
         Platform.runLater(new Runnable() {
             @Override
@@ -762,49 +770,48 @@ public class ChatController implements Initializable, IChatController {
 
     @Override
     public void recieveRecord(int senderId, byte[] buf) {
+        AudioFormat.Encoding encoding = AudioFormat.Encoding.PCM_SIGNED;
+        float rate = 44100.0f;
+        int channels = 2;
+        int sampleSize = 16;
+        boolean bigEndian = false;
+        AudioFormat format = new AudioFormat(encoding, rate, sampleSize, channels, (sampleSize / 8) * channels, rate, bigEndian);
+        DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
 
-            AudioFormat.Encoding encoding = AudioFormat.Encoding.PCM_SIGNED;
-            float rate = 44100.0f;
-            int channels = 2;
-            int sampleSize = 16;
-            boolean bigEndian = false;
-            AudioFormat format = new AudioFormat(encoding, rate, sampleSize, channels, (sampleSize / 8) * channels, rate, bigEndian);
-            DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
+        AudioBuffer audioBuffer = new AudioBuffer(ByteBuffer.wrap(buf), new org.jcodec.common.AudioFormat(44100, 16, 2, true, false), buf.length);
 
-            AudioBuffer audioBuffer = new AudioBuffer(ByteBuffer.wrap(buf), new org.jcodec.common.AudioFormat(44100, 16, 2, true, false), buf.length);
-
-            //            FileOutputStream fileOutputStream=new FileOutputStream();
-            // checks if system supports the data line
-            if (!AudioSystem.isLineSupported(info)) {
-                System.out.println("Line not supported");
-                System.exit(0);
-            }
+        //            FileOutputStream fileOutputStream=new FileOutputStream();
+        // checks if system supports the data line
+        if (!AudioSystem.isLineSupported(info)) {
+            System.out.println("Line not supported");
+            System.exit(0);
+        }
 //            SourceDataLine line = (SourceDataLine) AudioSystem.getLine(info);
 //
 //            line.write(buf, 0, buf.length);
-            for (int i = 0; i < 10; i++)
-                System.out.println("Buf: " + buf[i]);
+        for (int i = 0; i < 10; i++)
+            System.out.println("Buf: " + buf[i]);
 
-            AudioInputStream ais = new AudioInputStream(new ByteArrayInputStream(buf), format, buf.length / format.getFrameSize());
-            File wavFile = new File("./Client/src/main/resources/org/asasna/chat/client/audio/record2.wav");
-            try {
-                AudioSystem.write(ais, AudioFileFormat.Type.WAVE, wavFile);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            //AudioClip clip=new AudioClip(getClass().getResource("record2.wav").toExternalForm());
+        AudioInputStream ais = new AudioInputStream(new ByteArrayInputStream(buf), format, buf.length / format.getFrameSize());
+        File wavFile = new File("./Client/src/main/resources/org/asasna/chat/client/audio/record2.wav");
+        try {
+            AudioSystem.write(ais, AudioFileFormat.Type.WAVE, wavFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //AudioClip clip=new AudioClip(getClass().getResource("record2.wav").toExternalForm());
 
-            Media media = new Media(Paths.get("./Client/src/main/resources/org/asasna/chat/client/audio/record2.wav").toUri().toString());
-            AudioClip audioClip = new AudioClip(Paths.get("./Client/src/main/resources/org/asasna/chat/client/audio/record2.wav").toUri().toString());
-            MediaPlayer mediaPlayer = new MediaPlayer(media);
-            mediaPlayer.setAutoPlay(false);
-            HBox box = new HBox();
-            //box.setStyle("-fx-background-color: red;-fx-pref-height: 20px");
-            FontIcon playIcon = new FontIcon();
-            playIcon.setIconLiteral("dashicons-controls-play");
-            playIcon.setIconColor(Color.BLACK);
-            playIcon.setIconSize(25);
-            JFXButton startStop = new JFXButton(">");
+        Media media = new Media(Paths.get("./Client/src/main/resources/org/asasna/chat/client/audio/record2.wav").toUri().toString());
+        AudioClip audioClip = new AudioClip(Paths.get("./Client/src/main/resources/org/asasna/chat/client/audio/record2.wav").toUri().toString());
+        MediaPlayer mediaPlayer = new MediaPlayer(media);
+        mediaPlayer.setAutoPlay(false);
+        HBox box = new HBox();
+        //box.setStyle("-fx-background-color: red;-fx-pref-height: 20px");
+        FontIcon playIcon = new FontIcon();
+        playIcon.setIconLiteral("dashicons-controls-play");
+        playIcon.setIconColor(Color.BLACK);
+        playIcon.setIconSize(25);
+        JFXButton startStop = new JFXButton(">");
         /*startStop.setOnAction(e->{
         box.setStyle("-fx-background-color: red;-fx-pref-height: 20px");
         JFXButton startStop = new JFXButton(">");
@@ -816,33 +823,33 @@ public class ChatController implements Initializable, IChatController {
                 mediaPlayer.play();
             }
         });*/
-            playIcon.setOnMouseClicked(e -> {
-                Platform.runLater(() -> {
-                    if (mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
-                        playIcon.setIconLiteral("dashicons-controls-play");
-                        mediaPlayer.pause();
-                    } else {
-                        playIcon.setIconLiteral("dashicons-controls-pause");
-                        playIcon.setIconColor(Color.RED);
-                        mediaPlayer.play();
-                    }
+        playIcon.setOnMouseClicked(e -> {
+            Platform.runLater(() -> {
+                if (mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING) {
+                    playIcon.setIconLiteral("dashicons-controls-play");
+                    mediaPlayer.pause();
+                } else {
+                    playIcon.setIconLiteral("dashicons-controls-pause");
+                    playIcon.setIconColor(Color.RED);
+                    mediaPlayer.play();
+                }
 
-                    // playIcon.setIconColor(Color.BLACK);
-                });
-
-
+                // playIcon.setIconColor(Color.BLACK);
             });
 
-            mediaPlayer.setOnPlaying(() -> {
-                playIcon.setIconColor(Color.RED);
-            });
-            mediaPlayer.setOnEndOfMedia(() -> {
-                playIcon.setIconColor(Color.BLACK);
-                playIcon.setIconLiteral("dashicons-controls-play");
-                mediaPlayer.seek(Duration.ZERO);
-                mediaPlayer.stop();
-            });
-            JFXSlider slider = new JFXSlider();
+
+        });
+
+        mediaPlayer.setOnPlaying(() -> {
+            playIcon.setIconColor(Color.RED);
+        });
+        mediaPlayer.setOnEndOfMedia(() -> {
+            playIcon.setIconColor(Color.BLACK);
+            playIcon.setIconLiteral("dashicons-controls-play");
+            mediaPlayer.seek(Duration.ZERO);
+            mediaPlayer.stop();
+        });
+        JFXSlider slider = new JFXSlider();
         /*slider.setMax(mediaPlayer.getTotalDuration().toMillis());
         slider.setOnMouseClicked((MouseEvent mouseEvent) -> {
             mediaPlayer.seek(Duration.millis(slider.getValue()));
@@ -850,25 +857,25 @@ public class ChatController implements Initializable, IChatController {
         mediaPlayer.currentTimeProperty().addListener((ob, ol, nw) -> {
             slider.setValue(nw.toMillis());
         });*/
-            Platform.runLater(() -> {
-                slider.maxProperty().bind(Bindings.createDoubleBinding(
-                        () -> mediaPlayer.getTotalDuration().toSeconds(),
-                        mediaPlayer.totalDurationProperty()));
-                mediaPlayer.currentTimeProperty().addListener((ob, ol, nw) -> {
-                    slider.setValue(nw.toSeconds());
-                });
-                slider.setOnMouseClicked((e) -> {
-                    mediaPlayer.seek(Duration.seconds(slider.getValue()));
-                });
+        Platform.runLater(() -> {
+            slider.maxProperty().bind(Bindings.createDoubleBinding(
+                    () -> mediaPlayer.getTotalDuration().toSeconds(),
+                    mediaPlayer.totalDurationProperty()));
+            mediaPlayer.currentTimeProperty().addListener((ob, ol, nw) -> {
+                slider.setValue(nw.toSeconds());
             });
+            slider.setOnMouseClicked((e) -> {
+                mediaPlayer.seek(Duration.seconds(slider.getValue()));
+            });
+        });
 
-            MediaView mediaView = new MediaView(mediaPlayer);
-            box.setSpacing(10);
-            box.getChildren().add(playIcon);
-            box.getChildren().add(slider);
-            Platform.runLater(() -> {
-                view.getChildren().add(box);
-            });
+        MediaView mediaView = new MediaView(mediaPlayer);
+        box.setSpacing(10);
+        box.getChildren().add(playIcon);
+        box.getChildren().add(slider);
+        Platform.runLater(() -> {
+            view.getChildren().add(box);
+        });
 
 
 
@@ -1079,7 +1086,7 @@ public class ChatController implements Initializable, IChatController {
 
         } else {
             saveReceiverMessages(message.getUserId(), message);
-            if (activeContact.getUser().getId() == message.getUserId()) {
+            if (activeContact != null && activeContact.getUser().getId() == message.getUserId()) {
                 showReceiverMessage(message);
             } else {
                 showMessageNotification(message);
@@ -1246,9 +1253,8 @@ public class ChatController implements Initializable, IChatController {
             view.getChildren().clear();
         });
         if (!(activeContact instanceof GroupContact)) {
-            if (receiverMessages.get(activeContact.getUser().getId()) != null) {
+            if (activeContact != null && receiverMessages.get(activeContact.getUser().getId()) != null) {
                 List<Message> messages = receiverMessages.get(activeContact.getUser().getId());
-                //Collections.sort(messages);
                 for (Message m : messages) {
                     MessageView messageView = new MessageView(m);
                     if (me.getId() == m.getUserId()) {
@@ -1269,7 +1275,6 @@ public class ChatController implements Initializable, IChatController {
                             }
                         });
                     }
-                    System.out.println(m);
                 }
             }
         } else {
@@ -1319,27 +1324,29 @@ public class ChatController implements Initializable, IChatController {
 
     private void setInitialContact() {
         try {
-            friends = client.getFriendList();
+            if(client.getFriendList().size() > 0) {
+                friends = client.getFriendList();
+                Contact initialContact = new Contact(friends.get(0));
+                activeContact = initialContact;
+                System.out.println("At initialize function ---> active user " + activeContact.getUser().getName());
+                receiverImage.setFill(new ImagePattern(activeContact.getUser().getImage()));
+                receiverNameLabel.setText(activeContact.getUser().getName());
+                Label sayHello = new Label(" Say Hello to " + activeContact.getUser().getName() + " ");
+                sayHello.setAlignment(Pos.CENTER);
+                sayHello.setStyle("-fx-background-color: GAINSBORO; -fx-background-radius: 10;" +
+                        " -fx-font-size: 14px; -fx-font-family: Consolas; -fx-font-weight: bold");
+                HBox hBox = new HBox(sayHello);
+                hBox.setAlignment(Pos.CENTER);
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        view.getChildren().add(hBox);
+                    }
+                });
+            }
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-        Contact initialContact = new Contact(friends.get(0));
-        activeContact = initialContact;
-        System.out.println("At initialize function ---> active user " + activeContact.getUser().getName());
-        receiverImage.setFill(new ImagePattern(activeContact.getUser().getImage()));
-        receiverNameLabel.setText(activeContact.getUser().getName());
-        Label sayHello = new Label(" Say Hello to " + activeContact.getUser().getName() + " ");
-        sayHello.setAlignment(Pos.CENTER);
-        sayHello.setStyle("-fx-background-color: GAINSBORO; -fx-background-radius: 10;" +
-                " -fx-font-size: 14px; -fx-font-family: Consolas; -fx-font-weight: bold");
-        HBox hBox = new HBox(sayHello);
-        hBox.setAlignment(Pos.CENTER);
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                view.getChildren().add(hBox);
-            }
-        });
     }
 
     private void showMessageNotification(Message message) {
@@ -1411,8 +1418,8 @@ public class ChatController implements Initializable, IChatController {
         boolean isExist = false;
         contacts = contactsList.getChildren();
         for (Node c : contacts) {
-            if (admin.equals(c)) {
-                isExist = true;
+            if(admin.equals(c)){
+                isExist =true;
             }
         }
         return isExist;
@@ -1559,13 +1566,13 @@ public class ChatController implements Initializable, IChatController {
     @FXML
     public void send() throws RemoteException {
         String messageContent = messageTextArea.getText().trim();
-        if (messageContent.length() > 0) {
+        if(messageContent.length() > 0){
             if (activeContact instanceof GroupContact) {
                 System.out.println("inner");
                 client.sendGroupMessage(((GroupContact) activeContact).getChatGroup(), new Message(client.getUser().getId(), messageContent));
             } else {
                 if (activeContact.getUser().getStatus() == UserStatus.ONLINE) {
-                    if (messageTextArea.getText().length() != 0 && !messageTextArea.getText().equals(" ")) {
+                    if (messageTextArea.getText().length() !=0 && !messageTextArea.getText().equals(" ")) {
                         int receiverId = activeContact.getUser().getId();
                         int senderId = me.getId();
                         messageTextArea.setText("");
