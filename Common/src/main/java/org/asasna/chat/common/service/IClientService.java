@@ -42,13 +42,16 @@ public interface IClientService extends Remote {
     /* end nehal */
 
     /* start aya */
-    void sendFileToServer(String filePath, String extension, int senderId ,Message message) throws RemoteException;
+    void sendFileToServer(String filePath, String extension, int senderId, Message message) throws RemoteException;
 
-    void recieveFileMessage(Message message)throws RemoteException;
+    void recieveFileMessage(Message message) throws RemoteException;
 
-    public void downloadFile(RemoteInputStream inFile, String suffix, String direcotryPath,String name) throws RemoteException;
-    void getFile(String directoryPath, String fileName,int senderId)throws RemoteException;
-    public void reciveUpateNotification(User updatedUser)  throws RemoteException;
+    public void downloadFile(RemoteInputStream inFile, String suffix, String direcotryPath, String name) throws RemoteException;
+
+    void getFile(String directoryPath, String fileName, int senderId) throws RemoteException;
+
+    public void reciveUpateNotification(User updatedUser) throws RemoteException;
+
     public void changeStatus(User me, UserStatus status) throws RemoteException;
     void signOut(int id) throws RemoteException;
 
@@ -65,6 +68,8 @@ public interface IClientService extends Remote {
     void removeFriendFromList(int id) throws RemoteException;
 
     void removeNotification(int fromUserId) throws RemoteException;
+
+    long getUniqueGroupId() throws RemoteException;
 
     /* end shimaa */
 

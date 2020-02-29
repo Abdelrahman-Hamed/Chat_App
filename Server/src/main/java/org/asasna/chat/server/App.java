@@ -42,7 +42,6 @@ public class App extends Application {
             iAuthenticationService=new AuthenticationService();
             reg= LocateRegistry.createRegistry(5001);
             reg.rebind("AuthenticationService", iAuthenticationService );
-
         }
         catch (RemoteException ex) {
             ex.printStackTrace();
@@ -53,8 +52,10 @@ public class App extends Application {
         primaryStage.show();
         primaryStage.setOnCloseRequest((WindowEvent event1) -> {
             try {
-                iAuthenticationService.getThisChatService().closeServer();
-                iAuthenticationService.getThisChatService().unRegisterAll();
+                if (iAuthenticationService.getThisChatService() != null){
+                    iAuthenticationService.getThisChatService().closeServer();
+                    iAuthenticationService.getThisChatService().unRegisterAll();
+                }
                 reg.unbind("AuthenticationService");
                 Platform.exit();
                 System.exit(0);
@@ -91,7 +92,7 @@ public class App extends Application {
             System.setProperty("javax.net.ssl.trustStore","/home/abdulrahman/IdeaProjects/ITI_Chat/sysdmtruststore.ks");
             System.setProperty("javax.net.ssl.trustStorePassword","123456");
             //System.setProperty("java.rmi.server.hostname", "10.145.4.235");
-            RMIClientSocketFactory rmicsf = new SslRMIClientSocketFactory();
+            RMIClientorg.asasna.chat.client.App.loadFXMLSocketFactory rmicsf = new SslRMIClientSocketFactory();
             RMIServerSocketFactory rmissf = new SslRMIServerSocketFactory();
             Registry reg = LocateRegistry.createRegistry(5001, rmicsf, rmissf);
             IAuthenticationService iAuthenticationService = new AuthenticationService();

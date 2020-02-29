@@ -1,9 +1,13 @@
 package org.asasna.chat.client.view;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
@@ -251,6 +255,7 @@ public class RegisterController implements Initializable {
                     errorPhoneNumber.setText("phone already registered !");
                 }
             } catch (IOException e) {
+                serverIsDownHandler();
                 System.out.println("no fxml file");
             }
         }
@@ -327,6 +332,7 @@ public class RegisterController implements Initializable {
         try {
             myContoller = new Client(this); // edited by shimaa
         } catch (RemoteException e) {
+            serverIsDownHandler();
             e.printStackTrace();
         }
     }
@@ -355,4 +361,25 @@ public class RegisterController implements Initializable {
         return java.sql.Date.valueOf(dateToConvert);
     }
 
+    @FXML
+    Button closeONDown; //close all app if server is down
+    @FXML
+    HBox disableServerDown;
+    @FXML
+    Pane serverIsDown;//enable if Server is down
+
+    @FXML
+    private void close() {
+        closeONDown.setOnAction((actionEvent) -> {
+            Platform.exit();
+            System.exit(0);
+        });
+    }
+
+    public void serverIsDownHandler() {
+        disableServerDown.setDisable(true);
+        serverIsDown.setOpacity(1);
+        serverIsDown.setDisable(false);
+        close();
+    }
 }

@@ -57,7 +57,6 @@ public class PrimaryController implements Initializable {
 
     private void loadInfoIfExist() {
 
-
         File rememberMeFile = new File("./Client/src/main/java/org/asasna/chat/client/Auth/rememberme.xml");
         if (rememberMeFile.exists()) {
             String[] arr = readFromMyFile(rememberMeFile);
@@ -104,6 +103,7 @@ public class PrimaryController implements Initializable {
 //            Parent parent = fxmlLoader.load();
 //            scene.setRoot(parent);
         } catch (IOException e) {
+            serverIsDownHandler();
             System.out.println("no fxml file");
         }
     }
@@ -123,7 +123,6 @@ public class PrimaryController implements Initializable {
 
     }
 
-
     public static void removeFile(String fileName) {
         try {
             File rememberMeFile = new File("./Client/src/main/java/org/asasna/chat/client/Auth/" + fileName + ".xml");
@@ -132,7 +131,6 @@ public class PrimaryController implements Initializable {
             e.printStackTrace();
         }
     }
-
 
     @FXML
     public void loginButtonClicked(ActionEvent event) {

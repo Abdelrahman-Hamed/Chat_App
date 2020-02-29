@@ -29,7 +29,7 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     public static Map<Integer, IClientService> onlineUsers = new HashMap<>(); // will need it
     IUserDao userDao;
     private User user;
-
+    private static long uniqueGroupId = 1;
     /*public ChatService() throws RemoteException {
         try {
             userDao = new UserDao();
@@ -82,7 +82,7 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     public void unRegister(IClientService client) throws RemoteException {
         IClientService removedUser = onlineUsers.remove(client.getUser().getId());
         if (removedUser == null) { // Check User In Map
-            System.out.println("Not Found To Remove");
+            //System.out.println("Not Found To Remove");
         }
     }
 
@@ -193,7 +193,6 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
         return user;
     }
 
-
     /* ِ start  Abdo */
 
     /* end Abdo */
@@ -255,11 +254,11 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     public boolean removeFriend(int friendId) throws RemoteException {
         try {
             ContactDao contactDao = new ContactDao();
-            boolean result =  contactDao.removeFriend(user.getId(), friendId);
+            boolean result = contactDao.removeFriend(user.getId(), friendId);
             System.out.println("Get In Remove Friend");
-            if(result){
+            if (result) {
                 IClientService clientService = onlineUsers.get(friendId);
-                if(clientService != null)
+                if (clientService != null)
                     clientService.removeFriendFromList(user.getId());
             }
             return result;
@@ -285,7 +284,6 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
         for (IClientService client : onlineUsers.values()){
             client.closeIt();
         }
-        //closeIt()
     }
     public void unRegisterAll() throws RemoteException{
         onlineUsers.clear();
@@ -379,7 +377,7 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
         try {
             UserDao userdao = new UserDao();
             PasswordAuthentication passwordAuthentication = new PasswordAuthentication();
-            user.setPassword(passwordAuthentication.hash(user.getPassword()));
+//            user.setPassword(passwordAuthentication.hash(user.getPassword()));
             boolean done = userdao.updateUser(user.getId(), user);
             if (!done)
                 System.out.println("cant update user ");
@@ -399,6 +397,10 @@ public class ChatService extends UnicastRemoteObject implements IChatService {
     public User getUser(int id) throws RemoteException {
         return userDao.getUser(id);
     }
-    /* end shimaa */
 
+    /* end shimaa */
+    @Override
+    public long getUniqueGroupId() {
+        return uniqueGroupId++;
+    }
 }
