@@ -40,6 +40,7 @@ public class App extends Application {
     public void start(Stage primaryStage) throws IOException {
         try {
             iAuthenticationService=new AuthenticationService();
+            System.setProperty("java.rmi.server.hostname","10.145.1.152");
             reg= LocateRegistry.createRegistry(5001);
             reg.rebind("AuthenticationService", iAuthenticationService );
         }

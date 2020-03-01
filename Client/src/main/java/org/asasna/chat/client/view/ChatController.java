@@ -603,16 +603,22 @@ public class ChatController implements Initializable, IChatController {
     }
 
     public void saveChat() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Save File");
-        fileChooser.setInitialFileName("*.xml");
-        File file = fileChooser.showSaveDialog(null);
-        if (file != null) {
-            savedFilePath = file.getAbsolutePath();
-            System.out.println(savedFilePath);
-            saveXmlFile(receiverMessages.get(activeContact.getUser().getId()));
-        } else {
-            System.out.println("you didn't save chat");
+        try {
+            if(client.getFriendList().size() > 0) {
+                FileChooser fileChooser = new FileChooser();
+                fileChooser.setTitle("Save File");
+                fileChooser.setInitialFileName("*.xml");
+                File file = fileChooser.showSaveDialog(null);
+                if (file != null) {
+                    savedFilePath = file.getAbsolutePath();
+                    System.out.println(savedFilePath);
+                    saveXmlFile(receiverMessages.get(activeContact.getUser().getId()));
+                } else {
+                    System.out.println("you didn't save  chat");
+                }
+            }
+        } catch (RemoteException e) {
+            e.printStackTrace();
         }
     }
 
@@ -1247,18 +1253,33 @@ public class ChatController implements Initializable, IChatController {
             Document document = build.newDocument();
 
             Element root = document.createElement("ChatMessage");
+            String value = String.valueOf(me.getId());
+            root.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
+            root.setAttribute("xsi:noNamespaceSchemaLocation", "ChatSChema.xsd");
+            root.setAttribute("userId", value);
             document.appendChild(root);
 
             for (Message message : list) {
                 Element messageNode = document.createElement("Message");
+                Element textMessage, fileMessage;
+
                 Element id = document.createElement("Id");
                 Element content = document.createElement("Content");
 
                 id.appendChild(document.createTextNode(String.valueOf(message.getUserId())));
-                messageNode.appendChild(id);
-
                 content.appendChild(document.createTextNode(String.valueOf(message.getMesssagecontent())));
-                messageNode.appendChild(content);
+
+                if (message.getMessageType() == MessageType.TEXT){
+                    textMessage = document.createElement("Text");
+                    textMessage.appendChild(id);
+                    textMessage.appendChild(content);
+                    messageNode.appendChild(textMessage);
+                } else if (message.getMessageType() == MessageType.FILE){
+                    fileMessage = document.createElement("File");
+                    fileMessage.appendChild(id);
+                    fileMessage.appendChild(content);
+                    messageNode.appendChild(fileMessage);
+                }
                 root.appendChild(messageNode);
             }
             // Save the document to the disk file
@@ -1272,7 +1293,6 @@ public class ChatController implements Initializable, IChatController {
 
             DOMSource source = new DOMSource(document);
             try {
-                // location and name of XML file you can change as per need
                 FileWriter fileWriter = new FileWriter(savedFilePath);
                 StreamResult result = new StreamResult(fileWriter);
                 transformer.transform(source, result);
@@ -1284,7 +1304,9 @@ public class ChatController implements Initializable, IChatController {
         } catch (ParserConfigurationException ex) {
             System.out.println("Error building document");
         }
+
     }
+
 
     public void loadMessageChat() {
         Platform.runLater(() -> {
