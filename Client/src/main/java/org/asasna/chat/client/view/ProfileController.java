@@ -38,17 +38,17 @@ public class ProfileController extends Controller implements Initializable {
     }
 
     @FXML
-    JFXTextField Name;
+    TextField Name;
     @FXML
-    JFXTextField Phone;
+    TextField Phone;
     @FXML
-    JFXTextField Email;
+    TextField Email;
     @FXML
-    JFXTextField Country;
+    TextField Country;
     @FXML
-    JFXTextField NewPass;
+    PasswordField NewPass;
     @FXML
-    JFXTextField ConfirmPass;
+    PasswordField ConfirmPass;
     @FXML
     TextField check;
 
@@ -83,7 +83,7 @@ public class ProfileController extends Controller implements Initializable {
 
 
     }
-@FXML
+    @FXML
     public void UPdateButton() {
         Country.setDisable(false);
         Email.setDisable(false);
@@ -99,28 +99,35 @@ public class ProfileController extends Controller implements Initializable {
 
     @FXML
     public void SaveButton(){
-         Client client = chatController.client;
-         IChatService chatService= client.chatService;
-         if (checkingEmail() && checkingPhoneNum() && checkingName() && checkingConfirmPassword()) {
-             user.setName(Name.getText());
-             if(NewPass.getText().trim().length() > 0)
+        Client client = chatController.client;
+        IChatService chatService= client.chatService;
+        if (checkingEmail() && checkingPhoneNum() && checkingName() && checkingConfirmPassword()) {
+            user.setName(Name.getText());
+            if(NewPass.getText().trim().length() > 0)
                 user.setPassword(NewPass.getText().trim());
-             user.setEmail(Email.getText());
-             user.setCountry(Country.getText());
-             user.setPhone(Phone.getText());
-             if(image != null)
-                user.setImageURL(image.getUrl());
-             System.out.println(image.getUrl());
+            user.setEmail(Email.getText());
+            user.setCountry(Country.getText());
+            user.setPhone(Phone.getText());
+           if(image != null) {
+                 user.setImageURL(image.getUrl());
+                 System.out.println(image.getUrl());
+             }
 
+            try {
+                chatService.UpdateUser(user);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+            check.setVisible(false);
              try {
-                 chatService.UpdateUser(user);
+                 chatService.notifyMyfriends(user.getId());
              } catch (RemoteException e) {
                  e.printStackTrace();
              }
-            check.setVisible(false);
-         } else {
+            CancelButton ();
+        } else {
             check.setVisible(true);
-         }
+        }
 
     }
     @FXML
@@ -194,18 +201,19 @@ public class ProfileController extends Controller implements Initializable {
 
     }
 
-@FXML
-public void editPhoto() {
-    FileChooser open = new FileChooser();
-   open.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg"));
-    File file = open.showOpenDialog(null);
-    if (file != null) {
-        Image image1 = new Image(file.toURI().toString());
-        image = image1;
+    @FXML
+    public void editPhoto() {
+//        FileChooser open = new FileChooser();
+//        open.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg"));
+//        File file = open.showOpenDialog(null);
+//        if (file != null) {
+//            Image image1 = new Image(file.toURI().toString());
+        Image image1=new Image("abdo.jpg");
+            image = image1;
 
-        Photo.setFill(new ImagePattern(image1));
+            Photo.setFill(new ImagePattern(image1));
+        }
+
     }
 
-}
 
-}

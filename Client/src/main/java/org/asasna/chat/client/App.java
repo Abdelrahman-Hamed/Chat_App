@@ -31,7 +31,6 @@ public class App extends Application {
 
     private static Scene scene;
     private static PrimaryController primaryController; // edited
-
     @Override
     public void start(Stage stage) throws IOException {
             scene = new Scene(loadFXML("login"));
