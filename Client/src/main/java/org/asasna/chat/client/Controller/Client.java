@@ -54,8 +54,8 @@ public class Client extends UnicastRemoteObject implements IClientService {
 //            System.setProperty("javax.net.ssl.trustStorePassword", "123456");
 //            System.setProperty("java.rmi.server.hostname","10.145.1.152");
 //            Registry reg = LocateRegistry.getRegistry("10.145.4.235", 5001, new SslRMIClientSocketFactory());
-//            Registry reg = LocateRegistry.getRegistry("10.145.1.152", 5001);
-            Registry reg = LocateRegistry.getRegistry(5001);
+            Registry reg = LocateRegistry.getRegistry("192.168.43.80", 5001);
+//            Registry reg = LocateRegistry.getRegistry(5001);
             authenticationService = (IAuthenticationService) reg.lookup("AuthenticationService");
         } catch (java.rmi.ConnectException ex) {
             primaryController.serverIsDownHandler();
@@ -78,7 +78,8 @@ public class Client extends UnicastRemoteObject implements IClientService {
 //        reg = LocateRegistry.getRegistry("10.145.4.235", 5001);
 //        System.setProperty("java.rmi.server.hostname","10.145.1.152");
 //        reg = LocateRegistry.getRegistry("10.145.1.152", 5001);
-        reg = LocateRegistry.getRegistry(5001);
+        reg = LocateRegistry.getRegistry("192.168.43.80", 5001);
+//        reg = LocateRegistry.getRegistry(5001);
 //            this.user = new User(4, "Mohamed", "01027420575");
 //            chatService.register(this.user.getId(), this);
 //        } catch (RemoteException | NotBoundException e) {
@@ -99,7 +100,8 @@ public class Client extends UnicastRemoteObject implements IClientService {
         System.setProperty("javax.net.ssl.trustStorePassword", "123456");*/
 
         //reg = LocateRegistry.getRegistry("127.0.0.1", 5001, new SslRMIClientSocketFactory());
-        reg=LocateRegistry.getRegistry(5001);
+        reg = LocateRegistry.getRegistry("192.168.43.80", 5001);
+//        reg=LocateRegistry.getRegistry(5001);
 //            this.user = new User(4, "Mohamed", "01027420575");
 //            chatService.register(this.user.getId(), this);
 //        } catch (RemoteException | NotBoundException e) {
