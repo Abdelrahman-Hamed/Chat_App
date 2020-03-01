@@ -126,11 +126,14 @@
                               <VBox>
                                   <HBox>
                                       <Text style="-fx-font-weight: bold;">Background     </Text>
-                                      <Text style="-fx-font-weight: bold;">Font Size</Text>
+                                      <Text style="-fx-font-weight: bold;">Text Color</Text>
+                                      <Text style="-fx-font-weight: bold;">Font</Text>
+
                                   </HBox>
                                   <HBox spacing="20" fx:id="styleBox" prefHeight="28.0" prefWidth="764.0">
                                       <ColorPicker fx:id="backgroundPicker" prefHeight="25.0" prefWidth="48.0"/>
-                                      <TextField prefWidth="70" fx:id="fontSize"></TextField>
+                                      <ColorPicker fx:id="colorpicker" prefHeight="25.0" prefWidth="48.0"/>
+                                      <Button onAction="#showFontDialog">Font</Button>
                                   </HBox>
                               </VBox>
                           </top>

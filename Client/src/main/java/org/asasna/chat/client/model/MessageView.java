@@ -72,7 +72,7 @@ public class MessageView extends HBox {
         if (message.getMessageType() != MessageType.AUDIO) {
             displayedText = new Text(message.getMesssagecontent());
             displayedText.setTextAlignment(TextAlignment.LEFT);
-            displayedText.setFont(Font.font("Consolas", FontWeight.BOLD, FontPosture.ITALIC, 16));
+            //displayedText.setFont(Font.font("Consolas", FontWeight.BOLD, FontPosture.ITALIC, 16));
         }
     }
 
@@ -104,8 +104,10 @@ public class MessageView extends HBox {
 
         }
         container.setStyle("-fx-background-radius: 15; -fx-background-color: #1e82dc; ");
-        if(message.getStyle() != null)
+        if(message.getStyle() != null){
+            System.out.println(message.getStyle());
             container.setStyle(container.getStyle() + message.getStyle());
+        }
         container.setAlignment(Pos.CENTER_LEFT);
         container.maxWidthProperty().bind(widthProperty().multiply(0.70));
         getChildren().add(container);
