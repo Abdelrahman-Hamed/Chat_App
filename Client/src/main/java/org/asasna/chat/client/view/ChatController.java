@@ -110,6 +110,12 @@ public class ChatController implements Initializable, IChatController {
     @FXML
     GridPane chatArea;
     @FXML
+    FontIcon botIcon;
+    @FXML
+    ColorPicker backgroundPicker;
+    @FXML
+    TextField fontSize;
+    @FXML
     private HBox searchArea;
     @FXML
     private HBox chatArea_hbox;
@@ -167,6 +173,8 @@ public class ChatController implements Initializable, IChatController {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         bot1session = null;
         setToolTip();
+        backgroundPicker.setValue(Color.valueOf("#1e82dc"));
+        fontSize.setText("12");
         /*user = new User(4, "Ahmed", "01027420575");
         Message message = new Message(3, "Hello");
         List<User> list = new ArrayList<>();
@@ -239,7 +247,10 @@ public class ChatController implements Initializable, IChatController {
             }
             groupIcon.setOnMouseClicked((e) -> {
                 active = Active.Group;
+                notificationIcon.setIconColor(Color.WHITE);
                 groupIcon.setIconColor(Color.BLACK);
+                friendList.setIconColor(Color.WHITE);
+                friendRequest.setIconColor(Color.WHITE);
                 createbtn.setVisible(true);
                 //contactsList.getChildren().clear();
                 createbtn.setOnAction(e1 -> {
@@ -296,6 +307,10 @@ public class ChatController implements Initializable, IChatController {
             });
             friendList.setOnMouseClicked(e -> {
                 active = Active.Friends;
+                notificationIcon.setIconColor(Color.WHITE);
+                groupIcon.setIconColor(Color.WHITE);
+                friendList.setIconColor(Color.BLACK);
+                friendRequest.setIconColor(Color.WHITE);
                 oContacts.forEach(System.out::println);
                 contactsList.getChildren().clear();
                 contactsList.getChildren().addAll(oContacts);
@@ -304,11 +319,19 @@ public class ChatController implements Initializable, IChatController {
             });
             friendRequest.setOnMouseClicked(e -> {
                 active = Active.friendRequets;
+                notificationIcon.setIconColor(Color.WHITE);
+                groupIcon.setIconColor(Color.WHITE);
+                friendList.setIconColor(Color.WHITE);
+                friendRequest.setIconColor(Color.BLACK);
                 contactsList.getChildren().clear();
                 createbtn.setVisible(false);
             });
             notificationIcon.setOnMouseClicked(e -> {
                 active = Active.Notifications;
+                notificationIcon.setIconColor(Color.BLACK);
+                groupIcon.setIconColor(Color.WHITE);
+                friendList.setIconColor(Color.WHITE);
+                friendRequest.setIconColor(Color.WHITE);
                 createbtn.setVisible(false);
                 contactsList.getChildren().clear();
                 notifications.stream().forEach(notification -> {
@@ -899,7 +922,6 @@ public class ChatController implements Initializable, IChatController {
             System.out.println("Me: " + message.getMesssagecontent());
             viewTextMessage.setTextMSGview(SpeechDirection.RIGHT);
             Platform.runLater(new Runnable() {
-
                 @Override
                 public void run() {
                     view.getChildren().add(viewTextMessage);
@@ -952,8 +974,9 @@ public class ChatController implements Initializable, IChatController {
         oContacts.removeIf(contact -> !(contact instanceof GroupContact) && (contact.getUser().getId() == updatedUser.getId()));
         Contact contact1 = new Contact(updatedUser);
         addRemoveFriendButton(contact1);
-        oContacts.add(contact1);
+
         Platform.runLater(() -> {
+            oContacts.add(contact1);
             Bindings.bindContent(contactsList.getChildren(), FXCollections.observableArrayList(oContacts));
         });
     }
@@ -995,19 +1018,12 @@ public class ChatController implements Initializable, IChatController {
             showSenderMessage(message);
         } else {
             saveReceiverMessages(message.getUserId(), message);
-            if (!(activeContact instanceof GroupContact))
-                if (activeContact.getUser().getId() == message.getUserId()) {
-                    showReceiverMessage(message);
-                } else {
-                    showMessageNotification(message);
-                }
             if (activeContact != null && activeContact.getUser().getId() == message.getUserId()) {
                 showReceiverMessage(message);
             } else {
                 showMessageNotification(message);
             }
         }
-        //saveReceiverMessages(message.getUserId(), message);
         addEventHandlerOnFileMessage(message);
     }
 
@@ -1059,7 +1075,8 @@ public class ChatController implements Initializable, IChatController {
                     File selectedDirectory = directoryChooser.showDialog(null);
                     new Thread(() -> {
                         try {
-                            client.getFile(selectedDirectory.getAbsolutePath(), message.getMesssagecontent(), message.getUserId());
+                            if(selectedDirectory != null)
+                                client.getFile(selectedDirectory.getAbsolutePath(), message.getMesssagecontent(), message.getUserId());
                         } catch (RemoteException e) {
                             e.printStackTrace();
                         }
@@ -1192,12 +1209,15 @@ public class ChatController implements Initializable, IChatController {
                             }
                         });
                     }
+                    this.messageView = messageView;
+                    addEventHandlerOnFileMessage(m);
                 }
             }
         } else {
             if (groupMessages.get(((GroupContact) activeContact).getChatGroup().getGroupId()) != null)
                 groupMessages.get(((GroupContact) activeContact).getChatGroup().getGroupId()).forEach(m -> {
                     MessageView messageView = new MessageView(m);
+                    addEventHandlerOnFileMessage(m);
                     if (m.getUserId() == me.getId()) {
                         messageView.setDirection(SpeechDirection.RIGHT);
                     } else {
@@ -1395,10 +1415,12 @@ public class ChatController implements Initializable, IChatController {
         }
         if (checkEnableChatbot) {
             checkEnableChatbot = false;
+            botIcon.setIconColor(Paint.valueOf("#1e82dc"));
             messageTextArea.setDisable(false);
         } else {
             if (checkConnection()) {
                 checkEnableChatbot = true;
+                botIcon.setIconColor(Paint.valueOf("#39fa3d"));
                 messageTextArea.setDisable(true);
 
             } else {
@@ -1496,6 +1518,25 @@ public class ChatController implements Initializable, IChatController {
 
     @FXML
     public void send() throws RemoteException {
+        String backgroundColor = "rgb(" + backgroundPicker.getValue().getRed()*255 + "," + backgroundPicker.getValue().getGreen()*255 + "," + backgroundPicker.getValue().getBlue()*255 +")";
+        String fontSizeValue = fontSize.getText();
+        if(!fontSizeValue.matches("\\d+")){
+            fontSize.setText("16");
+            fontSizeValue = "16";
+        }
+        else if(Integer.parseInt(fontSizeValue) > 30){
+            fontSize.setText("30");
+            fontSizeValue = "30";
+        }
+        if(backgroundPicker.getValue().getRed() == 1.0 && backgroundPicker.getValue().getBlue() == 1.0 && backgroundPicker.getValue().getGreen() == 1.0 ){
+            backgroundColor = "#1e82dc";
+            backgroundPicker.setValue(Color.valueOf("#1e82dc"));
+        }
+        else if(backgroundPicker.getValue().getRed() == 0.0 && backgroundPicker.getValue().getBlue() == 0.0 && backgroundPicker.getValue().getGreen() == 0.0 ){
+            backgroundColor = "#1e82dc";
+            backgroundPicker.setValue(Color.valueOf("#1e82dc"));
+        }
+        System.out.println(backgroundColor);
         String messageContent = messageTextArea.getText().trim();
         if (messageContent.length() > 0) {
             if (activeContact instanceof GroupContact) {
@@ -1508,6 +1549,7 @@ public class ChatController implements Initializable, IChatController {
                         int senderId = me.getId();
                         messageTextArea.setText("");
                         Message message = new Message(senderId, messageContent, MessageType.TEXT);
+                        message.setStyle("-fx-background-color: " + backgroundColor + "; -fx-font-size: " + fontSizeValue + "px;");
                         sendMessage(receiverId, message);
                     }
                 }

@@ -8,16 +8,14 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.*;
 import javafx.scene.media.AudioClip;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.*;
 import javafx.util.Duration;
@@ -36,13 +34,14 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 
 public class MessageView extends HBox {
     private SpeechDirection direction;
     private Text displayedText;
     private Message message;
     private Image image;
-    private Timestamp timestamp;
+
     static int i=0;
 
     public MessageView(Message message) {
@@ -69,11 +68,11 @@ public class MessageView extends HBox {
     }
 
     private void setCommonConfigurations() {
-        timestamp = new Timestamp(System.currentTimeMillis());
+
         if (message.getMessageType() != MessageType.AUDIO) {
             displayedText = new Text(message.getMesssagecontent());
             displayedText.setTextAlignment(TextAlignment.LEFT);
-            displayedText.setFont(Font.font("Consolas", FontPosture.REGULAR, 16));
+            displayedText.setFont(Font.font("Consolas", FontWeight.BOLD, FontPosture.ITALIC, 16));
         }
     }
 
@@ -86,14 +85,27 @@ public class MessageView extends HBox {
         setCommonConfigurations();
         if (message.getMessageType() != MessageType.AUDIO) {
             displayedText.setFill(Color.WHITE);
+            if(message.getStyle() != null)
+                displayedText.setStyle(displayedText.getStyle() + message.getStyle());
             TextFlow textFlow = new TextFlow(displayedText);
-            container = new HBox(textFlow);
+            java.util.Date date = new java.util.Date();
+            date.setTime(message.getTimestamp().getTime());
+            String formattedDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S").format(date);
+
+            Text timeStamp = new Text(formattedDate);
+            timeStamp.setFont(Font.font("Consolas", FontWeight.LIGHT, FontPosture.ITALIC, 12));
+            timeStamp.setFill(Paint.valueOf("#636160"));
+            VBox vBox = new VBox(textFlow, timeStamp);
+            container = new HBox(vBox);
+            container.setPadding(new Insets(10));
             container.setMargin(textFlow, new Insets(10, 10, 15, 10));
         } else {
             container = recieveRecord(message.getUserId(), message.getMesssageAudioContent());
 
         }
-        container.setStyle("-fx-background-radius: 15; -fx-background-color: #1e82dc ");
+        container.setStyle("-fx-background-radius: 15; -fx-background-color: #1e82dc; ");
+        if(message.getStyle() != null)
+            container.setStyle(container.getStyle() + message.getStyle());
         container.setAlignment(Pos.CENTER_LEFT);
         container.maxWidthProperty().bind(widthProperty().multiply(0.70));
         getChildren().add(container);
@@ -115,15 +127,28 @@ public class MessageView extends HBox {
         if (message.getMessageType() != MessageType.AUDIO) {
             displayedText.setTextAlignment(TextAlignment.LEFT);
             displayedText.setFill(Color.BLACK);
+            if(message.getStyle() != null)
+                displayedText.setStyle(displayedText.getStyle() + message.getStyle());
             TextFlow textFlow = new TextFlow(displayedText);
-            container = new HBox(circle, textFlow);
+            java.util.Date date = new java.util.Date();
+            date.setTime(message.getTimestamp().getTime());
+            String formattedDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S").format(date);
+            Text timeStamp = new Text(formattedDate);
+            timeStamp.setFont(Font.font("Consolas", FontWeight.LIGHT, FontPosture.ITALIC, 12));
+            timeStamp.setFill(Paint.valueOf("#636160"));
+            HBox hBox = new HBox(circle, textFlow);
+            VBox vBox = new VBox(hBox, timeStamp);
+            container = new HBox(vBox);
+            container.setPadding(new Insets(10));
             container.setMargin(textFlow, new Insets(10, 10, 15, 10));
         } else {
             HBox smallContainer = recieveRecord(message.getUserId(), message.getMesssageAudioContent());
             container = new HBox(circle, smallContainer);
         }
 
-        container.setStyle("-fx-background-radius: 15; -fx-background-color: GAINSBORO ");
+        container.setStyle("-fx-background-radius: 15; -fx-background-color: GAINSBORO; -fx-font-size: 20px;");
+        if(message.getStyle() != null)
+            container.setStyle(container.getStyle() + message.getStyle());
         container.setAlignment(Pos.CENTER_LEFT);
         container.maxWidthProperty().bind(widthProperty().multiply(0.70));
         getChildren().addAll(circle, container);
