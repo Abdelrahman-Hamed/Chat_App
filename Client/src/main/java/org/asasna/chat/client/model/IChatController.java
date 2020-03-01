@@ -21,7 +21,7 @@ public interface IChatController{
     public void tempFileDisplayMessage(Message message);
     public void tempDisplayMessage(Message message, int receiverId);
 
-     HBox recieveRecord(int senderId, byte[] buf); // By Sayed Nabil
+
 
     void removeNotification(int fromUserId);
 
