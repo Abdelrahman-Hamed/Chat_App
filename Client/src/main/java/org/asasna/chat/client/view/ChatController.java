@@ -1144,18 +1144,31 @@ public class ChatController implements Initializable, IChatController {
             Document document = build.newDocument();
 
             Element root = document.createElement("ChatMessage");
+            String value = String.valueOf(me.getId());
+            root.setAttribute("userId", value);
             document.appendChild(root);
 
             for (Message message : list) {
                 Element messageNode = document.createElement("Message");
+                Element textMessage, fileMessage;
+
                 Element id = document.createElement("Id");
                 Element content = document.createElement("Content");
 
                 id.appendChild(document.createTextNode(String.valueOf(message.getUserId())));
-                messageNode.appendChild(id);
-
                 content.appendChild(document.createTextNode(String.valueOf(message.getMesssagecontent())));
-                messageNode.appendChild(content);
+
+                if (message.getMessageType() == MessageType.TEXT){
+                    textMessage = document.createElement("Text");
+                    textMessage.appendChild(id);
+                    textMessage.appendChild(content);
+                    messageNode.appendChild(textMessage);
+                } else if (message.getMessageType() == MessageType.FILE){
+                    fileMessage = document.createElement("File");
+                    fileMessage.appendChild(id);
+                    fileMessage.appendChild(content);
+                    messageNode.appendChild(fileMessage);
+                }
                 root.appendChild(messageNode);
             }
             // Save the document to the disk file
