@@ -108,10 +108,10 @@ public class ProfileController extends Controller implements Initializable {
             user.setEmail(Email.getText());
             user.setCountry(Country.getText());
             user.setPhone(Phone.getText());
-           if(image != null) {
+           /*  if(image != null) {
                  user.setImageURL(image.getUrl());
                  System.out.println(image.getUrl());
-             }
+             }*/
 
             try {
                 chatService.UpdateUser(user);
@@ -119,11 +119,11 @@ public class ProfileController extends Controller implements Initializable {
                 e.printStackTrace();
             }
             check.setVisible(false);
-             try {
+             /*try {
                  chatService.notifyMyfriends(user.getId());
              } catch (RemoteException e) {
                  e.printStackTrace();
-             }
+             }*/
             CancelButton ();
         } else {
             check.setVisible(true);
@@ -203,12 +203,11 @@ public class ProfileController extends Controller implements Initializable {
 
     @FXML
     public void editPhoto() {
-//        FileChooser open = new FileChooser();
-//        open.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg"));
-//        File file = open.showOpenDialog(null);
-//        if (file != null) {
-//            Image image1 = new Image(file.toURI().toString());
-        Image image1=new Image("abdo.jpg");
+        FileChooser open = new FileChooser();
+        open.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg"));
+        File file = open.showOpenDialog(null);
+        if (file != null) {
+            Image image1 = new Image(file.toURI().toString());
             image = image1;
 
             Photo.setFill(new ImagePattern(image1));
@@ -216,4 +215,4 @@ public class ProfileController extends Controller implements Initializable {
 
     }
 
-
+}
