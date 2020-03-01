@@ -1,5 +1,6 @@
 package org.asasna.chat.common.model;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -16,13 +17,13 @@ class NotificationTest {
     }
     @Test
     void getType() {
-    }
-
-    @Test
-    void setType() {
+        Assertions.assertEquals(type, notification.getType());
+        Assertions.assertNotNull(notification.getType());
     }
 
     @Test
     void getUser() {
+        Assertions.assertEquals(user, notification.getUser());
+        Assertions.assertNotNull(notification.getUser());
     }
 }

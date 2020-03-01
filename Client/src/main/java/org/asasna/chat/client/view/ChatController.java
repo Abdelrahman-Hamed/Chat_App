@@ -475,7 +475,6 @@ public class ChatController implements Initializable, IChatController {
         Contact contact1 = new Contact(user);
         addRemoveFriendButton(contact1);
         oContacts.add(contact1);
-
     }
 
     private AudioFormat getAudioFormat() {
@@ -549,23 +548,23 @@ public class ChatController implements Initializable, IChatController {
             removeWavFile();
         } else {
             new Thread(() -> {
-                byte[] buf = convertFileToBytes();
-                int senderId = me.getId();
-                Message message = new Message(senderId, buf);
-                if (!(activeContact instanceof GroupContact)) {
-                    int receiverId;
-                    receiverId = activeContact.getUser().getId();
-                    //boolean sent = client.sendRecord(receiverId, senderId, buf);
-                    sendMessage(receiverId, message);
-                    System.out.println(buf.length);
-                } else {
-                    try {
-                        sendGroupMessage(((GroupContact) activeContact).getChatGroup(), message);
-                    } catch (RemoteException e) {
-                        e.printStackTrace();
+                    byte[] buf = convertFileToBytes();
+                    int senderId = me.getId();
+                    Message message = new Message(senderId, buf);
+                    if (!(activeContact instanceof GroupContact)) {
+                        int receiverId;
+                        receiverId = activeContact.getUser().getId();
+                        //boolean sent = client.sendRecord(receiverId, senderId, buf);
+                        sendMessage(receiverId, message);
+                        System.out.println(buf.length);
+                    }else{
+                        try {
+                            sendGroupMessage(((GroupContact) activeContact).getChatGroup(),message);
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
                     }
-                }
-                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////else gp
+                    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////else gp
             }).start();
         }
     }
@@ -1062,9 +1061,9 @@ public class ChatController implements Initializable, IChatController {
                     System.out.println("chatbot start");
                     try {
                         if (message.getMessageType() == message.getMessageType().TEXT) {
-                            sendByChatbot(message, false);
-                        } else {
-                            sendByChatbot(message, true);
+                            sendByChatbot(message,false);
+                        }else{
+                            sendByChatbot(message,true);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -1170,12 +1169,12 @@ public class ChatController implements Initializable, IChatController {
                 id.appendChild(document.createTextNode(String.valueOf(message.getUserId())));
                 content.appendChild(document.createTextNode(String.valueOf(message.getMesssagecontent())));
 
-                if (message.getMessageType() == MessageType.TEXT) {
+                if (message.getMessageType() == MessageType.TEXT){
                     textMessage = document.createElement("Text");
                     textMessage.appendChild(id);
                     textMessage.appendChild(content);
                     messageNode.appendChild(textMessage);
-                } else if (message.getMessageType() == MessageType.FILE) {
+                } else if (message.getMessageType() == MessageType.FILE){
                     fileMessage = document.createElement("File");
                     fileMessage.appendChild(id);
                     fileMessage.appendChild(content);
@@ -1542,7 +1541,6 @@ public class ChatController implements Initializable, IChatController {
 
     //    Start Nehal Adel
     private Font messageFont;
-
     @FXML
     public void showFontDialog(ActionEvent actionEvent) {
         FontSelectorDialog fs = new FontSelectorDialog(null);
@@ -1553,7 +1551,6 @@ public class ChatController implements Initializable, IChatController {
             messageFont = res;
         });
     }
-
     @FXML
     public void send() throws RemoteException {
         String backgroundColor = "rgb(" + backgroundPicker.getValue().getRed() * 255 + "," + backgroundPicker.getValue().getGreen() * 255 + "," + backgroundPicker.getValue().getBlue() * 255 + ")";
@@ -1563,6 +1560,7 @@ public class ChatController implements Initializable, IChatController {
         String messageContent = messageTextArea.getText().trim();
         if (messageContent.length() > 0) {
             if (activeContact instanceof GroupContact) {
+                System.out.println("inner");
                 client.sendGroupMessage(((GroupContact) activeContact).getChatGroup(), new Message(client.getUser().getId(), messageContent));
                 messageTextArea.clear();
             } else {
@@ -1573,9 +1571,9 @@ public class ChatController implements Initializable, IChatController {
                         messageTextArea.setText("");
                         Message message = new Message(senderId, messageContent, MessageType.TEXT);
                         message.setStyle("-fx-background-color: " + backgroundColor + ";-fx-fill: " + textColor + ";");
-                        if (messageFont != null) {
+                        if(messageFont != null){
                             System.out.println("-fx-font-family: \"" + messageFont.getFamily() + "\";-fx-font-size: " + messageFont.getSize());
-                            message.setStyle(message.getStyle() + "-fx-font-family: \"" + messageFont.getFamily() + "\";-fx-font-size: " + messageFont.getSize());
+                            message.setStyle(message.getStyle() + "-fx-font-family: \"" + messageFont.getFamily() + "\";-fx-font-size: " + messageFont.getSize() );
                         }
                         sendMessage(receiverId, message);
                     }

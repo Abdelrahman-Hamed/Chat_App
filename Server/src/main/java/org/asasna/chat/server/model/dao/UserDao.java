@@ -398,7 +398,7 @@ public class UserDao implements IUserDao {
             user.setImageURL(resultSet.getString(5));
             user.setPassword(resultSet.getString(6));
             System.out.println(user.getImageURL());
-            user.setImage(new Image(new FileInputStream("./Server/src/main/resources/org/asasna/chat/server/model/dao/" + user.getImageURL())));
+            user.setImage(new Image(new FileInputStream("./Server/src/main/resources/org/asasna/chat/server/model/dao/abdo.jpg" )));
             Gender gender = Gender.Male;
             switch (resultSet.getString(7)) {
                 case "Female":
