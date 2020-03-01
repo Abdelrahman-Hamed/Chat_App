@@ -315,7 +315,7 @@ public class ChatController implements Initializable, IChatController {
                 oContacts.forEach(System.out::println);
                 contactsList.getChildren().clear();
                 contactsList.getChildren().addAll(oContacts);
-                Bindings.bindContent(contactsList.getChildren(), FXCollections.observableArrayList(oContacts));
+                //Bindings.bindContent(contactsList.getChildren(), FXCollections.observableArrayList(oContacts));
                 createbtn.setVisible(false);
             });
             friendRequest.setOnMouseClicked(e -> {
@@ -474,6 +474,7 @@ public class ChatController implements Initializable, IChatController {
         Contact contact1 = new Contact(user);
         addRemoveFriendButton(contact1);
         oContacts.add(contact1);
+
     }
 
     private AudioFormat getAudioFormat() {
@@ -1083,7 +1084,6 @@ public class ChatController implements Initializable, IChatController {
 
         Platform.runLater(() -> {
             oContacts.add(contact1);
-            Bindings.bindContent(contactsList.getChildren(), FXCollections.observableArrayList(oContacts));
         });
     }
 
@@ -1633,8 +1633,8 @@ public class ChatController implements Initializable, IChatController {
         String messageContent = messageTextArea.getText().trim();
         if (messageContent.length() > 0) {
             if (activeContact instanceof GroupContact) {
-                System.out.println("inner");
                 client.sendGroupMessage(((GroupContact) activeContact).getChatGroup(), new Message(client.getUser().getId(), messageContent));
+                messageTextArea.clear();
             } else {
                 if (activeContact.getUser().getStatus() == UserStatus.ONLINE) {
                     if (messageTextArea.getText().length() != 0 && !messageTextArea.getText().equals(" ")) {
