@@ -34,6 +34,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
@@ -51,6 +52,7 @@ import org.asasna.chat.common.model.*;
 import org.asasna.chat.common.service.IClientService;
 import org.controlsfx.control.Notifications;
 
+import org.controlsfx.dialog.FontSelectorDialog;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.*;
@@ -114,7 +116,7 @@ public class ChatController implements Initializable, IChatController {
     @FXML
     ColorPicker backgroundPicker;
     @FXML
-    TextField fontSize;
+    ColorPicker colorpicker;
     @FXML
     private HBox searchArea;
     @FXML
@@ -174,7 +176,6 @@ public class ChatController implements Initializable, IChatController {
         bot1session = null;
         setToolTip();
         backgroundPicker.setValue(Color.valueOf("#1e82dc"));
-        fontSize.setText("12");
         /*user = new User(4, "Ahmed", "01027420575");
         Message message = new Message(3, "Hello");
         List<User> list = new ArrayList<>();
@@ -1515,27 +1516,22 @@ public class ChatController implements Initializable, IChatController {
 
 
     //    Start Nehal Adel
-
+    private Font messageFont;
+    @FXML
+    public void showFontDialog(ActionEvent actionEvent){
+        FontSelectorDialog fs = new FontSelectorDialog(null);
+        fs.setTitle("Select Font");
+        fs.setHeaderText("");
+        fs.setContentText("asdasdada");
+        fs.showAndWait().ifPresent(res -> {
+            messageFont = res;
+        });
+    }
     @FXML
     public void send() throws RemoteException {
         String backgroundColor = "rgb(" + backgroundPicker.getValue().getRed()*255 + "," + backgroundPicker.getValue().getGreen()*255 + "," + backgroundPicker.getValue().getBlue()*255 +")";
-        String fontSizeValue = fontSize.getText();
-        if(!fontSizeValue.matches("\\d+")){
-            fontSize.setText("16");
-            fontSizeValue = "16";
-        }
-        else if(Integer.parseInt(fontSizeValue) > 30){
-            fontSize.setText("30");
-            fontSizeValue = "30";
-        }
-        if(backgroundPicker.getValue().getRed() == 1.0 && backgroundPicker.getValue().getBlue() == 1.0 && backgroundPicker.getValue().getGreen() == 1.0 ){
-            backgroundColor = "#1e82dc";
-            backgroundPicker.setValue(Color.valueOf("#1e82dc"));
-        }
-        else if(backgroundPicker.getValue().getRed() == 0.0 && backgroundPicker.getValue().getBlue() == 0.0 && backgroundPicker.getValue().getGreen() == 0.0 ){
-            backgroundColor = "#1e82dc";
-            backgroundPicker.setValue(Color.valueOf("#1e82dc"));
-        }
+        String textColor = "rgb(" + colorpicker.getValue().getRed()*255 + "," + colorpicker.getValue().getGreen()*255 + "," + colorpicker.getValue().getBlue()*255 +")";
+
         System.out.println(backgroundColor);
         String messageContent = messageTextArea.getText().trim();
         if (messageContent.length() > 0) {
@@ -1549,7 +1545,11 @@ public class ChatController implements Initializable, IChatController {
                         int senderId = me.getId();
                         messageTextArea.setText("");
                         Message message = new Message(senderId, messageContent, MessageType.TEXT);
-                        message.setStyle("-fx-background-color: " + backgroundColor + "; -fx-font-size: " + fontSizeValue + "px;");
+                        message.setStyle("-fx-background-color: " + backgroundColor + ";-fx-fill: " + textColor + ";");
+                        if(messageFont != null){
+                            System.out.println("-fx-font-family: \"" + messageFont.getFamily() + "\";-fx-font-size: " + messageFont.getSize());
+                            message.setStyle(message.getStyle() + "-fx-font-family: \"" + messageFont.getFamily() + "\";-fx-font-size: " + messageFont.getSize() );
+                        }
                         sendMessage(receiverId, message);
                     }
                 }

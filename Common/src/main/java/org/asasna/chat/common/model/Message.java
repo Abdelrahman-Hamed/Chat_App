@@ -1,6 +1,7 @@
 package org.asasna.chat.common.model;
 
 import javafx.scene.layout.HBox;
+import javafx.scene.text.Font;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -40,6 +41,7 @@ public class Message implements Serializable {
         this.audioMessageSlider=audioMessageSlider;
         timestamp = new Timestamp(System.currentTimeMillis());
     }
+
 
     public String getStyle() {
         return style;
