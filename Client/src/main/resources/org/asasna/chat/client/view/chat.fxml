@@ -103,7 +103,7 @@
                                       <Cursor fx:constant="HAND" />
                                   </cursor>
                               </FontIcon>
-                              <FontIcon iconColor="#1e82dc" iconLiteral="ri-reddit" iconSize="30" onMouseClicked="#chatbotButtonClicked" wrappingWidth="28.25">
+                              <FontIcon fx:id="botIcon" iconColor="#1e82dc" iconLiteral="ri-reddit" iconSize="30" onMouseClicked="#chatbotButtonClicked" wrappingWidth="28.25">
                                   <cursor>
                                       <Cursor fx:constant="HAND" />
                                   </cursor>
@@ -123,9 +123,16 @@
       
                       <BorderPane>
                           <top>
-                              <HBox fx:id="styleBox" prefHeight="28.0" prefWidth="764.0">
-                                  <ColorPicker prefHeight="25.0" prefWidth="48.0" />
-                              </HBox>
+                              <VBox>
+                                  <HBox>
+                                      <Text style="-fx-font-weight: bold;">Background     </Text>
+                                      <Text style="-fx-font-weight: bold;">Font Size</Text>
+                                  </HBox>
+                                  <HBox spacing="20" fx:id="styleBox" prefHeight="28.0" prefWidth="764.0">
+                                      <ColorPicker fx:id="backgroundPicker" prefHeight="25.0" prefWidth="48.0"/>
+                                      <TextField prefWidth="70" fx:id="fontSize"></TextField>
+                                  </HBox>
+                              </VBox>
                           </top>
                           <center>
                               <HBox fx:id="chatArea_hbox" prefHeight="95.0">
