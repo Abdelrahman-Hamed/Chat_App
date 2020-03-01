@@ -39,11 +39,14 @@ public class App extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
         try {
-            iAuthenticationService=new AuthenticationService();
-            reg= LocateRegistry.createRegistry(5001);
-            reg.rebind("AuthenticationService", iAuthenticationService );
-        }
-        catch (RemoteException ex) {
+            iAuthenticationService = new AuthenticationService();
+            /*reg = LocateRegistry.createRegistry(5001);
+            reg.rebind("AuthenticationService", iAuthenticationService);*/
+            /*System.clearProperty("java.rmi.server.hostname");
+            System.setProperty("java.rmi.server.hostname", "10.145.4.235");*/
+            Registry reg = LocateRegistry.createRegistry(5001);
+            reg.rebind("AuthenticationService", iAuthenticationService);
+        } catch (RemoteException ex) {
             ex.printStackTrace();
         }
         scene = new Scene(loadFXML("server"));
